@@ -1,15 +1,10 @@
-use types::flow::Flow;
-
-use std::fs::File;
-use std::io::Read;
-use serde_json;
+use flow_parser::parse;
 
 fn main() {
-    let file_path = "./flow.json";
-    let mut file = File::open(file_path).expect("Failed to open file");
-    let mut contents = String::new();
+    let flow = parse(String::from("./flow.json")).expect("Falha ao realizar o parse do fluxo!");
+    let start = flow.get_onboarding_state().expect("Bloco de início não encontrado!");
+    println!("{:#?}", start);
 
-    file.read_to_string(&mut contents).expect("Failed to read file");
-    let flow: Flow = serde_json::from_str(&contents).expect("Failed to parse JSON");
-    flow.get_start_state();
+    let fallback = flow.get_state(&start.default_output.state_id);
+    println!("{:#?}", fallback);
 }
