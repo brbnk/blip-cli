@@ -31,7 +31,8 @@ pub enum Settings {
     ScriptV2(ScriptV2),
     ProcessCommand(ProcessCommand),
     ExecuteBlipFunction(ExecuteBlipFunction),
-    ProcessContentAssistant(ProcessContentAssistant)
+    ProcessContentAssistant(ProcessContentAssistant),
+    TrackEvent(TrackEvent)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -176,4 +177,16 @@ pub struct ProcessContentAssistant {
 
     #[serde(rename = "outputVariable")]
     pub output_variable: String
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TrackEvent {
+    #[serde(rename = "extras")]
+    pub extras: HashMap<String, String>,
+
+    #[serde(rename = "category")]
+    pub category: String,
+
+    #[serde(rename = "action")]
+    pub action: String
 }

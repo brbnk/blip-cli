@@ -55,7 +55,7 @@ pub struct Document {
     pub doc_type: String,
 
     #[serde(rename = "content")]
-    pub content: Content 
+    pub content: Option<Content> 
 }
 
 #[derive(Debug, Serialize, Deserialize)]
