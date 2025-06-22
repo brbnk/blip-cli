@@ -1,3 +1,4 @@
+use contexts::{input, replacer};
 use serde::{Deserialize, Serialize};
 use std::{
     io::{self, Write},
@@ -36,7 +37,7 @@ impl Action {
             }
             Some(Content::Text(text)) => {
                 println!("\n[BOT]");
-                println!("{}", text);
+                println!("{}", replacer::replace(text));
             }
             None => {
                 println!("Nenhum conteúdo encontrado!");
@@ -64,9 +65,9 @@ impl Input {
             .read_line(&mut input_content)
             .expect("Erro ao ler entrada");
 
-        // let input_content = input_content.trim().to_string();
+        let input_content = input_content.trim().to_string();
 
-        // user_context.insert(String::from("input.content"), input_content);
+        input::set("input.content", &input_content);
     }
 }
 

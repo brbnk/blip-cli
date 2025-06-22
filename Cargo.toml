@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = [ "flow_parser", "types" ]
+members = [ "contexts", "flow_parser", "types" ]
 
 [dependencies]
 deno_core = "0.341.0"
