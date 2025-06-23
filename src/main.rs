@@ -13,11 +13,13 @@ fn main() {
     // Global entering actions
 
     // Entering custom actions
+    state.handle_custom_entering_actions();
 
     // Content actions
     state.handle_content_actions();
 
     // Leaving custom actions
+    state.handle_custom_leaving_actions();
 
     // Global leaving actions
 
@@ -30,7 +32,7 @@ fn main() {
     state = flow
       .get_state(destination)
       .expect("Bloco não encontrado");
-    
+
     println!("");
   }
 }

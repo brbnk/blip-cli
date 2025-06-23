@@ -78,40 +78,25 @@ impl Condition {
             },
             Comparison::Contains => {
                 match value {
-                    Some(context) => {
-                        for val in &self.values {
-                            if context.contains(val) {
-                                return true
-                            }
-                        }
-                        return false
-                    },
+                    Some(context) => self.values
+                        .iter()
+                        .any(|v| context.contains(v)),
                     None => false,
                 }
             },
             Comparison::StartsWith => {
                 match value {
-                    Some(context) => {
-                        for val in &self.values {
-                            if context.starts_with(val) {
-                                return true
-                            }
-                        }
-                        return false
-                    },
+                    Some(context) => self.values
+                        .iter()
+                        .any(|v| context.starts_with(v)),
                     None => false,
                 }
             },
             Comparison::EndsWith => {
                 match value {
-                    Some(context) => {
-                        for val in &self.values {
-                            if context.ends_with(val) {
-                                return true
-                            }
-                        }
-                        return false
-                    },
+                    Some(context) => self.values
+                        .iter()
+                        .any(|v| context.ends_with(v)),
                     None => false,
                 }
             },

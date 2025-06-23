@@ -51,6 +51,22 @@ impl State {
         println!("{}", topo_base);
     }
 
+    pub fn handle_custom_entering_actions(&self) {
+        for action in &self.entering_custom_actions {
+            if action.should_execute() {
+                action.execute();
+            }
+        }
+    }
+
+      pub fn handle_custom_leaving_actions(&self) {
+        for action in &self.leaving_custom_actions {
+            if action.should_execute() {
+                action.execute();
+            }
+        }
+    }
+
     pub fn handle_content_actions(&self) {
         for content in &self.content_actions {
             match content {

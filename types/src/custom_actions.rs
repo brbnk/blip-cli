@@ -1,39 +1,8 @@
 use std::collections::HashMap;
+use colored::Colorize;
 use serde::{Serialize, Deserialize};
 use crate::conditions::Condition;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CustomAction {
-    #[serde(rename = "$id")]
-    pub id: String,
-
-    #[serde(rename = "type")]
-    pub action_type: String,
-
-    #[serde(rename = "$title")]
-    pub title: String,
-
-    #[serde(rename = "settings")]
-    pub settings: Settings,
-
-    #[serde(rename = "conditions")]
-    pub conditions: Option<Vec<Condition>>
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum Settings {
-    Script(Script),
-    Variable(Variable),
-    ProcessHttp(ProcessHttp),
-    MergeContact(MergeContact),
-    Redirect(Redirect),
-    ScriptV2(ScriptV2),
-    ProcessCommand(ProcessCommand),
-    ExecuteBlipFunction(ExecuteBlipFunction),
-    ProcessContentAssistant(ProcessContentAssistant),
-    TrackEvent(TrackEvent)
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Script {
@@ -189,4 +158,94 @@ pub struct TrackEvent {
 
     #[serde(rename = "action")]
     pub action: String
+}
+
+impl TrackEvent {
+    pub fn execute(&self) {
+        println!(
+            "+ {}: {} -> {}", 
+            "Tracking".blue().bold(),
+            contexts::replacer::replace(&self.category), 
+            contexts::replacer::replace(&self.action));
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub enum ActionType {
+    ExecuteScript,
+    SetVariable,
+    ProcessHttp,
+    MergeContact,
+    Redirect,
+    ExecuteScriptV2,
+    ProcessCommand,
+    ExecuteBlipFunction,
+    ProcessContentAssistant,
+    TrackEvent
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Settings {
+    Script(Script),
+    Variable(Variable),
+    ProcessHttp(ProcessHttp),
+    MergeContact(MergeContact),
+    Redirect(Redirect),
+    ScriptV2(ScriptV2),
+    ProcessCommand(ProcessCommand),
+    ExecuteBlipFunction(ExecuteBlipFunction),
+    ProcessContentAssistant(ProcessContentAssistant),
+    TrackEvent(TrackEvent)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CustomAction {
+    #[serde(rename = "$id")]
+    pub id: String,
+
+    #[serde(rename = "type")]
+    pub action_type: ActionType,
+
+    #[serde(rename = "$title")]
+    pub title: String,
+
+    #[serde(rename = "settings")]
+    pub settings: Settings,
+
+    #[serde(rename = "conditions")]
+    pub conditions: Option<Vec<Condition>>
+}
+
+impl CustomAction {
+    pub fn should_execute(&self) -> bool {
+        match &self.conditions {
+            Some(conditions) => {
+                if conditions.is_empty() {
+                    return true
+                }
+
+                return conditions
+                    .iter()
+                    .any(|c| c.should_execute())
+            },
+            None => true,
+        }
+    }
+
+    pub fn execute(&self) {
+        match &self.settings {
+            Settings::Script(_) => todo!(),
+            Settings::Variable(_) => todo!(),
+            Settings::ProcessHttp(_) => todo!(),
+            Settings::MergeContact(_) => todo!(),
+            Settings::Redirect(_) => todo!(),
+            Settings::ScriptV2(_) => todo!(),
+            Settings::ProcessCommand(_) => todo!(),
+            Settings::ExecuteBlipFunction(_) => todo!(),
+            Settings::ProcessContentAssistant(_) => todo!(),
+            Settings::TrackEvent(track_event) => track_event.execute(),
+        }
+    }
 }
