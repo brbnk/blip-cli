@@ -17,6 +17,10 @@ fn main() {
     // Content actions
     state.handle_content_actions();
 
+    // Leaving custom actions
+
+    // Global leaving actions
+
     // Condition outputs
     let destination = match state.handle_condition_outputs() {
       Some(destination) => destination,
@@ -26,10 +30,7 @@ fn main() {
     state = flow
       .get_state(destination)
       .expect("Bloco não encontrado");
-
-    // Leaving custom actions
-
-    // Global leaving actions
+    
     println!("");
   }
 }

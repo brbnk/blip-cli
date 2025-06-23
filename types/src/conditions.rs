@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use contexts::{input,context};
+use contexts::{context};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -62,30 +62,78 @@ impl Condition {
             },
             Comparison::Equals => {
                 match value {
-                    Some(v) => self.values
+                    Some(context) => self.values
                         .iter()
-                        .any(|s| s.eq_ignore_ascii_case(v.as_str())),
+                        .any(|s| s.eq_ignore_ascii_case(context.as_str())),
                     None => false,
                 }
             },
-            Comparison::NotEquals => todo!(),
-            Comparison::Contains => todo!(),
-            Comparison::StartsWith => todo!(),
-            Comparison::EndsWith => todo!(),
+            Comparison::NotEquals => {
+                match value {
+                    Some(context) => self.values
+                        .iter()
+                        .any(|s| !s.eq_ignore_ascii_case(context.as_str())),
+                    None => false,
+                }
+            },
+            Comparison::Contains => {
+                match value {
+                    Some(context) => {
+                        for val in &self.values {
+                            if context.contains(val) {
+                                return true
+                            }
+                        }
+                        return false
+                    },
+                    None => false,
+                }
+            },
+            Comparison::StartsWith => {
+                match value {
+                    Some(context) => {
+                        for val in &self.values {
+                            if context.starts_with(val) {
+                                return true
+                            }
+                        }
+                        return false
+                    },
+                    None => false,
+                }
+            },
+            Comparison::EndsWith => {
+                match value {
+                    Some(context) => {
+                        for val in &self.values {
+                            if context.ends_with(val) {
+                                return true
+                            }
+                        }
+                        return false
+                    },
+                    None => false,
+                }
+            },
             Comparison::GreaterThan => todo!(),
             Comparison::LessThan => todo!(),
             Comparison::GreaterThanOrEquals => todo!(),
             Comparison::LessThanOrEquals => todo!(),
             Comparison::ApproximateTo => todo!(),
             Comparison::Matches => todo!(),
-            Comparison::NotExists => todo!(),
+            Comparison::NotExists => {
+                match value {
+                    Some(_) => false,
+                    None => true,
+                }
+            }
         }
     }
 
     fn get_source_value(&self) -> Option<String> {
         match self.source {
             Source::Input => 
-                input::get("input.content"),
+                context::get("input.content"),
             Source::Context => 
                 context::get(self.variable
                     .as_ref()

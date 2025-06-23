@@ -1,5 +1,5 @@
 use colored::Colorize;
-use contexts::{input, replacer};
+use contexts::{context, replacer};
 use serde::{Deserialize, Serialize};
 use std::{
     io::{self, Write},
@@ -78,7 +78,7 @@ impl Input {
 
         let input_content = input_content.trim().to_string();
 
-        input::set("input.content", &input_content);
+        context::set("input.content", &input_content);
     }
 }
 
