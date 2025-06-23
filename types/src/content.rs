@@ -1,3 +1,4 @@
+use colored::Colorize;
 use contexts::{input, replacer};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -32,12 +33,19 @@ impl Action {
     pub fn handle_action(&self) {
         match &self.card_content.document.content {
             Some(Content::ChatState(json)) => {
-                println!("\n... ({}s)", json.interval / 1000);
-                sleep(Duration::from_millis(json.interval.into()));
+                // json.interval / 1000
+                let frames = ["|", "/", "-", "\\"];
+                let animation_time = (json.interval / 100) as usize;
+                for i in 0..animation_time {
+                    let frame = frames[i % frames.len()];
+                    print!("\r{}", frame);
+                    std::io::Write::flush(&mut std::io::stdout()).unwrap();
+                    sleep(Duration::from_millis(100));
+                }
+                print!("\x08 \x08");
             }
             Some(Content::Text(text)) => {
-                println!("\n[BOT]");
-                println!("{}", replacer::replace(text));
+                print!("{}\n", replacer::replace(text).yellow().bold());
             }
             None => {
                 println!("Nenhum conteúdo encontrado!");
@@ -57,10 +65,13 @@ pub struct Input {
 
 impl Input {
     pub fn handle_input(&self) {
-        io::stdout().flush().unwrap();
+        if self.bypass {
+            return;
+        }
 
-        println!("\n[USER]");
         let mut input_content = String::new();
+
+        io::stdout().flush().unwrap();
         io::stdin()
             .read_line(&mut input_content)
             .expect("Erro ao ler entrada");
@@ -96,6 +107,9 @@ pub struct Document {
 
     #[serde(rename = "type")]
     pub doc_type: String,
+
+    #[serde(rename = "textContent")]
+    pub text_content: Option<String>,
 
     #[serde(rename = "content")]
     pub content: Option<Content>,
