@@ -6,4 +6,5 @@ edition = "2024"
 [dependencies]
 serde = { version = "1.0.219", features = ["derive"] }
 contexts = { path = "../contexts" }
+js_runner = { path = "../js_runner" }
 colored = "2"

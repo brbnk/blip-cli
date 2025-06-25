@@ -45,7 +45,7 @@ impl Action {
                 print!("\x08 \x08");
             }
             Some(Content::Text(text)) => {
-                print!("{}\n", replacer::replace(text).yellow().bold());
+                print!("{}\n", replacer::replace(text).white().bold());
             }
             None => {
                 println!("Nenhum conteúdo encontrado!");

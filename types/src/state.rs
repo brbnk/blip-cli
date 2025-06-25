@@ -57,9 +57,11 @@ impl State {
                 action.execute();
             }
         }
+        println!();
     }
 
       pub fn handle_custom_leaving_actions(&self) {
+        println!();
         for action in &self.leaving_custom_actions {
             if action.should_execute() {
                 action.execute();
