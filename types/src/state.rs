@@ -31,24 +31,24 @@ pub struct State {
 
 impl State {
     pub fn print_state_title(&self) {
-        let texto = &self.title;
-        let largura = 60;
-        let largura_minima = texto.len() + 2;
-        let largura = largura.max(largura_minima);
+        let title = &self.title;
+        let length = 60;
+        let min_length = title.len() + 2;
+        let length = length.max(min_length);
 
-        let topo_base = format!("+{}+", "-".repeat(largura - 2));
-        let padding_total = largura - 2 - texto.len();
-        let padding_esquerda = padding_total / 2;
-        let padding_direita = padding_total - padding_esquerda;
+        let upper_state = format!("+{}+", "-".repeat(length - 2));
+        let total_padding = length - 2 - title.len();
+        let left_padding = total_padding / 2;
+        let right_padding = total_padding - left_padding;
 
-        println!("{}", topo_base);
+        println!("{}", upper_state);
         println!(
             "|{}{}{}|",
-            " ".repeat(padding_esquerda),
-            texto.green().bold(),
-            " ".repeat(padding_direita)
+            " ".repeat(left_padding),
+            title.green().bold(),
+            " ".repeat(right_padding)
         );
-        println!("{}", topo_base);
+        println!("{}", upper_state);
     }
 
     pub fn handle_custom_entering_actions(&self) {

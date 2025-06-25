@@ -3,7 +3,7 @@ use contexts::{context, replacer};
 use serde::{Deserialize, Serialize};
 use std::{
     io::{self, Write},
-    thread::sleep,
+    thread::{sleep},
     time::Duration,
 };
 
@@ -76,10 +76,14 @@ impl Input {
             .flush()
             .unwrap();
 
-        io::stdin()
+        let bytes_read = io::stdin()
             .read_line(&mut input_content)
             .expect("Erro ao ler entrada");
 
+        if bytes_read == 0 {
+            std::process::exit(0);
+        }
+    
         let input_content = input_content
             .trim()
             .to_string();

@@ -14,9 +14,12 @@ pub fn exec_script(script: String, args: Vec<String>) -> Result<String, Box<dyn 
         runtime.execute_script("<init>", script)
             .map_err(|e| format!("Erro ao executar script: {e}"))?;
 
-        let function = if args.is_empty() {
+        let function = if args.is_empty() 
+        {
             String::from("run()")
-        } else {
+        } 
+        else 
+        {
             String::from(format!("run({})", args.join(", ")))
         };
 
@@ -27,9 +30,12 @@ pub fn exec_script(script: String, args: Vec<String>) -> Result<String, Box<dyn 
         let scope = &mut runtime.handle_scope();
         let value = v8::Local::new(scope, result);
 
-        if value.is_string() {
+        if value.is_string() 
+        {
             Ok(value.to_rust_string_lossy(scope))
-        } else if value.is_object() {
+        } 
+        else if value.is_object() 
+        {
             let global = scope.get_current_context().global(scope);
 
             let json_key = v8::String::new(scope, "JSON").unwrap();
@@ -55,7 +61,9 @@ pub fn exec_script(script: String, args: Vec<String>) -> Result<String, Box<dyn 
                 .ok_or("Erro ao converter objeto para JSON string")?;
 
             Ok(json_str.to_rust_string_lossy(scope))
-        } else {
+        } 
+        else 
+        {
             Ok(value
                 .to_string(scope)
                 .ok_or("Erro ao converter valor JS para string")?
