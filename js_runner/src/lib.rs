@@ -1,5 +1,5 @@
 use std::{cell::RefCell};
-use deno_core::{JsRuntime, RuntimeOptions};
+use deno_core::{v8, JsRuntime, RuntimeOptions};
 
 thread_local! {
     static JS_RUNTIME: RefCell<JsRuntime> = RefCell::new(
@@ -7,31 +7,60 @@ thread_local! {
     );
 }
 
-pub fn exec_script(script: String) -> Result<String, Box<dyn std::error::Error>> {
+pub fn exec_script(script: String, args: Vec<String>) -> Result<String, Box<dyn std::error::Error>> {
     let result: Result<String, Box<dyn std::error::Error>> = JS_RUNTIME.with(|cell| {
         let mut runtime = cell.borrow_mut();
-        
+
         runtime.execute_script("<init>", script)
             .map_err(|e| format!("Erro ao executar script: {e}"))?;
 
+        let function = if args.is_empty() {
+            String::from("run()")
+        } else {
+            String::from(format!("run({})", args.join(", ")))
+        };
+
         let result = runtime
-            .execute_script("<run>", "run()")
+            .execute_script("<run>", function)
             .map_err(|e| format!("Erro ao executar script: {e}"))?;
 
         let scope = &mut runtime.handle_scope();
-        let local = result.open(scope);
+        let value = v8::Local::new(scope, result);
 
-        let rust_string = if local.is_string() {
-            local.to_rust_string_lossy(scope)
+        if value.is_string() {
+            Ok(value.to_rust_string_lossy(scope))
+        } else if value.is_object() {
+            let global = scope.get_current_context().global(scope);
+
+            let json_key = v8::String::new(scope, "JSON").unwrap();
+            let json_key_val = json_key.into();
+
+            let json_obj = global
+                .get(scope, json_key_val)
+                .and_then(|val| v8::Local::<v8::Object>::try_from(val).ok())
+                .ok_or("Não foi possível acessar JSON")?;
+
+            let stringify_key = v8::String::new(scope, "stringify").unwrap();
+            let stringify_key_val = stringify_key.into();
+
+            let stringify_fn = json_obj
+                .get(scope, stringify_key_val)
+                .and_then(|val| v8::Local::<v8::Function>::try_from(val).ok())
+                .ok_or("Não foi possível acessar JSON.stringify")?;
+
+            let args = [value];
+            let json_str = stringify_fn
+                .call(scope, json_obj.into(), &args)
+                .and_then(|val| v8::Local::<v8::String>::try_from(val).ok())
+                .ok_or("Erro ao converter objeto para JSON string")?;
+
+            Ok(json_str.to_rust_string_lossy(scope))
         } else {
-            let to_string = local
+            Ok(value
                 .to_string(scope)
-                .ok_or("Erro ao converter retorno JS para string")?; // &str vira Box<dyn Error>
-            to_string.to_rust_string_lossy(scope)
-        };
-
-        Ok(rust_string)
+                .ok_or("Erro ao converter valor JS para string")?
+                .to_rust_string_lossy(scope))
+        }
     });
-
     result
 }

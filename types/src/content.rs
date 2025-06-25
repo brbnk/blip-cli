@@ -71,12 +71,18 @@ impl Input {
 
         let mut input_content = String::new();
 
-        io::stdout().flush().unwrap();
+        print!("Input: ");
+        io::stdout()
+            .flush()
+            .unwrap();
+
         io::stdin()
             .read_line(&mut input_content)
             .expect("Erro ao ler entrada");
 
-        let input_content = input_content.trim().to_string();
+        let input_content = input_content
+            .trim()
+            .to_string();
 
         context::set("input.content", &input_content);
     }

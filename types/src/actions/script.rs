@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use contexts::{context};
 use crate::actions::print::{print_yellow};
 
@@ -19,7 +19,18 @@ pub struct Script {
 
 impl Script {
     pub fn execute(&self) {
-        let script_response = js_runner::exec_script(self.source.clone())
+        let args: Vec<String> = self.input_variables
+            .iter()
+            .map(|input_var| {
+                match context::get(&input_var) {
+                    Some(value) => serde_json::to_string(&value).unwrap(),
+                    None => serde_json::to_string("").unwrap(),
+                }
+            })
+            .collect();
+
+        let script_response = 
+            js_runner::exec_script(self.source.clone(), args)
             .expect("Erro ao executar script");
         
         print_yellow(

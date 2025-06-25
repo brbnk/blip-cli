@@ -1339,6 +1339,7 @@ dependencies = [
  "contexts",
  "js_runner",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
