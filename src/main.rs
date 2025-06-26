@@ -1,7 +1,10 @@
-use flow_parser::parse;
+use contexts::{context};
+use types::{flow::Flow};
 
 fn main() {
-  let flow = parse(String::from("./flow.json")).expect("Falha ao realizar o parse do fluxo!");
+  context::set_master_state("teste638760290597490566");
+  
+  let flow = Flow::deserialize(&context::get_master_state());
 
   let mut state = flow
     .get_onboarding_state()
@@ -9,8 +12,6 @@ fn main() {
     
   loop {
     state.print_state_title();
-
-    // Global entering actions
 
     // Entering custom actions
     state.handle_custom_entering_actions();
@@ -20,8 +21,6 @@ fn main() {
 
     // Leaving custom actions
     state.handle_custom_leaving_actions();
-
-    // Global leaving actions
 
     // Condition outputs
     let destination = match state.handle_condition_outputs() {

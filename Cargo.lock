@@ -135,7 +135,7 @@ dependencies = [
 name = "blip-cli"
 version = "0.1.0"
 dependencies = [
- "flow_parser",
+ "contexts",
  "serde",
  "serde_json",
  "types",
@@ -396,7 +396,6 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
- "types",
 ]
 
 [[package]]
@@ -1337,6 +1336,7 @@ version = "0.1.0"
 dependencies = [
  "colored",
  "contexts",
+ "flow_parser",
  "js_runner",
  "serde",
  "serde_json",

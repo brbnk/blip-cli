@@ -1,8 +1,9 @@
-use crate::condition_outputs::ConditionOutputs;
+use crate::{condition_outputs::ConditionOutputs, global_actions::GlobalActions};
 use crate::content::ContentAction;
 use crate::custom_actions::CustomAction;
 use crate::default_output::DefaultOutput;
 use colored::Colorize;
+use contexts::context;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -76,7 +77,24 @@ impl State {
                     action.handle_action();
                 }
                 ContentAction::Input { input } => {
+                    let should_execute_global_actions = !self.id.eq_ignore_ascii_case("onboarding") && !input.bypass;
+                    
+                    let global_actions = GlobalActions::deserialize(&context::get_master_state());
+
+                    context::set("sys.should_execute_global_actions", &should_execute_global_actions.to_string());
+
+                    if should_execute_global_actions {
+                        println!();
+                        global_actions.handle_custom_entering_actions();
+                    }
+                    
                     input.handle_input();
+                    
+                    if should_execute_global_actions {
+                        global_actions.handle_custom_leaving_actions();
+                    }
+
+                    context::set("sys.should_execute_global_actions", "false");
                 }
             }
         }

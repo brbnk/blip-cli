@@ -16,3 +16,15 @@ pub fn set(key: &str, value: &str) {
   let mut ctx = CONTEXT.write().unwrap();
   ctx.insert(key.trim().to_string(), value.trim().to_string());
 }
+
+pub fn get_master_state() -> String {
+  let result = get("master_state");
+  match result {
+    Some(master_state) => master_state,
+    None => panic!("master-state não encontrado"),
+  }
+}
+
+pub fn set_master_state(value: &str) {
+  set("master_state", value);
+}
