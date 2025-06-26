@@ -71,7 +71,7 @@ impl Input {
 
         let mut input_content = String::new();
 
-        print!("Input: ");
+        print!("\n> ");
         io::stdout()
             .flush()
             .unwrap();

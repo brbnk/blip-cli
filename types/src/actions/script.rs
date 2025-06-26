@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use contexts::{context};
+use contexts::{context, store};
 use crate::actions::{print::print_yellow, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -22,7 +22,7 @@ impl Executable for Script {
         let args: Vec<String> = self.input_variables
             .iter()
             .map(|input_var| {
-                match context::get(&input_var) {
+                match store::get(&input_var) {
                     Some(value) => serde_json::to_string(&value).unwrap(),
                     None => serde_json::to_string("").unwrap(),
                 }

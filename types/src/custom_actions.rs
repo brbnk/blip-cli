@@ -25,13 +25,13 @@ pub enum Settings {
     Script(Script),
     Variable(Variable),
     ProcessHttp(ProcessHttp),
+    TrackEvent(TrackEvent),
     MergeContact(MergeContact),
     Redirect(Redirect),
     ScriptV2(ScriptV2),
     ProcessCommand(ProcessCommand),
     ExecuteBlipFunction(ExecuteBlipFunction),
-    ProcessContentAssistant(ProcessContentAssistant),
-    TrackEvent(TrackEvent)
+    ProcessContentAssistant(ProcessContentAssistant)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -73,13 +73,13 @@ impl CustomAction {
             Settings::Script(script) => script.execute(),
             Settings::Variable(variable) => variable.execute(),
             Settings::ProcessHttp(process_http) => process_http.execute(),
+            Settings::TrackEvent(track_event) => track_event.execute(),
             Settings::MergeContact(merge_contact) => merge_contact.execute(),
             Settings::Redirect(redirect) => redirect.execute(),
             Settings::ScriptV2(scriptv2) => scriptv2.execute(),
             Settings::ProcessCommand(process_command) => process_command.execute(),
             Settings::ExecuteBlipFunction(execute_blip_function) => execute_blip_function.execute(),
-            Settings::ProcessContentAssistant(process_content_action) => process_content_action.execute(),
-            Settings::TrackEvent(track_event) => track_event.execute(),
+            Settings::ProcessContentAssistant(process_content_action) => process_content_action.execute()
         }
     }
 }

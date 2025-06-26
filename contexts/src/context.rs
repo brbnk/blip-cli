@@ -8,11 +8,11 @@ pub static CONTEXT: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| {
 });
 
 pub fn get(key: &str) -> Option<String> {
-  let ctx = CONTEXT.write().unwrap();
+  let ctx = CONTEXT.read().unwrap();
   ctx.get(key).cloned()
 }
 
 pub fn set(key: &str, value: &str) {
   let mut ctx = CONTEXT.write().unwrap();
-  ctx.insert(key.to_string(), value.to_string());
+  ctx.insert(key.trim().to_string(), value.trim().to_string());
 }

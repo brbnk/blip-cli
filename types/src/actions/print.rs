@@ -20,3 +20,7 @@ pub fn print_red(action: &str, key: &String, value: &String) {
 pub fn print_blue(action: &str, key: &String, value: &String) {
   print_action(action.blue().bold(), key, value);
 }
+
+pub fn print_cyan(action: &str, key: &String, value: &String) {
+  print_action(action.cyan().bold(), key, value);
+}

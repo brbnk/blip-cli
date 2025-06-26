@@ -7,11 +7,11 @@ pub static INPUT_CONTEXT: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| {
 });
 
 pub fn get(key: &str) -> Option<String> {
-  let ctx = INPUT_CONTEXT.write().unwrap();
+  let ctx = INPUT_CONTEXT.read().unwrap();
   ctx.get(key).cloned()
 }
 
 pub fn set(key: &str, value: &str) {
   let mut ctx = INPUT_CONTEXT.write().unwrap();
-  ctx.insert(key.to_string(), value.to_string());
+  ctx.insert(key.trim().to_string(), value.trim().to_string());
 }
