@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use contexts::{context, store};
-use crate::actions::{print::print_yellow, Executable};
+use crate::actions::{printer::print_yellow, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Script {

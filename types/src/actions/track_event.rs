@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::actions::{print::print_blue, Executable};
+use crate::actions::{printer::print_blue, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TrackEvent {

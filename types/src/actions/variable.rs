@@ -1,7 +1,7 @@
 use contexts::{context, replacer};
 use serde::{Deserialize, Serialize};
 
-use crate::actions::{print::print_red, Executable};
+use crate::actions::{printer::print_red, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Variable {

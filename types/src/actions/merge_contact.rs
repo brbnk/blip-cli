@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use contexts::{replacer, user};
 use serde::{Deserialize, Serialize};
 
-use crate::actions::{print::print_cyan, Executable};
+use crate::actions::{printer::print_cyan, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MergeContact {
