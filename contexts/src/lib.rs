@@ -1,5 +1,5 @@
 pub mod input;
-pub mod user;
+pub mod contact;
 pub mod context;
 pub mod replacer;
 pub mod store;

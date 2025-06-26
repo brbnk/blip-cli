@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use contexts::{replacer, user};
+use contexts::{replacer, contact};
 use serde::{Deserialize, Serialize};
 
 use crate::actions::{printer::print_cyan, Executable};
@@ -68,7 +68,7 @@ impl Executable for MergeContact {
 impl MergeContact {
     fn save_contact_value(&self, key: &str, value: &str) {
         let parsed_value = replacer::replace(value);
-        user::set(key, &parsed_value);
+        contact::set(key, &parsed_value);
         print_cyan("MergeContact", &key.to_string(), &parsed_value);
     }
 }
