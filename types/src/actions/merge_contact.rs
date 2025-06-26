@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::actions::Executable;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MergeContact {
     #[serde(rename = "extras")]
@@ -24,4 +26,10 @@ pub struct MergeContact {
 
     #[serde(rename = "gender")]
     pub gender: String
+}
+
+impl Executable for MergeContact {
+    fn execute(&self) {
+        todo!()
+    }
 }

@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::actions::Executable;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProcessHttp {
     #[serde(rename = "headers")]
@@ -18,4 +20,10 @@ pub struct ProcessHttp {
 
     #[serde(rename = "responseBodyVariable")]
     pub response: String
+}
+
+impl Executable for ProcessHttp {
+    fn execute(&self) {
+        todo!()
+    }
 }

@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::actions::Executable;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProcessContentAssistant {
     #[serde(rename = "v2")]
@@ -13,4 +15,10 @@ pub struct ProcessContentAssistant {
 
     #[serde(rename = "outputVariable")]
     pub output_variable: String
+}
+
+impl Executable for ProcessContentAssistant {
+    fn execute(&self) {
+        todo!()
+    }
 }

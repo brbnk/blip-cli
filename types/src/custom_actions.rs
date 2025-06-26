@@ -1,16 +1,7 @@
 use serde::{Serialize, Deserialize};
 use crate::conditions::Condition;
 use crate::actions::{
-    Script,
-    Variable,
-    ProcessHttp,
-    MergeContact,
-    Redirect,
-    ScriptV2,
-    ProcessCommand,
-    ExecuteBlipFunction,
-    ProcessContentAssistant,
-    TrackEvent
+    Executable, ExecuteBlipFunction, MergeContact, ProcessCommand, ProcessContentAssistant, ProcessHttp, Redirect, Script, ScriptV2, TrackEvent, Variable
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -81,13 +72,13 @@ impl CustomAction {
         match &self.settings {
             Settings::Script(script) => script.execute(),
             Settings::Variable(variable) => variable.execute(),
-            Settings::ProcessHttp(_) => todo!(),
-            Settings::MergeContact(_) => todo!(),
-            Settings::Redirect(_) => todo!(),
-            Settings::ScriptV2(_) => todo!(),
-            Settings::ProcessCommand(_) => todo!(),
-            Settings::ExecuteBlipFunction(_) => todo!(),
-            Settings::ProcessContentAssistant(_) => todo!(),
+            Settings::ProcessHttp(process_http) => process_http.execute(),
+            Settings::MergeContact(merge_contact) => merge_contact.execute(),
+            Settings::Redirect(redirect) => redirect.execute(),
+            Settings::ScriptV2(scriptv2) => scriptv2.execute(),
+            Settings::ProcessCommand(process_command) => process_command.execute(),
+            Settings::ExecuteBlipFunction(execute_blip_function) => execute_blip_function.execute(),
+            Settings::ProcessContentAssistant(process_content_action) => process_content_action.execute(),
             Settings::TrackEvent(track_event) => track_event.execute(),
         }
     }

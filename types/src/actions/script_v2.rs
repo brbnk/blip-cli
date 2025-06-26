@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::actions::Executable;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ScriptV2 {
     #[serde(rename = "function")]
@@ -13,4 +15,10 @@ pub struct ScriptV2 {
 
     #[serde(rename = "outputVariable")]
     pub output_variable: String
+}
+
+impl Executable for ScriptV2 {
+    fn execute(&self) {
+        todo!()
+    }
 }

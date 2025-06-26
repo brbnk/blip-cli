@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use contexts::{context};
-use crate::actions::print::{print_yellow};
+use crate::actions::{print::print_yellow, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Script {
@@ -17,8 +17,8 @@ pub struct Script {
     pub output_variable: String
 }
 
-impl Script {
-    pub fn execute(&self) {
+impl Executable for Script {
+    fn execute(&self) {
         let args: Vec<String> = self.input_variables
             .iter()
             .map(|input_var| {

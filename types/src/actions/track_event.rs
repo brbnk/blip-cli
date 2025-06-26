@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::actions::print::print_blue;
+use crate::actions::{print::print_blue, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TrackEvent {
@@ -16,8 +16,8 @@ pub struct TrackEvent {
     pub action: String
 }
 
-impl TrackEvent {
-    pub fn execute(&self) {
+impl Executable for TrackEvent {
+    fn execute(&self) {
         print_blue(
           "Tracking", 
           &self.category, 

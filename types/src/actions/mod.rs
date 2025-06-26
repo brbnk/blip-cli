@@ -8,6 +8,7 @@ mod process_command;
 mod execute_blip_function;
 mod process_content_assistant;
 mod track_event;
+mod executable;
 
 pub use script::Script;
 pub use variable::Variable;
@@ -19,4 +20,5 @@ pub use process_command::ProcessCommand;
 pub use execute_blip_function::ExecuteBlipFunction;
 pub use process_content_assistant::ProcessContentAssistant;
 pub use track_event::TrackEvent;
+pub use executable::Executable;
 pub mod print;
