@@ -1,30 +1,29 @@
-use serde::{Serialize,Deserialize};
-use crate::content::ContentAction;
-use crate::custom_actions::CustomAction;
+use crate::state::State;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
-#[derive(Serialize,Deserialize,Debug)]
-pub struct State {
-    #[serde(rename = "$contentActions")]
-    pub content_actions: Vec<ContentAction>,
-    
-    #[serde(rename = "$enteringCustomActions")]
-    pub entering_custom_actions: Vec<CustomAction>,
-
-    #[serde(rename = "$leavingCustomActions")]
-    pub leaving_custom_actions: Vec<CustomAction>
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Flow {
+    #[serde(rename = "flow")]
+    pub flow: HashMap<String, State>,
 }
 
-impl State {
-    pub fn list_content_actions(&self) {
-        for item in &self.content_actions {
-            match item {
-                ContentAction::Action { action } => {
-                    println!("{}", action.id);
-                }
-                ContentAction::Input { input } => {
-                    println!("{}", input.card_content.document.id);
-                }
-            }
+impl Flow {
+    pub fn list_state_titles(&self) {
+        for (key, _) in &self.flow {
+            println!("{}", key)
         }
+    }
+
+    pub fn get_onboarding_state(&self) -> Result<&State, String> {
+        self.flow
+            .get("onboarding")
+            .ok_or("Estado 'onboarding' não encontrado".to_string())
+    }
+
+    pub fn get_state(&self, id: &String) -> Result<&State, String> {
+        self.flow
+            .get(id)
+            .ok_or(format!("State {} não encontrado!", &id))
     }
 }
