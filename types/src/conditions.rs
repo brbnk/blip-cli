@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use contexts::{context};
+use contexts::{store};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -118,9 +118,9 @@ impl Condition {
     fn get_source_value(&self) -> Option<String> {
         match self.source {
             Source::Input => 
-                context::get("input.content"),
+                store::get("input.content"),
             Source::Context => 
-                context::get(self.variable
+                store::get(self.variable
                     .as_ref()
                     .unwrap()
                     .as_str()),
