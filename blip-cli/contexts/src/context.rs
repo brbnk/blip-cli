@@ -26,5 +26,5 @@ pub fn get_master_state() -> String {
 }
 
 pub fn set_master_state(value: &str) {
-  set("master_state", value);
+  set("master-state", value);
 }
