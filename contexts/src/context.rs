@@ -18,7 +18,7 @@ pub fn set(key: &str, value: &str) {
 }
 
 pub fn get_master_state() -> String {
-  let result = get("master_state");
+  let result = get("master-state");
   match result {
     Some(master_state) => master_state,
     None => panic!("master-state não encontrado"),

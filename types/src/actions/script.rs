@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use contexts::{context, store};
+use contexts::{context, replacer, store};
 use crate::actions::{printer::{print_magenta}, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -28,9 +28,10 @@ impl Executable for Script {
                 }
             })
             .collect();
-
+        
+        let function = replacer::replace(&self.source);
         let script_response = 
-            js_runner::exec_script(self.source.clone(), args)
+            js_runner::exec_script(function.clone(), args)
             .expect("Erro ao executar script");
         
         print_magenta(

@@ -13,10 +13,14 @@ pub struct ConditionOutputs {
 impl ConditionOutputs {
   pub fn get_destination(&self) -> Option<&String> {
     if self.conditions.is_some() {
-      for condition in self.conditions.as_ref().unwrap() {
-        if condition.should_execute() {
-          return Some(&self.destination)
-        }
+      let all_conditions_satisfied = self.conditions
+        .as_ref()
+        .unwrap()
+        .iter()
+        .all(|c| c.should_execute());
+      
+      if all_conditions_satisfied {
+        return Some(&self.destination)
       }
     }
     None
