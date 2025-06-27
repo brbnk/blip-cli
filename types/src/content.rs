@@ -33,12 +33,11 @@ impl Action {
     pub fn handle_action(&self) {
         match &self.card_content.document.content {
             Some(Content::ChatState(json)) => {
-                // json.interval / 1000
                 let animation_time = (json.interval / 1000) as u32;
                 load_animation(animation_time);
             }
             Some(Content::Text(text)) => {
-                print!("👽 {}\n", replacer::replace(text).white().bold());
+                println!("{}\n", replacer::replace(text).bright_yellow());
             }
             None => {
                 println!("Nenhum conteúdo encontrado!");

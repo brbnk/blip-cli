@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use contexts::{context, store};
-use crate::actions::{printer::print_yellow, Executable};
+use crate::actions::{printer::{print_magenta}, Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Script {
@@ -33,7 +33,7 @@ impl Executable for Script {
             js_runner::exec_script(self.source.clone(), args)
             .expect("Erro ao executar script");
         
-        print_yellow(
+        print_magenta(
             "ExecuteScript", 
             &self.output_variable, 
             &script_response);

@@ -42,14 +42,16 @@ impl State {
         let left_padding = total_padding / 2;
         let right_padding = total_padding - left_padding;
 
-        println!("{}", upper_state);
+        println!("{}", upper_state.bright_black());
         println!(
-            "|{}{}{}|",
+            "{}{}{}{}{}",
+            "|".bright_black(),
             " ".repeat(left_padding),
             title.green().bold(),
-            " ".repeat(right_padding)
+            " ".repeat(right_padding),
+            "|".bright_black()
         );
-        println!("{}", upper_state);
+        println!("{}", upper_state.bright_black());
     }
 
     pub fn handle_global_leaving_actions(&self, is_first_input: bool) {
