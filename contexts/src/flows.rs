@@ -11,6 +11,7 @@ pub static FLOWS: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| {
 pub fn get(id: &str) -> Option<String> {
   let normalized = id.trim();
   let ctx = FLOWS.read().unwrap();
+  
   if ctx.contains_key(normalized) {
     ctx.get(normalized).cloned()
   }

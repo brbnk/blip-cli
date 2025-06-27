@@ -9,8 +9,7 @@ pub fn replace(message: &str) -> String {
   let user = CONTACT_CONTEXT.read().unwrap();
   let context = CONTEXT.read().unwrap();
 
-  let iterator = 
-    input
+  let iterator = input
     .iter()
     .chain(user.iter())
     .chain(context.iter());

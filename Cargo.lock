@@ -391,14 +391,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "flow_parser"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "form_urlencoded"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -708,6 +700,14 @@ version = "0.1.0"
 dependencies = [
  "deno_core",
  "once_cell",
+]
+
+[[package]]
+name = "json_converter"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -1336,8 +1336,8 @@ version = "0.1.0"
 dependencies = [
  "colored",
  "contexts",
- "flow_parser",
  "js_runner",
+ "json_converter",
  "serde",
  "serde_json",
 ]

@@ -13,7 +13,7 @@ impl Flow {
     pub fn deserialize(identifier: &str) -> Flow {
         let serialized_flow = flows::get(identifier);
         let flow: Flow = match serialized_flow {
-            Some(flow) => flow_parser::deserialize(&flow).expect("Falha ao desserializar o parse do fluxo!"),
+            Some(flow) => json_converter::deserialize(&flow).expect("Falha ao desserializar o parse do fluxo!"),
             None => panic!(),
         };
         flow

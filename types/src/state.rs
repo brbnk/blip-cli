@@ -52,6 +52,31 @@ impl State {
         println!("{}", upper_state);
     }
 
+    pub fn handle_global_leaving_actions(&self, is_first_input: bool) {
+        let has_input = self.content_actions.iter().any(|ca| {
+            match ca {
+                ContentAction::Action {action: _} => false,
+                ContentAction::Input { input } => !input.bypass,
+            }
+        });
+
+        if has_input && !is_first_input {
+            let global_actions = GlobalActions::deserialize(&context::get_master_state());
+            global_actions.handle_custom_leaving_actions();
+            print!("\n");
+        }
+    }
+
+    pub fn save_previous(&self) {
+        context::set("prvious.state.id", &self.id);
+        context::set("prvious.state.name", &self.title);
+    }
+
+    pub fn save_current(&self) {
+        context::set("state.id", &self.id);
+        context::set("state.name", &self.title);
+    }
+
     pub fn handle_custom_entering_actions(&self) {
         for action in &self.entering_custom_actions {
             if action.should_execute() {
@@ -70,31 +95,19 @@ impl State {
         }
     }
 
-    pub fn handle_content_actions(&self) {
+    pub fn handle_content_actions(&self, is_first_input: bool) {
         for content in &self.content_actions {
             match content {
                 ContentAction::Action { action } => {
                     action.handle_action();
                 }
                 ContentAction::Input { input } => {
-                    let should_execute_global_actions = !self.id.eq_ignore_ascii_case("onboarding") && !input.bypass;
-                    
-                    let global_actions = GlobalActions::deserialize(&context::get_master_state());
-
-                    context::set("sys.should_execute_global_actions", &should_execute_global_actions.to_string());
-
-                    if should_execute_global_actions {
-                        println!();
+                    input.handle_input();
+                    if !is_first_input && !input.bypass {
+                        print!("\n");
+                        let global_actions = GlobalActions::deserialize(&context::get_master_state());
                         global_actions.handle_custom_entering_actions();
                     }
-                    
-                    input.handle_input();
-                    
-                    if should_execute_global_actions {
-                        global_actions.handle_custom_leaving_actions();
-                    }
-
-                    context::set("sys.should_execute_global_actions", "false");
                 }
             }
         }
@@ -102,14 +115,12 @@ impl State {
 
     pub fn handle_condition_outputs(&self) -> Option<&String> {
         for condition_output in &self.condition_outputs {
-            match condition_output.get_destination() {
-                Some(destination) => {
-                    return Some(destination)
-                },
-                None => None::<&String>,
-            };
+            let destination = condition_output.get_destination();
+            if destination.is_some() {
+                return Some(destination.unwrap());
+            }
         }
-        return None;
+        None
     }
 
     pub fn get_default_output(&self) -> &String {

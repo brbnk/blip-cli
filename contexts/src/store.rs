@@ -2,7 +2,6 @@ use crate::{input, contact, context};
 
 pub fn get(key: &str) -> Option<String> {
   let input = input::get(key);
-
   if input.is_some() {
     return Some(input.unwrap());
   }

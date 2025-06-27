@@ -31,7 +31,7 @@ impl GlobalActions {
     pub fn deserialize(identifier: &str) -> GlobalActions {
         let serialized_flow = global_actions::get(identifier);
         let result: GlobalActions = match serialized_flow {
-            Some(actions) => flow_parser::deserialize(&actions).expect("Falha ao desserializar o parse do fluxo!"),
+            Some(actions) => json_converter::deserialize(&actions).expect("Falha ao desserializar o parse do fluxo!"),
             None => panic!(),
         };
         result

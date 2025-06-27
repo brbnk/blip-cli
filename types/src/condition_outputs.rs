@@ -12,16 +12,13 @@ pub struct ConditionOutputs {
 
 impl ConditionOutputs {
   pub fn get_destination(&self) -> Option<&String> {
-    match &self.conditions {
-      Some(conditions) => {
-        for condition in conditions {
-          if condition.should_execute() {
-            return Some(&self.destination)
-          }
+    if self.conditions.is_some() {
+      for condition in self.conditions.as_ref().unwrap() {
+        if condition.should_execute() {
+          return Some(&self.destination)
         }
-        return None
-      },
-      None => None
+      }
     }
+    None
   }
 }

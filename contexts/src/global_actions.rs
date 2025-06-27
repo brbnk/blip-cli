@@ -10,8 +10,8 @@ pub static GLOBAL_ACTIONS: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| 
 
 pub fn get(id: &str) -> Option<String> {
   let ctx = GLOBAL_ACTIONS.read().unwrap();
-
   let normalized = id.trim();
+  
   if ctx.contains_key(normalized) {
     ctx.get(normalized).cloned()
   }

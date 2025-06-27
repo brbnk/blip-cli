@@ -34,18 +34,11 @@ impl Action {
         match &self.card_content.document.content {
             Some(Content::ChatState(json)) => {
                 // json.interval / 1000
-                let frames = ["|", "/", "-", "\\"];
-                let animation_time = (json.interval / 100) as usize;
-                for i in 0..animation_time {
-                    let frame = frames[i % frames.len()];
-                    print!("\r{}", frame);
-                    std::io::Write::flush(&mut std::io::stdout()).unwrap();
-                    sleep(Duration::from_millis(100));
-                }
-                print!("\x08 \x08");
+                let animation_time = (json.interval / 1000) as u32;
+                load_animation(animation_time);
             }
             Some(Content::Text(text)) => {
-                print!("{}\n", replacer::replace(text).white().bold());
+                print!("👽 {}\n", replacer::replace(text).white().bold());
             }
             None => {
                 println!("Nenhum conteúdo encontrado!");
@@ -71,13 +64,15 @@ impl Input {
 
         let mut input_content = String::new();
 
-        print!("\n\n> ");
+        print!("\n> ");
         io::stdout().flush().unwrap();
         
         let bytes_read = io::stdin()
             .read_line(&mut input_content)
             .expect("Erro ao ler entrada");
-        print!("\n");
+
+        load_animation(1);
+
         if bytes_read == 0 {
             std::process::exit(0);
         }
@@ -135,4 +130,16 @@ pub struct ChatState {
 
     #[serde(rename = "interval")]
     pub interval: u32,
+}
+
+fn load_animation(animation_time_sec: u32) {
+    let frames = ["|", "/", "-", "\\"];
+    let repetition: usize = (animation_time_sec * 10).try_into().unwrap();
+    for i in 0..repetition {
+        let frame = frames[i % frames.len()];
+        print!("\r{}", frame);
+        std::io::Write::flush(&mut std::io::stdout()).unwrap();
+        sleep(Duration::from_millis(100));
+    }
+    print!("\x08 \x08");
 }

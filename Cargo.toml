@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = [ "contexts", "js_runner", "flow_parser", "types" ]
+members = [ "contexts", "js_runner", "json_converter", "types" ]
 
 [dependencies]
 serde = { version = "1.0.219", features = ["derive"] }
