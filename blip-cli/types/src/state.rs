@@ -1,7 +1,7 @@
-use crate::{condition_outputs::ConditionOutputs, global_actions::GlobalActions};
 use crate::content::ContentAction;
 use crate::custom_actions::CustomAction;
 use crate::default_output::DefaultOutput;
+use crate::{condition_outputs::ConditionOutputs, global_actions::GlobalActions};
 use colored::Colorize;
 use contexts::context;
 use serde::{Deserialize, Serialize};
@@ -47,7 +47,7 @@ impl State {
             "{}{}{}{}{}",
             "|".bright_black(),
             " ".repeat(left_padding),
-            title.green().bold(),
+            title.bright_green().bold(),
             " ".repeat(right_padding),
             "|".bright_black()
         );
@@ -55,17 +55,9 @@ impl State {
     }
 
     pub fn handle_global_leaving_actions(&self, is_first_input: bool) {
-        let has_input = self.content_actions.iter().any(|ca| {
-            match ca {
-                ContentAction::Action {action: _} => false,
-                ContentAction::Input { input } => !input.bypass,
-            }
-        });
-
-        if has_input && !is_first_input {
+        if self.has_input() && !is_first_input {
             let global_actions = GlobalActions::deserialize(&context::get_master_state());
             global_actions.handle_custom_leaving_actions();
-            print!("\n");
         }
     }
 
@@ -88,13 +80,15 @@ impl State {
         println!();
     }
 
-      pub fn handle_custom_leaving_actions(&self) {
-        println!();
+    pub fn handle_custom_leaving_actions(&self) {
         for action in &self.leaving_custom_actions {
             if action.should_execute() {
                 action.execute();
             }
         }
+        let length = 60;
+        let bottom_state = format!("|{}|", "_".repeat(length - 2));
+        println!("{}", bottom_state.bright_black());
     }
 
     pub fn handle_content_actions(&self, is_first_input: bool) {
@@ -127,5 +121,12 @@ impl State {
 
     pub fn get_default_output(&self) -> &String {
         &self.default_output.state_id
+    }
+
+    pub fn has_input(&self) -> bool {
+        self.content_actions.iter().any(|ca| match ca {
+            ContentAction::Action { action: _ } => false,
+            ContentAction::Input { input } => !input.bypass,
+        })
     }
 }

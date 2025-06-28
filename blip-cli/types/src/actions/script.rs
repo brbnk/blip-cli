@@ -30,9 +30,10 @@ impl Executable for Script {
             .collect();
         
         let function = replacer::replace(&self.source);
-        let script_response = 
-            js_runner::exec_script(function.clone(), args)
-            .expect("Erro ao executar script");
+        let script_response = js_runner::exec_script(
+            function.clone(), 
+            args
+        ).expect("Erro ao executar script");
         
         print_magenta(
             "ExecuteScript", 

@@ -214,6 +214,8 @@ name = "contexts"
 version = "0.1.0"
 dependencies = [
  "once_cell",
+ "regex",
+ "serde_json",
 ]
 
 [[package]]

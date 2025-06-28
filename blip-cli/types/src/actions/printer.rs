@@ -3,9 +3,12 @@ use contexts::{replacer};
 
 fn print_action(action: ColoredString, key: &String, value: &String) {
     println!(
-      "+ {:<13}: {} -> {}", 
+      "{} {:<13}{} {} {} {}",
+      "|".bright_black(),
       action,
+      "|".bright_black(),
       replacer::replace(key), 
+      "->".bright_black(),
       replacer::replace(value));
 }
 
