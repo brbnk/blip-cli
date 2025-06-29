@@ -1,5 +1,5 @@
 use contexts::context;
-use types::flow::Flow;
+use types::{flow::Flow};
 
 pub fn init(identifier: &str) {
     context::set_master_state(identifier);
@@ -19,10 +19,11 @@ pub fn init(identifier: &str) {
         state.handle_content_actions(is_first_input);
         state.handle_custom_leaving_actions();
         state.save_previous();
-
+        
+        let default_output = state.default_output.get_state_id();
         state = flow.get_state(match state.handle_condition_outputs() {
             Some(destination) => destination,
-            None => state.get_default_output(),
+            None => &default_output,
         }).expect("Bloco não encontrado");
 
         state.save_current();

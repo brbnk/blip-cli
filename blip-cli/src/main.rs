@@ -14,27 +14,27 @@ enum Commands {
     Chat {
         /// flow identifier
         #[arg(short, long)]
-        identifier: String,
+        bot: String,
     },
 
     /// mirror an application locally
     Mirror {
         #[arg(short, long)]
-        identifier: String
+        bot: String
     }
 }
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(Commands::Chat { identifier }) => {
-            if !identifier.is_empty() {
-                chat::init(identifier);
+        Some(Commands::Chat { bot }) => {
+            if !bot.is_empty() {
+                chat::init(bot);
             }
         },
-        Some(Commands::Mirror { identifier }) => {
-            if !identifier.is_empty() {
-                mirror::clone_application(identifier);
+        Some(Commands::Mirror { bot }) => {
+            if !bot.is_empty() {
+                mirror::clone_application(bot);
             }
         },
         None => {}

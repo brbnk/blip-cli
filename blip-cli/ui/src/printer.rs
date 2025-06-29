@@ -57,3 +57,7 @@ pub fn print_state_title(title: &str) {
     );
     println!("{}", upper_state.bright_black());
 }
+
+pub fn print_success_message(message: &str) {
+  println!("\n✅ {}", message);
+}

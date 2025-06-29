@@ -32,7 +32,7 @@ pub fn get(key: &str) -> Option<String> {
   None
 }
 
-pub fn set(identifier: &str, configs: &HashMap<String, String>) {
+fn set(identifier: &str, configs: &HashMap<String, String>) {
   let mut pool = CONFIGS.write().unwrap();
   pool.insert(
     identifier.trim().to_string(), 

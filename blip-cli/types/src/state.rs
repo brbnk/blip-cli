@@ -39,8 +39,8 @@ impl State {
     }
 
     pub fn save_previous(&self) {
-        context::set("prvious.state.id", &self.id);
-        context::set("prvious.state.name", &self.title);
+        context::set("state.previous.id", &self.id);
+        context::set("state.previous.name", &self.title);
     }
 
     pub fn save_current(&self) {
@@ -96,8 +96,8 @@ impl State {
         None
     }
 
-    pub fn get_default_output(&self) -> &String {
-        &self.default_output.state_id
+    pub fn get_default_output(&self) -> String {
+        self.default_output.get_state_id()
     }
 
     pub fn has_input(&self) -> bool {

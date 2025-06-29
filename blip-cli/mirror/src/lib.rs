@@ -1,5 +1,6 @@
 use http::{HttpClient};
 use types::http::Application;
+use ui::printer::print_success_message;
 
 mod auth;
 
@@ -15,6 +16,8 @@ pub fn clone_application(identifier: &str) {
 
         response.save_flow(identifier).expect("flow.json created");
         response.save_global_actions(identifier).expect("global_actions.json created");
-        response.save_configurations(identifier).expect("configs.json created")
+        response.save_configurations(identifier).expect("configs.json created");
+
+        print_success_message(&format!("Sucessso ao configurar o bot '{}' localmente", identifier));
     }
 }
