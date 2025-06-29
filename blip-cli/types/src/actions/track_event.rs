@@ -1,5 +1,5 @@
-use std::collections::HashMap;
-
+use std::{collections::HashMap};
+use contexts::replacer;
 use serde::{Deserialize, Serialize};
 
 use crate::actions::{printer::print_blue, Executable};
@@ -20,7 +20,7 @@ impl Executable for TrackEvent {
     fn execute(&self) {
         print_blue(
           "Tracking", 
-          &self.category, 
-          &self.action);
+          &replacer::replace(&self.category), 
+          &replacer::replace(&self.action));
     }
 }

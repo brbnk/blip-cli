@@ -1,10 +1,11 @@
 using Lime.Protocol;
+using Server.Models;
 
 namespace Server.Services.Interfaces;
 
 public interface ICommandService
 {
-  Task<Command> SendAsync(string identifier, string accessKey, Command command);
+  Task<Command> SendAsync(ApplicationResponse application, Command command);
 
-  Task<T?> SendAsync<T>(string identifier, string accessKey, Command command) where T : class;
+  Task<T?> SendAsync<T>(ApplicationResponse application, Command command) where T : class;
 }

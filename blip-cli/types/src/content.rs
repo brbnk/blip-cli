@@ -37,7 +37,7 @@ impl Action {
                 load_animation(animation_time);
             }
             Some(Content::Text(text)) => {
-                println!("  {}\n", replacer::replace(text).bright_yellow());
+                println!("{}\n", replacer::replace(text).bright_yellow());
             }
             None => {
                 println!("Nenhum conteúdo encontrado!");

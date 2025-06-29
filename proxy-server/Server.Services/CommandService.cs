@@ -13,18 +13,18 @@ public class CommandService(EnvelopeSerializer serializer) : ICommandService
 {
   private readonly Dictionary<string, ISender> _clientPool = [];
 
-  public async Task<Command> SendAsync(string identifier, string accessKey, Command command)
+  public async Task<Command> SendAsync(ApplicationResponse application, Command command)
   {
-    var client = GetSender(identifier, accessKey);
+    var client = GetSender(application.ShortName, application.AccessKey);
 
     var response = await client.ProcessCommandAsync(command, CancellationToken.None);
 
     return response;
   }
 
-  public async Task<T?> SendAsync<T>(string identifier, string accessKey, Command command) where T : class
+  public async Task<T?> SendAsync<T>(ApplicationResponse application, Command command) where T : class
   {
-    var response = await SendAsync(identifier, accessKey, command);
+    var response = await SendAsync(application, command);
 
     if (response is null)
     {

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Server.Models;
 
-public class ApplicationCommandResponse
+public class ApplicationResponse
 {
   [JsonProperty("shortName")]
   public string ShortName { get; set; } = string.Empty;

@@ -1,32 +1,31 @@
-use contexts::context;
-use types::flow::Flow;
+use chat;
+use clap::{arg, Parser, Subcommand};
 
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {    
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// simulate a chat
+    Chat {
+        /// flow identifier
+        #[arg(short, long)]
+        identifier: String,
+    },
+}
 fn main() {
-    context::set_master_state("teste638760290597490566");
+    let cli = Cli::parse();
 
-    let flow = Flow::deserialize(&context::get_master_state());
-
-    let mut state = flow
-        .get_onboarding_state()
-        .expect("Bloco de início não encontrado!");
-
-    let mut is_first_input = true;
-
-    loop {
-        state.print_state_title();
-        state.handle_global_leaving_actions(is_first_input);
-        state.handle_custom_entering_actions();
-        state.handle_content_actions(is_first_input);
-        state.handle_custom_leaving_actions();
-        state.save_previous();
-
-        state = flow.get_state(match state.handle_condition_outputs() {
-            Some(destination) => destination,
-            None => state.get_default_output(),
-        }).expect("Bloco não encontrado");
-
-        state.save_current();
-        is_first_input = false;
-        println!();
+    match &cli.command {
+        Some(Commands::Chat { identifier }) => {
+            if !identifier.is_empty() {
+                chat::init(identifier);
+            }
+        }
+        None => {}
     }
 }

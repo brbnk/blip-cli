@@ -5,9 +5,9 @@ use serde_json::{Value,from_str};
 pub fn replace(message: &str) -> String {
   let mut result = message.to_string();
 
-  result = replace_native_and_simple_vars(&result);
-
   result = replace_object(&result);
+
+  result = replace_native_and_simple_vars(&result);
 
   result
 }
