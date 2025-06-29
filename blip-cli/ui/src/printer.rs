@@ -59,5 +59,5 @@ pub fn print_state_title(title: &str) {
 }
 
 pub fn print_success_message(message: &str) {
-  println!("\n✅ {}", message);
+  println!("\n✔️ {}", message);
 }

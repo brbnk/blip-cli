@@ -7,42 +7,45 @@ namespace Server.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProxyController(IPortalService portalService, ICommandService commandService) : ControllerBase
+public class ProxyController(IApplicationService applicationService, ICommandService commandService) : ControllerBase
 {
-  [HttpGet("data")]
+  [HttpGet("working-flow")]
   public async Task<IActionResult> GetWorkingFlowAsync([FromHeader] string token, [FromQuery] string identifier)
   {
-    var application = await portalService.SendAsync<ApplicationResponse>(
-      token,
-      CommandFactory.GetApplicationCommand(identifier));
-
-    if (application is null)
-    {
-      return BadRequest($"Não foi possível buscar as informações do identifier {identifier}");
-    }
-
-    var flow = await commandService.SendAsync(
-      application,
-      CommandFactory.GetWorkingFlowCommand());
-
-    var globaActions = await commandService.SendAsync(
-      application,
-      CommandFactory.GetGlobalActionCommand());
-
-    var setup = await commandService.SendAsync<ApplicationCommandResponse>(
-      application,
-      CommandFactory.GetApplicationSetupCommand());
-
-    var applicationSetup = JsonConvert.DeserializeObject<ApplicationSetup>(setup!.Application);
-
+    var application = await applicationService.GetAsync(token, identifier);
+    var flow = await commandService.SendAsync(application, CommandFactory.GetWorkingFlowCommand());
+    
     return Ok(new
     {
       Application = new
       {
         Flow = flow.Resource
-      },
-      GlobalActions = globaActions.Resource,
-      Configurations = applicationSetup?.Settings?.Flow?.Configuration?.ToObject<object>()
+      }
+    });
+  }
+
+  [HttpGet("global-actions")]
+  public async Task<IActionResult> GetGlobalActionsAsync([FromHeader] string token, [FromQuery] string identifier)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+    var globalActions = await commandService.SendAsync(application, CommandFactory.GetGlobalActionCommand());
+
+    return Ok(new
+    {
+      GlobalActions = globalActions.Resource
+    });
+  }
+
+  [HttpGet("configs")]
+  public async Task<IActionResult> GetBuilderConfigurationsAsync([FromHeader] string token, [FromQuery] string identifier)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+    var builder = await commandService.SendAsync<BuilderConfiguration>(application, CommandFactory.GetBuilderConfigurationsCommand());
+    var setup  = JsonConvert.DeserializeObject<BuilderSetup>(builder!.Application);
+
+    return Ok(new
+    {
+      Configurations = setup?.Settings?.Flow?.Configuration?.ToObject<object>()
     });
   }
 }

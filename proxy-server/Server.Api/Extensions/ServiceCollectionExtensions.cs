@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
   {
     services.AddSingleton<IPortalService, PortalService>();
     services.AddSingleton<ICommandService, CommandService>();
+    services.AddSingleton<IApplicationService, ApplicationService>();
 
     return services;
   }

@@ -3,20 +3,20 @@ using Newtonsoft.Json.Linq;
 
 namespace Server.Models;
 
-public class ApplicationCommandResponse
+public class BuilderConfiguration
 {
   public string Application { get; set; } = string.Empty;
 
   public string Template { get; set; } = string.Empty;
 }
 
-public class ApplicationSetup
+public class BuilderSetup
 {
   [JsonProperty("settings")]
-  public ApplicationSettings? Settings { get; set; }
+  public BuilderSettings? Settings { get; set; }
 }
 
-public class ApplicationSettings
+public class BuilderSettings
 {
   [JsonProperty("flow")]
   public FlowSettings? Flow { get; set; }

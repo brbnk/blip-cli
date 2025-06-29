@@ -4,15 +4,17 @@ use reqwest::{blocking::Client, header::{HeaderMap, HeaderValue}};
 pub struct HttpClient {
     client: Client,
     base_url: String,
-    token: String
+    token: String,
+    pub identifier: String
 }
 
 impl HttpClient {
-    pub fn new(base_url: &str, token: &str) -> HttpClient {
+    pub fn new(base_url: &str, token: &str, identifier: &str) -> HttpClient {
         HttpClient { 
             client: Client::new(), 
             base_url: base_url.to_string(),
-            token: token.to_string()
+            token: token.to_string(),
+            identifier: identifier.to_string()
         }
     }
 

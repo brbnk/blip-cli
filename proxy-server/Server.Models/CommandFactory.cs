@@ -29,7 +29,7 @@ public static class CommandFactory
     To = POSTMASTER_MSGING
   };
 
-  public static Command GetApplicationSetupCommand() => new()
+  public static Command GetBuilderConfigurationsCommand() => new()
   {
     Method = CommandMethod.Get,
     Uri = "lime://builder.hosting@msging.net/configuration",
