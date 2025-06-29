@@ -1,0 +1,51 @@
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Server.Models;
+using Server.Services.Interfaces;
+
+namespace Server.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProxyController(IApplicationService applicationService, ICommandService commandService) : ControllerBase
+{
+  [HttpGet("working-flow")]
+  public async Task<IActionResult> GetWorkingFlowAsync([FromHeader] string token, [FromQuery] string identifier)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+    var flow = await commandService.SendAsync(application, CommandFactory.GetWorkingFlowCommand());
+    
+    return Ok(new
+    {
+      Application = new
+      {
+        Flow = flow.Resource
+      }
+    });
+  }
+
+  [HttpGet("global-actions")]
+  public async Task<IActionResult> GetGlobalActionsAsync([FromHeader] string token, [FromQuery] string identifier)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+    var globalActions = await commandService.SendAsync(application, CommandFactory.GetGlobalActionCommand());
+
+    return Ok(new
+    {
+      GlobalActions = globalActions.Resource
+    });
+  }
+
+  [HttpGet("configs")]
+  public async Task<IActionResult> GetBuilderConfigurationsAsync([FromHeader] string token, [FromQuery] string identifier)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+    var builder = await commandService.SendAsync<BuilderConfiguration>(application, CommandFactory.GetBuilderConfigurationsCommand());
+    var setup  = JsonConvert.DeserializeObject<BuilderSetup>(builder!.Application);
+
+    return Ok(new
+    {
+      Configurations = setup?.Settings?.Flow?.Configuration?.ToObject<object>()
+    });
+  }
+}
