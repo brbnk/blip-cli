@@ -1,7 +1,7 @@
 use contexts::{context, replacer};
 use serde::{Deserialize, Serialize};
 
-use crate::actions::{printer::print_red, Executable};
+use crate::actions::{Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Variable {
@@ -16,7 +16,7 @@ impl Executable for Variable {
     fn execute(&self) {
         let replaced = replacer::replace(&self.value);
 
-        print_red(
+        ui::printer::print_red(
             "SetVariable", 
             &self.variable, 
             &replaced);

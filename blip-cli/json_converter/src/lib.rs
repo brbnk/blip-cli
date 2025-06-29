@@ -1,7 +1,5 @@
-use serde::de::DeserializeOwned;
+mod deserializer;
+mod reader;
 
-pub fn deserialize<T>(flow: &String) -> Result<T, String> where T: DeserializeOwned
-{
-    let flow = serde_json::from_str::<T>(flow).map_err(|e| format!("Erro ao fazer parse do JSON: {}", e))?;
-    Ok(flow)
-}
+pub use deserializer::deserialize;
+pub use reader::read_file_json_to_string;

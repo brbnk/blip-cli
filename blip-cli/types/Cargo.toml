@@ -9,4 +9,5 @@ serde_json = "1.0.140"
 contexts = { path = "../contexts" }
 js_runner = { path = "../js_runner" }
 json_converter = { path = "../json_converter" }
+ui = { path = "../ui" }
 colored = "2"

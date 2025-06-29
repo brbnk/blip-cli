@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use contexts::{context, replacer, store};
-use crate::actions::{printer::{print_magenta}, Executable};
+use crate::actions::{Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Script {
@@ -35,7 +35,7 @@ impl Executable for Script {
             args
         ).expect("Erro ao executar script");
         
-        print_magenta(
+        ui::printer::print_magenta(
             "ExecuteScript", 
             &self.output_variable, 
             &script_response);

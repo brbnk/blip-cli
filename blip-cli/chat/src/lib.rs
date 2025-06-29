@@ -13,7 +13,7 @@ pub fn init(identifier: &str) {
     let mut is_first_input = true;
 
     loop {
-        state.print_state_title();
+        ui::printer::print_state_title(&state.title);
         state.handle_global_leaving_actions(is_first_input);
         state.handle_custom_entering_actions();
         state.handle_content_actions(is_first_input);

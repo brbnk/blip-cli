@@ -16,6 +16,12 @@ enum Commands {
         #[arg(short, long)]
         identifier: String,
     },
+
+    /// mirror an application locally
+    Mirror {
+        #[arg(short, long)]
+        identifier: String
+    }
 }
 fn main() {
     let cli = Cli::parse();
@@ -25,7 +31,12 @@ fn main() {
             if !identifier.is_empty() {
                 chat::init(identifier);
             }
-        }
+        },
+        Some(Commands::Mirror { identifier }) => {
+            if !identifier.is_empty() {
+                mirror::clone_application(identifier);
+            }
+        },
         None => {}
     }
 }

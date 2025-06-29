@@ -7,3 +7,4 @@ pub mod default_output;
 pub mod condition_outputs;
 pub mod actions;
 pub mod global_actions;
+pub mod http;

@@ -2,7 +2,7 @@ use std::{collections::HashMap};
 use contexts::replacer;
 use serde::{Deserialize, Serialize};
 
-use crate::actions::{printer::print_blue, Executable};
+use crate::actions::{Executable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TrackEvent {
@@ -18,7 +18,7 @@ pub struct TrackEvent {
 
 impl Executable for TrackEvent {
     fn execute(&self) {
-        print_blue(
+        ui::printer::print_blue(
           "Tracking", 
           &replacer::replace(&self.category), 
           &replacer::replace(&self.action));

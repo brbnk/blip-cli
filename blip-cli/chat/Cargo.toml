@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 types = { path = "../types" }
 contexts = { path = "../contexts" }
+ui = { path = "../ui" }

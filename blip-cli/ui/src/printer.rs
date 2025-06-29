@@ -35,3 +35,25 @@ pub fn print_black(action: &str, key: &String, value: &String) {
 pub fn print_magenta(action: &str, key: &String, value: &String) {
   print_action(action.magenta().bold(), key, value);
 }
+
+pub fn print_state_title(title: &str) {
+    let length = 60;
+    let min_length = title.len() + 2;
+    let length = length.max(min_length);
+
+    let upper_state = format!("+{}+", "-".repeat(length - 2));
+    let total_padding = length - 2 - title.len();
+    let left_padding = total_padding / 2;
+    let right_padding = total_padding - left_padding;
+
+    println!("{}", upper_state.bright_black());
+    println!(
+        "{}{}{}{}{}",
+        "|".bright_black(),
+        " ".repeat(left_padding),
+        title.bright_green().bold(),
+        " ".repeat(right_padding),
+        "|".bright_black()
+    );
+    println!("{}", upper_state.bright_black());
+}

@@ -31,29 +31,6 @@ pub struct State {
 }
 
 impl State {
-    pub fn print_state_title(&self) {
-        let title = &self.title;
-        let length = 60;
-        let min_length = title.len() + 2;
-        let length = length.max(min_length);
-
-        let upper_state = format!("+{}+", "-".repeat(length - 2));
-        let total_padding = length - 2 - title.len();
-        let left_padding = total_padding / 2;
-        let right_padding = total_padding - left_padding;
-
-        println!("{}", upper_state.bright_black());
-        println!(
-            "{}{}{}{}{}",
-            "|".bright_black(),
-            " ".repeat(left_padding),
-            title.bright_green().bold(),
-            " ".repeat(right_padding),
-            "|".bright_black()
-        );
-        println!("{}", upper_state.bright_black());
-    }
-
     pub fn handle_global_leaving_actions(&self, is_first_input: bool) {
         if self.has_input() && !is_first_input {
             let global_actions = GlobalActions::deserialize(&context::get_master_state());
