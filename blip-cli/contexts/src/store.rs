@@ -1,4 +1,4 @@
-use crate::{configs, contact, context, input};
+use crate::{configs, contact, context, input, resource};
 
 pub fn get(key: &str) -> Option<String> {
   let input = input::get(key);
@@ -9,6 +9,11 @@ pub fn get(key: &str) -> Option<String> {
   let config = configs::get(key);
   if config.is_some() {
     return Some(config.unwrap());
+  }
+
+  let resource = resource::get(key);
+  if resource.is_some() {
+    return Some(resource.unwrap());
   }
 
   let user = contact::get(key);

@@ -1,8 +1,8 @@
 using Lime.Protocol.Serialization;
 using Lime.Protocol.Serialization.Newtonsoft;
-using Microsoft.AspNetCore.Http.Json;
 using Server.Api.Extensions;
 using Server.Api.Formatters;
+using Server.Models;
 using Take.Blip.Client.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 var documentResolver = new DocumentTypeResolver().WithBlipDocuments();
+documentResolver.RegisterAssemblyDocuments(typeof(ResourceCollection).Assembly);
 
 var serializer = new EnvelopeSerializer(documentResolver);
 builder.Services.AddSingleton(serializer);

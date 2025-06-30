@@ -35,4 +35,18 @@ public static class CommandFactory
     Uri = "lime://builder.hosting@msging.net/configuration",
     To = POSTMASTER_CONFIGURATIONS
   };
+
+  public static Command GetResourcesCommand() => new()
+  {
+    Method = CommandMethod.Get,
+    Uri = "/resources?$skip=0&$take=100",
+    To = POSTMASTER_MSGING
+  };
+
+  public static Command GetResourceCommand(string key) => new()
+  {
+    Method = CommandMethod.Get,
+    Uri = $"/resources/{key}",
+    To = POSTMASTER_MSGING
+  };
 }

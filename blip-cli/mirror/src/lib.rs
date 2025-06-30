@@ -1,13 +1,15 @@
 use http::{HttpClient};
-use types::{http::{BuilderConfigs, BuilderFlow, BuilderGlobalActions}};
+use types::http::{BuilderConfigs, BuilderFlow, BuilderGlobalActions, Resources};
 use ui::{loader, printer::print_success_message};
 
 mod auth;
+pub mod scanner;
 
 pub enum RequestType {
     WorkingFlow,
     GlobalAction,
-    Configurations
+    Configurations,
+    Resources
 }
 
 pub fn clone(identifier: &str, request_type: &Vec<RequestType>) {
@@ -22,7 +24,8 @@ pub fn clone(identifier: &str, request_type: &Vec<RequestType>) {
                 match rt {
                     RequestType::WorkingFlow => request_builder_working_flow(&client),
                     RequestType::GlobalAction => request_builder_global_actions(&client),
-                    RequestType::Configurations => request_builder_configurations(&client)
+                    RequestType::Configurations => request_builder_configurations(&client),
+                    RequestType::Resources => request_resources(&client)
                 };
             };
         }
@@ -32,6 +35,8 @@ pub fn clone(identifier: &str, request_type: &Vec<RequestType>) {
             request_builder_global_actions(&client);
             loader::start(1);
             request_builder_configurations(&client);
+            loader::start(1);
+            request_resources(&client);
         }
     }
 }
@@ -61,4 +66,13 @@ fn request_builder_configurations(client: &HttpClient) {
 
     builder_configs.save(&client.identifier).expect("configs.json created");
     print_success_message("Variáveis de configuração");
+}
+
+fn request_resources(client: &HttpClient) {
+    let builder_configs: Resources = client
+        .get(&format!("/resources?identifier={}", &client.identifier))
+        .expect("application resources");
+
+    builder_configs.save(&client.identifier).expect("resources.json created");
+    print_success_message("Recursos");
 }

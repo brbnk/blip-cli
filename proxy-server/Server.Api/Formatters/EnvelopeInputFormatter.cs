@@ -13,6 +13,7 @@ public class EnvelopeInputFormatter : TextInputFormatter
   {
     _envelopeSerializer = envelopeSerializer;
     SupportedMediaTypes.Add(Lime.Protocol.MediaType.ApplicationJson);
+    SupportedMediaTypes.Add(Lime.Protocol.MediaType.TextPlain);
     SupportedEncodings.Add(Encoding.UTF8);
   }
   

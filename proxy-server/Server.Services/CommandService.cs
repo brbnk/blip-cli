@@ -31,6 +31,12 @@ public class CommandService(EnvelopeSerializer serializer) : ICommandService
       return null;
     }
 
+    if (response.Type == MediaType.TextPlain)
+    {
+      var text = response?.Resource.ToString();
+      return text as T;
+    }
+    
     var json = JsonConvert.SerializeObject(response);
     var resource = JsonConvert.DeserializeObject<CommandResource<T>>(json);
 

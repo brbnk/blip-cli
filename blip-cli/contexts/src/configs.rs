@@ -22,7 +22,7 @@ pub fn get(key: &str) -> Option<String> {
   else {
     drop(pool);
     let path = format!("./data/{}/configs.json", master_state);
-    let json = read_file_json_to_string(path).expect("Não foi possível encontrar as ações globais");
+    let json = read_file_json_to_string(path).expect("Não foi possível encontrar configurações do bot");
     let configs = deserialize::<HashMap<String, String>>(&json).unwrap();
     set(&master_state, &configs);
     if let Some(value) = configs.get(&replaced_key) {

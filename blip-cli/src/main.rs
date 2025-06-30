@@ -1,6 +1,6 @@
 use chat;
 use clap::{arg, Parser, Subcommand};
-use mirror::{clone, RequestType};
+use mirror::{RequestType};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -35,7 +35,14 @@ enum Commands {
         /// mirror only config variables
         #[arg(short, long)]
         configurations: bool,
-    }
+
+        /// mirror only resources
+        #[arg(short, long)]
+        resources: bool,
+    },
+
+    /// list local bots
+    List {}
 }
 
 fn main() {
@@ -47,7 +54,13 @@ fn main() {
                 chat::init(bot);
             }
         },
-        Some(Commands::Mirror { bot, working_flow, global_actions, configurations }) => {
+        Some(Commands::Mirror { 
+            bot, 
+            working_flow, 
+            global_actions, 
+            configurations,
+            resources }
+        ) => {
             if !bot.is_empty() {
                 let mut request_type: Vec<RequestType> = Vec::new();
 
@@ -62,10 +75,17 @@ fn main() {
                 if *configurations {
                     request_type.push(RequestType::Configurations);
                 }
+                
+                if *resources {
+                    request_type.push(RequestType::Resources);
+                }
 
-                clone(bot, &request_type);
+                mirror::clone(bot, &request_type);
             }
         },
+        Some(Commands::List { }) => {
+            mirror::scanner::list_identifiers().expect("list of identifiers");
+        }
         None => {}
     }
 }
