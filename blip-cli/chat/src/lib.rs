@@ -1,7 +1,8 @@
 use contexts::context;
 use types::{flow::Flow};
 
-pub fn init(identifier: &str) {
+pub fn init(tenant: &str, identifier: &str) {
+    context::set_tenant(tenant);
     context::set_master_state(identifier);
 
     let flow = Flow::deserialize(&context::get_master_state());

@@ -7,6 +7,7 @@ public static class CommandFactory
   public const string POSTMASTER_PORTAL = "postmaster@portal.blip.ai";
   public const string POSTMASTER_MSGING = "postmaster@msging.net";
   public const string POSTMASTER_CONFIGURATIONS = "postmaster@configurations.msging.net";
+  public const string POSTMASTER_BUILDER = "postmaster@builder.msging.net";
 
   public static Command GetApplicationCommand(string identifier) => new()
   {
@@ -48,5 +49,12 @@ public static class CommandFactory
     Method = CommandMethod.Get,
     Uri = $"/resources/{key}",
     To = POSTMASTER_MSGING
+  };
+
+  public static Command GetBlipFunctions() => new()
+  {
+    Method = CommandMethod.Get,
+    Uri = $"/functions",
+    To = POSTMASTER_BUILDER
   };
 }

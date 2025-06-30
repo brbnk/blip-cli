@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using Server.Models;
 using Server.Services.Interfaces;
 
@@ -14,7 +13,7 @@ public class ResourceService(ICommandService commandService) : IResourceService
 
     if (resources is null || !resources.Items.Any())
     {
-      throw new ArgumentException("No resource found.");  
+      return new Dictionary<string, object?>();
     }
 
     var tasks = resources.Items.Select(async r =>

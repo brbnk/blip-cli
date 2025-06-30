@@ -13,6 +13,10 @@ struct Cli {
 enum Commands {
     /// simulate a chat
     Chat {
+        /// bot contract
+        #[arg(short, long)]
+        tenant: String,
+
         /// flow identifier
         #[arg(short, long)]
         bot: String,
@@ -20,6 +24,10 @@ enum Commands {
 
     /// mirror an application locally
     Mirror {
+        /// bot contract
+        #[arg(short, long)]
+        tenant: String,
+
         /// bot identifier
         #[arg(short, long)]
         bot: String,
@@ -49,19 +57,20 @@ fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(Commands::Chat { bot }) => {
-            if !bot.is_empty() {
-                chat::init(bot);
+        Some(Commands::Chat { tenant, bot }) => {
+            if !tenant.is_empty() && !bot.is_empty() {
+                chat::init(tenant, bot);
             }
         },
         Some(Commands::Mirror { 
-            bot, 
+            bot,
+            tenant,
             working_flow, 
             global_actions, 
             configurations,
             resources }
         ) => {
-            if !bot.is_empty() {
+            if !tenant.is_empty() && !bot.is_empty() {
                 let mut request_type: Vec<RequestType> = Vec::new();
 
                 if *working_flow {
@@ -80,7 +89,7 @@ fn main() {
                     request_type.push(RequestType::Resources);
                 }
 
-                mirror::clone(bot, &request_type);
+                mirror::clone(tenant, bot, &request_type);
             }
         },
         Some(Commands::List { }) => {

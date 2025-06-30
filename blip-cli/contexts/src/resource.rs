@@ -12,6 +12,7 @@ pub static RESOURCES: Lazy<RwLock<HashMap<String, HashMap<String,String>>>> = La
 
 pub fn get(key: &str) -> Option<String> {
   let replaced_key = key.replace("resource.", "");
+  let tenant = context::get_tenant();
   let master_state = context::get_master_state();
   let pool = RESOURCES.read().unwrap();
   
@@ -22,34 +23,46 @@ pub fn get(key: &str) -> Option<String> {
   }
   else {
     drop(pool);
-    let path = format!("./data/{}/resources.json", master_state);
+    let path = format!("./data/{}/{}/resources.json", &tenant, master_state);
     let json = read_file_json_to_string(path).expect("Não foi possível encontrar os recursos");
-    let deserialized_json = deserialize::<Value>(&json).unwrap();
-
-    let mut resources: HashMap<String, String> = HashMap::new();
-    if let Some(obj) = deserialized_json.as_object() {
-      for (k, v) in obj {
-        let key = k.trim();
-        match v {
-            Value::String(s) => {
-              resources.insert(key.to_string(), s.trim().to_string());
-            },
-            Value::Object(map) => {
-              resources.insert(key.to_string(), serde_json::to_string(map).expect("object"));
-            },
-            _ => {
-              resources.insert(key.to_string(), serde_json::to_string(v).expect("other type"));
-            }
-        }
-      }
-    }
-    
+    let resources = parse_resources(&json);
     set(&master_state, &resources);
     if let Some(value) = resources.get(&replaced_key) {
       return Some(value.clone());
     }
   }
   None
+}
+
+fn parse_resources(json: &String) -> HashMap<String, String> {
+  let mut resources: HashMap<String, String> = HashMap::new();
+
+  let deserialized_json = deserialize::<Value>(json).unwrap();
+
+  if let Some(obj) = deserialized_json.as_object() {
+    for (k, v) in obj {
+      let key = k.trim().to_string();
+      match v {
+          Value::String(s) => {
+            resources.insert(
+              key,
+              s.trim().to_string());
+          },
+          Value::Object(map) => {
+            resources.insert(
+              key,
+              serde_json::to_string(map).expect("object"));
+          },
+          _ => {
+            resources.insert(
+              key,
+              serde_json::to_string(v).expect("other type"));
+          }
+      }
+    }
+  }
+  
+  resources
 }
 
 fn set(identifier: &str, configs: &HashMap<String, String>) {

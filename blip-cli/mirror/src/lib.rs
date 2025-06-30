@@ -12,9 +12,9 @@ pub enum RequestType {
     Resources
 }
 
-pub fn clone(identifier: &str, request_type: &Vec<RequestType>) {
+pub fn clone(tenant: &str, identifier: &str, request_type: &Vec<RequestType>) {
     if let Some(token) = auth::get_token() {
-        let client = HttpClient::new("http://localhost:5107/api/Proxy", &token, identifier);
+        let client = HttpClient::new("http://localhost:5107/api/Proxy", &token, tenant, identifier);
         
         println!("Iniciando download das configurações do bot '{}'", &client.identifier);
         loader::start(1);
@@ -46,7 +46,7 @@ fn request_builder_working_flow(client: &HttpClient) {
         .get(&format!("/working-flow?identifier={}", &client.identifier))
         .expect("builder flow");
 
-    builder_flow.save(&client.identifier).expect("flow.json created");
+    builder_flow.save(&client.tenant, &client.identifier).expect("flow.json created");
     print_success_message("Fluxo");
 }
 
@@ -55,7 +55,7 @@ fn request_builder_global_actions(client: &HttpClient) {
         .get(&format!("/global-actions?identifier={}", &client.identifier))
         .expect("builder global actions");
 
-    builder_global_actions.save(&client.identifier).expect("global_actions.json created");
+    builder_global_actions.save(&client.tenant, &client.identifier).expect("global_actions.json created");
     print_success_message("Ações Globais");
 }
 
@@ -64,7 +64,7 @@ fn request_builder_configurations(client: &HttpClient) {
         .get(&format!("/configs?identifier={}", &client.identifier))
         .expect("builder configuration variables");
 
-    builder_configs.save(&client.identifier).expect("configs.json created");
+    builder_configs.save(&client.tenant, &client.identifier).expect("configs.json created");
     print_success_message("Variáveis de configuração");
 }
 
@@ -73,6 +73,6 @@ fn request_resources(client: &HttpClient) {
         .get(&format!("/resources?identifier={}", &client.identifier))
         .expect("application resources");
 
-    builder_configs.save(&client.identifier).expect("resources.json created");
+    builder_configs.save(&client.tenant, &client.identifier).expect("resources.json created");
     print_success_message("Recursos");
 }

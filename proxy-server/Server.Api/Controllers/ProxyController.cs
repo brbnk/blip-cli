@@ -63,4 +63,28 @@ public class ProxyController(
       Resources = resources
     });
   }
+
+  [HttpGet("blip-functions")]
+  public async Task<IActionResult> GetBlipFunction([FromHeader] string token, [FromQuery] string identifier)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+
+    var response = await commandService.SendAsync<CommandListResponse<BuilderFunction>>(
+      application,
+      CommandFactory.GetBlipFunctions());
+
+    return Ok(new
+    {
+      Tentant = response?.Items.FirstOrDefault()?.TentantId,
+      Functions = response?.Items.Select(i =>
+      {
+        return new
+        {
+          Id = i.FunctionId,
+          Name = i.FunctionName,
+          Content = i.FunctionContent,
+        };
+      })
+    });
+  }
 }

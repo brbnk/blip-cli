@@ -12,6 +12,7 @@ pub static CONFIGS: Lazy<RwLock<HashMap<String, HashMap<String,String>>>> = Lazy
 pub fn get(key: &str) -> Option<String> {
   let replaced_key = key.replace("config.", "");
   let master_state = context::get_master_state();
+  let tenant = context::get_tenant();
   let pool = CONFIGS.read().unwrap();
   
   if let Some(master_configs) = pool.get(&master_state) {
@@ -21,7 +22,7 @@ pub fn get(key: &str) -> Option<String> {
   }
   else {
     drop(pool);
-    let path = format!("./data/{}/configs.json", master_state);
+    let path = format!("./data/{}/{}/configs.json", &tenant, master_state);
     let json = read_file_json_to_string(path).expect("Não foi possível encontrar configurações do bot");
     let configs = deserialize::<HashMap<String, String>>(&json).unwrap();
     set(&master_state, &configs);

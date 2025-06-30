@@ -4,16 +4,17 @@ using Lime.Protocol;
 namespace Server.Models;
 
 [DataContract]
-public class ResourceCollection : Document
+public class BuilderFunctionsDocument : Document
 {
-  public const string MIME_TYPE = "application/vnd.lime.collection+json";
+  public const string MIME_TYPE = "application/vnd.iris.builder.function+json";
 
   public static readonly MediaType MediaType = MediaType.Parse(MIME_TYPE);
 
-  public ResourceCollection() : base(MediaType)
+  public BuilderFunctionsDocument() : base(MediaType)
   {
   }
 
+  
   [DataMember(Name = "total")]
   public int Total { get; set; }
 
@@ -21,5 +22,5 @@ public class ResourceCollection : Document
   public string ItemType { get; set; } = string.Empty;
 
   [DataMember(Name = "items")]
-  public IEnumerable<string> Items { get; set; } = [];
+  public IEnumerable<BuilderFunction> Items { get; set; } = [];
 }

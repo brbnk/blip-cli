@@ -28,3 +28,15 @@ pub fn get_master_state() -> String {
 pub fn set_master_state(value: &str) {
   set("master-state", value);
 }
+
+pub fn get_tenant() -> String {
+  let result = get("tenant");
+  match result {
+    Some(tenant) => tenant,
+    None => panic!("tenant não encontrado"),
+  }
+}
+
+pub fn set_tenant(value: &str) {
+  set("tenant", value);
+}

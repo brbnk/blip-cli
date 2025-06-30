@@ -10,7 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 var documentResolver = new DocumentTypeResolver().WithBlipDocuments();
-documentResolver.RegisterAssemblyDocuments(typeof(ResourceCollection).Assembly);
+documentResolver.RegisterAssemblyDocuments(typeof(ResourceCollectionDocument).Assembly);
+documentResolver.RegisterAssemblyDocuments(typeof(BuilderFunctionsDocument).Assembly);
 
 var serializer = new EnvelopeSerializer(documentResolver);
 builder.Services.AddSingleton(serializer);

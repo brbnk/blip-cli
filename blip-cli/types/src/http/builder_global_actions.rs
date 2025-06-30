@@ -9,11 +9,11 @@ pub struct BuilderGlobalActions {
 }
 
 impl BuilderGlobalActions {
-    pub fn save(&self, identifier: &str) -> std::io::Result<()> {
+    pub fn save(&self, tenant: &str, identifier: &str) -> std::io::Result<()> {
         let content = serde_json::to_string_pretty(&self.global_actions)?;
         
         handle_creation(
-          identifier, 
+          &format!("{}/{}", tenant, identifier),
           "global_actions.json", 
           &content)?;
           
