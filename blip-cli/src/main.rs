@@ -25,11 +25,11 @@ enum Commands {
     /// mirror an application locally
     Mirror {
         /// bot contract
-        #[arg(short, long)]
+        #[arg(long)]
         tenant: String,
 
         /// bot identifier
-        #[arg(short, long)]
+        #[arg(long)]
         bot: String,
 
         /// mirror only working flow
@@ -43,6 +43,10 @@ enum Commands {
         /// mirror only config variables
         #[arg(short, long)]
         configurations: bool,
+
+        /// mirror only blip functions
+        #[arg(short, long)]
+        blip_functions: bool,
 
         /// mirror only resources
         #[arg(short, long)]
@@ -68,6 +72,7 @@ fn main() {
             working_flow, 
             global_actions, 
             configurations,
+            blip_functions,
             resources }
         ) => {
             if !tenant.is_empty() && !bot.is_empty() {
@@ -87,6 +92,10 @@ fn main() {
                 
                 if *resources {
                     request_type.push(RequestType::Resources);
+                }
+
+                if *blip_functions {
+                    request_type.push(RequestType::BlipFunction);
                 }
 
                 mirror::clone(tenant, bot, &request_type);

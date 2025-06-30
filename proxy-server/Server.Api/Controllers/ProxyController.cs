@@ -75,7 +75,7 @@ public class ProxyController(
 
     return Ok(new
     {
-      Tentant = response?.Items.FirstOrDefault()?.TentantId,
+      Tenant = response?.Items.FirstOrDefault()?.TentantId,
       Functions = response?.Items.Select(i =>
       {
         return new

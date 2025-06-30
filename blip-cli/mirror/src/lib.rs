@@ -1,5 +1,5 @@
 use http::{HttpClient};
-use types::http::{BuilderConfigs, BuilderFlow, BuilderGlobalActions, Resources};
+use types::http::{BuilderConfigs, BuilderFlow, BuilderGlobalActions, Resources, BlipFunctionsResult};
 use ui::{loader, printer::print_success_message};
 
 mod auth;
@@ -9,14 +9,15 @@ pub enum RequestType {
     WorkingFlow,
     GlobalAction,
     Configurations,
-    Resources
+    Resources,
+    BlipFunction
 }
 
 pub fn clone(tenant: &str, identifier: &str, request_type: &Vec<RequestType>) {
     if let Some(token) = auth::get_token() {
         let client = HttpClient::new("http://localhost:5107/api/Proxy", &token, tenant, identifier);
         
-        println!("Iniciando download das configurações do bot '{}'", &client.identifier);
+        println!("\nIniciando download das configurações do bot '{}'", &client.identifier);
         loader::start(1);
         
         if !request_type.is_empty() {
@@ -25,18 +26,10 @@ pub fn clone(tenant: &str, identifier: &str, request_type: &Vec<RequestType>) {
                     RequestType::WorkingFlow => request_builder_working_flow(&client),
                     RequestType::GlobalAction => request_builder_global_actions(&client),
                     RequestType::Configurations => request_builder_configurations(&client),
-                    RequestType::Resources => request_resources(&client)
+                    RequestType::Resources => request_resources(&client),
+                    RequestType::BlipFunction => request_blip_functions(&client)
                 };
             };
-        }
-        else {
-            request_builder_working_flow(&client);
-            loader::start(1);
-            request_builder_global_actions(&client);
-            loader::start(1);
-            request_builder_configurations(&client);
-            loader::start(1);
-            request_resources(&client);
         }
     }
 }
@@ -75,4 +68,13 @@ fn request_resources(client: &HttpClient) {
 
     builder_configs.save(&client.tenant, &client.identifier).expect("resources.json created");
     print_success_message("Recursos");
+}
+
+fn request_blip_functions(client: &HttpClient) {
+    let blip_functions: BlipFunctionsResult = client
+        .get(&format!("/blip-functions?identifier={}", &client.identifier))
+        .expect("tenant blip functions");
+
+    blip_functions.save().expect("blip-functions.json created");
+    print_success_message("Blip functions");
 }
