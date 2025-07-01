@@ -202,6 +202,7 @@ dependencies = [
  "mirror",
  "serde",
  "serde_json",
+ "tester",
 ]
 
 [[package]]
@@ -1943,6 +1944,15 @@ dependencies = [
  "once_cell",
  "rustix 1.0.7",
  "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "tester"
+version = "0.1.0"
+dependencies = [
+ "contexts",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

@@ -12,3 +12,15 @@ pub fn handle_creation(folder_name: &str, file_name: &str, file_content: &str) -
 
     Ok(())
 }
+
+pub fn handle_test_file_creation(folder_name: &str, file_content: &str) -> Result<()> {
+    let path = format!("./data/{}/__tests__", folder_name.trim());
+    fs::create_dir_all(&path)?;
+
+    let file_path = format!("{}/{}", path, "test_case.json");
+    let mut file = File::create(file_path)?;
+
+    file.write_all(file_content.as_bytes())?;
+
+    Ok(())
+}
