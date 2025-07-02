@@ -27,10 +27,6 @@ impl PathBuilder for TestTemplateFile {
             constants::TESTS_FOLDER
         )
     }
-
-    fn append_file_name(&self, path: &str, name: &str) -> String {
-        format!("{}/{}", path, name)
-    }
 }
 
 impl Writer for TestTemplateFile {

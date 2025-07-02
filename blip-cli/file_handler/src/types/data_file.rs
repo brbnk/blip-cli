@@ -24,10 +24,6 @@ impl PathBuilder for DataFile {
             None => path,
         }
     }
-    
-    fn append_file_name(&self, path: &str, name: &str) -> String {
-        format!("{}/{}", path, name)
-    }
 }
 
 impl Writer for DataFile {
