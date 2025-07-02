@@ -1,4 +1,7 @@
-use std::{fs::{self, File}, io::{Result, Write}};
+use std::{
+    fs::{self, File},
+    io::{Result, Write},
+};
 
 pub fn handle_creation(folder_name: &str, file_name: &str, file_content: &str) -> Result<()> {
     let path = format!("./data/{}", folder_name.trim());
@@ -9,6 +12,18 @@ pub fn handle_creation(folder_name: &str, file_name: &str, file_content: &str) -
 
     file.write_all(file_content.as_bytes())
         .expect("file created");
+
+    Ok(())
+}
+
+pub fn handle_test_file_creation(folder_name: &str, file_content: &str) -> Result<()> {
+    let path = format!("./data/{}/__tests__", folder_name.trim());
+    fs::create_dir_all(&path)?;
+
+    let file_path = format!("{}/{}", path, "test_case.json");
+    let mut file = File::create(file_path)?;
+
+    file.write_all(file_content.as_bytes())?;
 
     Ok(())
 }

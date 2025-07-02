@@ -1,7 +1,10 @@
-use contexts::context;
-use types::{flow::Flow};
+mod types;
 
-pub fn init(identifier: &str) {
+use contexts::context;
+use crate::types::Flow;
+
+pub fn init(tenant: &str, identifier: &str) {
+    context::set_tenant(tenant);
     context::set_master_state(identifier);
 
     let flow = Flow::deserialize(&context::get_master_state());
@@ -20,7 +23,7 @@ pub fn init(identifier: &str) {
         state.handle_custom_leaving_actions();
         state.save_previous();
         
-        let default_output = state.default_output.get_state_id();
+        let default_output = state.get_default_output();
         state = flow.get_state(match state.handle_condition_outputs() {
             Some(destination) => destination,
             None => &default_output,

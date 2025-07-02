@@ -1,9 +1,5 @@
-using Lime.Protocol.Serialization;
-using Lime.Protocol.Serialization.Newtonsoft;
-using Server.Api.Formatters;
 using Server.Services;
 using Server.Services.Interfaces;
-using Take.Blip.Client.Extensions;
 
 namespace Server.Api.Extensions;
 
@@ -14,6 +10,7 @@ public static class ServiceCollectionExtensions
     services.AddSingleton<IPortalService, PortalService>();
     services.AddSingleton<ICommandService, CommandService>();
     services.AddSingleton<IApplicationService, ApplicationService>();
+    services.AddSingleton<IResourceService, ResourceService>();
 
     return services;
   }

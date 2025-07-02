@@ -10,7 +10,7 @@ pub fn exec_script(
         .execute_script("<init>", script)
         .map_err(|e| format!("Erro ao executar script: {e}"))?;
 
-    let mut function = String::from("run()"); 
+    let mut function = String::from("run()");
     if !args.is_empty() {
         function = String::from(format!("run({})", args.join(", ")));
     }
