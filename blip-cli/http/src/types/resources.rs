@@ -1,4 +1,3 @@
-use contexts::context_file_handler::handle_creation;
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -6,18 +5,4 @@ use serde_json::Value;
 pub struct Resources {
     #[serde(rename = "resources")]
     pub resources: Value,
-}
-
-impl Resources {
-    pub fn save(&self, tenant: &str, identifier: &str) -> std::io::Result<()> {
-        let content = serde_json::to_string_pretty(&self.resources)?;
-
-        handle_creation(
-            &format!("{}/{}", tenant, identifier),
-            "resources.json",
-            &content,
-        )?;
-
-        Ok(())
-    }
 }

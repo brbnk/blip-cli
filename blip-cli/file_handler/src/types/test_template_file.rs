@@ -1,32 +1,69 @@
-use std::{fs::{self, File}, io::Write};
+use std::{
+    fs::{self, File},
+    io::Write,
+};
 
-use domain::{constants, traits::file_handler::Writer};
+use domain::{
+    constants,
+    traits::file_handler::{PathBuilder, Writer},
+};
+use ui::printer;
 
 pub struct TestTemplateFile {
-  pub tenant: String,
+    pub tenant: String,
 
-  pub bot_id: String,
+    pub bot_id: String,
 
-  pub content: String
+    pub content: Option<String>,
+}
+
+impl PathBuilder for TestTemplateFile {
+    fn build_path(&self) -> String {
+        format!(
+            "./{}/{}/{}/{}",
+            constants::DATA_FOLDER,
+            self.tenant,
+            self.bot_id,
+            constants::TESTS_FOLDER
+        )
+    }
+
+    fn append_file_name(&self, path: &str, name: &str) -> String {
+        format!("{}/{}", path, name)
+    }
 }
 
 impl Writer for TestTemplateFile {
     fn write(&self) -> std::io::Result<()> {
-        let path = format!(
-          "./{}/{}/{}/{}",
-          constants::DATA_FOLDER,
-          self.tenant,
-          self.bot_id,
-          constants::TESTS_FOLDER
-        );
+        let path = self.build_path();
 
         fs::create_dir_all(&path)?;
-        
-        let file_path = format!("{}/{}", path, "test_case.json");
-        let mut file = File::create(file_path)?;
 
-        file.write_all(self.content.as_bytes())?;
+        let count = self.count();
+        let file_name = format!("test_case_{}.json", count + 1);
+        let file_path = self.append_file_name(&path, &file_name);
+        let mut file = File::create(&file_path)?;
+        match &self.content {
+            Some(c) => {
+              println!();
+              file.write_all(c.as_bytes())?;
+              printer::print_success_message(&format!("Arquivo '{}' criado com sucesso!", file_path));
+            },
+            None => {}
+        }
 
         Ok(())
+    }
+}
+
+impl TestTemplateFile {
+    pub fn count(&self) -> usize {
+        let path = self.build_path();
+
+        fs::read_dir(path)
+            .expect("read directory")
+            .filter_map(Result::ok) // ignora erros ao ler entradas
+            .filter(|entry| entry.path().is_file()) // considera apenas arquivos
+            .count()
     }
 }

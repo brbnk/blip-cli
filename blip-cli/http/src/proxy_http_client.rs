@@ -23,8 +23,8 @@ pub struct ProxyHttpClient {
 }
 
 impl ProxyHttpClient {
-    pub fn new(base_url: &str, token: &str, tenant: &str, identifier: &str) -> ProxyHttpClient {
-        ProxyHttpClient {
+    pub fn new(base_url: &str, token: &str, tenant: &str, identifier: &str) -> Self {
+        Self {
             client: Client::new(),
             base_url: base_url.to_string(),
             token: token.to_string(),
@@ -64,9 +64,9 @@ impl ProxyRequests for ProxyHttpClient {
 
         let data_file = DataFile {
             tenant: self.tenant.clone(),
-            bot_id: self.identifier.clone(),
+            bot_id: Some(self.identifier.clone()),
             file_name: constants::FLOW_FILE_NAME.to_string(),
-            content: serde_json::to_string_pretty(&response.application).expect("flow json"),
+            content: Some(serde_json::to_string_pretty(&response.application).expect("flow json")),
         };
 
         data_file.write().expect("create flow file");
@@ -80,9 +80,9 @@ impl ProxyRequests for ProxyHttpClient {
 
         let data_file = DataFile {
             tenant: self.tenant.clone(),
-            bot_id: self.identifier.clone(),
+            bot_id: Some(self.identifier.clone()),
             file_name: constants::RESOURCES_FILE_NAME.to_string(),
-            content: serde_json::to_string_pretty(&response.resources).expect("resources json"),
+            content: Some(serde_json::to_string_pretty(&response.resources).expect("resources json")),
         };
 
         data_file.write().expect("resources file");
@@ -96,10 +96,9 @@ impl ProxyRequests for ProxyHttpClient {
 
         let data_file = DataFile {
             tenant: self.tenant.clone(),
-            bot_id: self.identifier.clone(),
+            bot_id: Some(self.identifier.clone()),
             file_name: constants::CONFIGS_FILE_NAME.to_string(),
-            content: serde_json::to_string_pretty(&response.configurations)
-                .expect("configurations json"),
+            content: Some(serde_json::to_string_pretty(&response.configurations).expect("configurations json")),
         };
 
         data_file.write().expect("configurations file");
@@ -113,10 +112,9 @@ impl ProxyRequests for ProxyHttpClient {
 
         let data_file = DataFile {
             tenant: self.tenant.clone(),
-            bot_id: self.identifier.clone(),
+            bot_id: Some(self.identifier.clone()),
             file_name: constants::GLOBAL_ACTIONS_FILE_NAME.to_string(),
-            content: serde_json::to_string_pretty(&response.global_actions)
-                .expect("global action json"),
+            content: Some(serde_json::to_string_pretty(&response.global_actions).expect("global action json")),
         };
 
         data_file.write().expect("create global actions file");
@@ -130,9 +128,9 @@ impl ProxyRequests for ProxyHttpClient {
 
         let data_file = DataFile {
             tenant: self.tenant.clone(),
-            bot_id: String::from(""),
+            bot_id: None,
             file_name: constants::BLIP_FUNCTION_FILE_NAME.to_string(),
-            content: serde_json::to_string_pretty(&response.functions).expect("blip function json"),
+            content: Some(serde_json::to_string_pretty(&response.functions).expect("blip function json")),
         };
 
         data_file.write().expect("blip functions file");

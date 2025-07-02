@@ -54,6 +54,14 @@ pub fn print_success_message(message: &str) {
     );
 }
 
+pub fn print_error_message(message: &str) {
+    println!(
+        "[{}] {}", 
+        colorize("ERRO", Color::Red),
+        colorize(message, Color::Yellow)
+    );
+}
+
 fn colorize(text: &str, color: Color) -> ColoredString {
     match color {
         Color::Yellow => text.yellow(),

@@ -197,14 +197,7 @@ dependencies = [
 name = "blip-cli"
 version = "0.1.0"
 dependencies = [
- "chat",
- "clap",
- "domain",
- "file_handler",
- "mirror",
- "serde",
- "serde_json",
- "tester",
+ "cli",
 ]
 
 [[package]]
@@ -326,6 +319,19 @@ name = "clap_lex"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
+
+[[package]]
+name = "cli"
+version = "0.1.0"
+dependencies = [
+ "chat",
+ "clap",
+ "domain",
+ "file_handler",
+ "mirror",
+ "serde_json",
+ "tester",
+]
 
 [[package]]
 name = "colorchoice"
@@ -567,6 +573,7 @@ name = "file_handler"
 version = "0.1.0"
 dependencies = [
  "domain",
+ "ui",
 ]
 
 [[package]]
