@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = [ "chat", "contexts", "http", "js_runner", "json_converter", "mirror", "tester", "types" , "ui"]
+members = [ "chat", "contexts", "domain", "file_handler", "http", "js_runner", "json_converter", "mirror", "tester", "ui"]
 
 [dependencies]
 serde = { version = "1.0.219", features = ["derive"] }
@@ -13,3 +13,5 @@ chat = { path = "./chat" }
 clap = { version = "4.5.40", features = ["derive"] }
 mirror = { path = "./mirror" }
 tester = { path = "./tester" }
+file_handler = { path = "./file_handler" }
+domain = { path = "./domain" }

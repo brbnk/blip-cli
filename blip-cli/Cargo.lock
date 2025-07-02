@@ -199,6 +199,8 @@ version = "0.1.0"
 dependencies = [
  "chat",
  "clap",
+ "domain",
+ "file_handler",
  "mirror",
  "serde",
  "serde_json",
@@ -266,7 +268,11 @@ name = "chat"
 version = "0.1.0"
 dependencies = [
  "contexts",
- "types",
+ "domain",
+ "js_runner",
+ "json_converter",
+ "serde",
+ "serde_json",
  "ui",
 ]
 
@@ -516,6 +522,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "domain"
+version = "0.1.0"
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -551,6 +561,13 @@ name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
+
+[[package]]
+name = "file_handler"
+version = "0.1.0"
+dependencies = [
+ "domain",
+]
 
 [[package]]
 name = "fnv"
@@ -775,9 +792,13 @@ dependencies = [
 name = "http"
 version = "0.1.0"
 dependencies = [
+ "contexts",
+ "domain",
+ "file_handler",
  "reqwest",
  "serde",
  "serde_json",
+ "ui",
 ]
 
 [[package]]
@@ -1182,8 +1203,10 @@ dependencies = [
 name = "mirror"
 version = "0.1.0"
 dependencies = [
+ "domain",
+ "file_handler",
  "http 0.1.0",
- "types",
+ "serde_json",
  "ui",
 ]
 
@@ -2116,19 +2139,6 @@ name = "try-lock"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
-
-[[package]]
-name = "types"
-version = "0.1.0"
-dependencies = [
- "colored",
- "contexts",
- "js_runner",
- "json_converter",
- "serde",
- "serde_json",
- "ui",
-]
 
 [[package]]
 name = "ui"

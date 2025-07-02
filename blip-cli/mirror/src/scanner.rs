@@ -20,7 +20,7 @@ pub fn list_identifiers() -> Result<()> {
                 }
             }
         }
-    };
-    
+    }
+
     Ok(())
 }

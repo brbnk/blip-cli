@@ -1,7 +1,9 @@
 use chat;
 use clap::{arg, Args, Parser, Subcommand};
+use file_handler::types::TestTemplateFile;
 use mirror::{RequestType};
 use tester::types::TestTemplate;
+use domain::traits::file_handler::Writer;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -76,11 +78,11 @@ pub enum TestSubcommands {
 #[derive(Args, Debug)]
 pub struct CommonArgs {
     /// bot contract
-    #[arg(short, long)]
+    #[arg(long)]
     pub tenant: String,
 
     /// flow identifier
-    #[arg(short, long)]
+    #[arg(long)]
     pub bot: String,
 }
 
@@ -139,7 +141,15 @@ fn main() {
         Some(Commands::Test(test)) => match &test.action {
             TestSubcommands::Create { commong_args } => {
                 if commong_args.is_valid() {
-                    TestTemplate::create_file(&commong_args.tenant, &commong_args.bot);
+                    let template = serde_json::to_string_pretty(&TestTemplate::new()).expect("test template");
+                    
+                    let test_file_template = TestTemplateFile {
+                        tenant: commong_args.tenant.clone(),
+                        bot_id: commong_args.bot.clone(),
+                        content: template,
+                    };
+
+                    test_file_template.write().expect("create test file");
                 }
             },
             TestSubcommands::Run { commong_args: _, file_name: _ } => todo!(),

@@ -1,3 +1,4 @@
-mod http_client;
+mod proxy_http_client;
 
-pub use http_client::HttpClient;
+pub mod types;
+pub use proxy_http_client::ProxyHttpClient;

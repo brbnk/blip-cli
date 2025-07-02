@@ -1,39 +1,27 @@
+use crate::types::{ActionProps, Color};
 use colored::{ColoredString, Colorize};
-use contexts::{replacer};
+use contexts::replacer;
 
-fn print_action(action: ColoredString, key: &String, value: &String) {
+pub fn print_action(props: ActionProps) {
+    let r_key = replacer::replace(&props.key);
+    let r_value = replacer::replace(&props.value);
     println!(
-      "{} {:<13}{} {} {} {}",
-      "|".bright_black(),
-      action,
-      "|".bright_black(),
-      replacer::replace(key), 
-      "->".bright_black(),
-      replacer::replace(value));
+        "{} {:<13}{} {} {} {}",
+        colorize("|", Color::BrightBlack),
+        colorize(&props.name, props.color),
+        colorize("|", Color::BrightBlack),
+        r_key,
+        colorize("->", Color::BrightBlack),
+        r_value
+    );
 }
 
-pub fn print_yellow(action: &str, key: &String, value: &String) {
-  print_action(action.yellow().bold(), key, value);
+pub fn println(message: &str, color: Color) {
+    println!("{}", colorize(message, color));
 }
 
-pub fn print_red(action: &str, key: &String, value: &String) {
-  print_action(action.red().bold(), key, value);
-}
-
-pub fn print_blue(action: &str, key: &String, value: &String) {
-  print_action(action.blue().bold(), key, value);
-}
-
-pub fn print_cyan(action: &str, key: &String, value: &String) {
-  print_action(action.cyan().bold(), key, value);
-}
-
-pub fn print_black(action: &str, key: &String, value: &String) {
-  print_action(action.black().bold(), key, value);
-}
-
-pub fn print_magenta(action: &str, key: &String, value: &String) {
-  print_action(action.magenta().bold(), key, value);
+pub fn print(message: &str, color: Color) {
+    print!("{}", colorize(message, color));
 }
 
 pub fn print_state_title(title: &str) {
@@ -46,18 +34,36 @@ pub fn print_state_title(title: &str) {
     let left_padding = total_padding / 2;
     let right_padding = total_padding - left_padding;
 
-    println!("{}", upper_state.bright_black());
+    println!("{}", colorize(&upper_state, Color::BrightBlack));
     println!(
         "{}{}{}{}{}",
-        "|".bright_black(),
+        colorize("|", Color::BrightBlack),
         " ".repeat(left_padding),
-        title.bright_green().bold(),
+        colorize(title, Color::Green),
         " ".repeat(right_padding),
-        "|".bright_black()
+        colorize("|", Color::BrightBlack)
     );
-    println!("{}", upper_state.bright_black());
+    println!("{}", colorize(&upper_state, Color::BrightBlack));
 }
 
 pub fn print_success_message(message: &str) {
-  println!("✔️ {}", message);
+    println!(
+        "[{}] {}", 
+        colorize("Ok", Color::Green),
+        colorize(message, Color::Yellow)
+    );
+}
+
+fn colorize(text: &str, color: Color) -> ColoredString {
+    match color {
+        Color::Yellow => text.yellow(),
+        Color::Red => text.red(),
+        Color::Blue => text.blue(),
+        Color::Cyan => text.cyan(),
+        Color::Black => text.black(),
+        Color::Magenta => text.magenta(),
+        Color::White => text.white(),
+        Color::BrightBlack => text.bright_black(),
+        Color::Green => text.green(),
+    }
 }

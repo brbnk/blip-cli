@@ -1,4 +1,7 @@
-use std::{fs::{self, File}, io::{Result, Write}};
+use std::{
+    fs::{self, File},
+    io::{Result, Write},
+};
 
 pub fn handle_creation(folder_name: &str, file_name: &str, file_content: &str) -> Result<()> {
     let path = format!("./data/{}", folder_name.trim());
