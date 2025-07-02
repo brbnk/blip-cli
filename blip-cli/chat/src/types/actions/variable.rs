@@ -10,12 +10,15 @@ pub struct Variable {
     pub variable: String,
 
     #[serde(rename = "value")]
-    pub value: String
+    pub value: Option<String>
 }
 
 impl Executable for Variable {
     fn execute(&self) {
-        let replaced = replacer::replace(&self.value);
+        let replaced = match &self.value {
+            Some(v) => replacer::replace(v),
+            None => "".to_string(),
+        };
 
         context::set(&self.variable, replaced.as_str());
 
