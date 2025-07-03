@@ -12,7 +12,7 @@ pub struct Chat {
 impl Runnable for Chat {
     fn run(&self) {
         if self.commong_args.is_valid() {
-            chat::init(&self.commong_args.tenant, &self.commong_args.bot);
+            chat::init(&self.commong_args.tenant, &self.commong_args.bot, &false);
         }
     }
 }

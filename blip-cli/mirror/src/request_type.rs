@@ -3,5 +3,6 @@ pub enum RequestType {
     GlobalAction,
     Configurations,
     Resources,
-    BlipFunction
+    BlipFunction,
+    Router
 }

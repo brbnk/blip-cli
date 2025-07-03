@@ -8,6 +8,7 @@ use reqwest::{
     header::{HeaderMap, HeaderValue},
 };
 use serde::de::DeserializeOwned;
+use serde_json::Value;
 use ui::printer::print_success_message;
 
 use crate::types::{
@@ -20,16 +21,18 @@ pub struct ProxyHttpClient {
     token: String,
     pub tenant: String,
     pub identifier: String,
+    pub tier: String
 }
 
 impl ProxyHttpClient {
-    pub fn new(base_url: &str, token: &str, tenant: &str, identifier: &str) -> Self {
+    pub fn new(base_url: &str, token: &str, tenant: &str, identifier: &str, tier: &str) -> Self {
         Self {
             client: Client::new(),
             base_url: base_url.to_string(),
             token: token.to_string(),
             tenant: tenant.to_string(),
             identifier: identifier.to_string(),
+            tier: tier.to_string()
         }
     }
 
@@ -135,5 +138,21 @@ impl ProxyRequests for ProxyHttpClient {
 
         data_file.write().expect("blip functions file");
         print_success_message("Blip functions");
+    }
+    
+    fn get_router_chidlren(&self) {
+        let response: Value = self
+            .get(&format!("/router?routerId={}&tier={}", &self.identifier, &self.tier))
+            .expect("router children");
+
+        let data_file = DataFile {
+            tenant: self.tenant.clone(),
+            bot_id: Some(self.identifier.clone()),
+            file_name: constants::ROUTER_CHILDREN_FILE_NAME.to_string(),
+            content: Some(serde_json::to_string_pretty(&response).expect("blip function json")),
+        };
+
+        data_file.write().expect("router children file");
+        print_success_message("Route Children");
     }
 }
