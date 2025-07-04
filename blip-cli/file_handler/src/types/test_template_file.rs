@@ -1,6 +1,6 @@
 use std::{
     fs::{self, File},
-    io::Write,
+    io::{Read, Write, Result},
 };
 
 use domain::{
@@ -61,5 +61,19 @@ impl TestTemplateFile {
             .filter_map(Result::ok) // ignora erros ao ler entradas
             .filter(|entry| entry.path().is_file()) // considera apenas arquivos
             .count()
+    }
+
+    pub fn read_files(&self) -> Result<Vec<String>> {
+        let path = self.build_path();
+
+         fs::read_dir(path)?
+            .filter_map(Result::ok)
+            .filter(|entry| entry.path().is_file())
+            .map(|entry| {
+                let mut contents = String::new();
+                File::open(entry.path())?.read_to_string(&mut contents)?;
+                Ok(contents)
+            })
+            .collect()
     }
 }

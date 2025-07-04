@@ -1,25 +1,18 @@
 mod types;
 
-use contexts::context;
-use crate::types::Flow;
+pub use types::params;
 
-pub fn init(tenant: &str, identifier: &str, is_router: &bool) {
-    context::set_tenant(tenant);
+use contexts::{system, test};
+use crate::types::{Flow, params::ChatParams};
 
-    if !is_router {
-        context::set_master_state(identifier);
-    }
-    else {
-        // Ler route children file
-        // Pegar o default
-        // setar master-state
-        todo!()
-    }
+pub fn init(params: ChatParams) {
+    system::set_tenant(&params.tenant);
+    system::set_master_state(&params.bot);
 
     let mut is_first_input = true;
 
     loop {
-        let flow = Flow::deserialize(&context::get_master_state());
+        let flow = Flow::deserialize(&system::get_master_state());
         
         let mut state = flow
             .get_onboarding_state()
@@ -31,6 +24,11 @@ pub fn init(tenant: &str, identifier: &str, is_router: &bool) {
             state.handle_global_leaving_actions(is_first_input);
             state.handle_custom_entering_actions();
             state.handle_content_actions(is_first_input);
+
+            if test::is_reset_end_signal() {
+                break;
+            }
+
             state.handle_custom_leaving_actions();
             state.save_previous();
         
@@ -43,6 +41,10 @@ pub fn init(tenant: &str, identifier: &str, is_router: &bool) {
             state.save_current();
             is_first_input = false;
             println!();
+        }
+
+        if test::is_reset_end_signal() {
+            break;
         }
 
         // context::set_master_state(identifier);

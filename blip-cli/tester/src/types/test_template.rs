@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::types::asserts::{AssertType, RedirectAssert, SendMessageAssert, Specs, TrackingAssert, VariableAssert};
+use file_handler::{deserialize, types::TestTemplateFile};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TestTemplate {
@@ -47,5 +48,22 @@ impl TestTemplate {
                 AssertType::SendMessage { inner: SendMessageAssert::create_example() }
             ],
         }
+    }
+
+    pub fn read_files(tenant: &str, identifier: &str) -> Vec<Self> {
+        let instance = TestTemplateFile {
+            tenant: tenant.to_string(),
+            bot_id: identifier.to_string(),
+            content: None,
+        };
+
+        let files = instance
+            .read_files()
+            .expect("test files")
+            .iter()
+            .map(|f| deserialize::<TestTemplate>(f).expect("test file"))
+            .collect();
+    
+        files
     }
 }

@@ -1,4 +1,5 @@
 use std::{collections::HashMap};
+use contexts::replacer;
 use serde::{Deserialize, Serialize};
 
 use domain::traits::chat::Executable;
@@ -20,8 +21,8 @@ impl Executable for TrackEvent {
     fn execute(&self) {
         printer::print_action(ActionProps {
             name: String::from("Tracking"),
-            key: String::from(&self.category),
-            value: String::from(&self.action),
+            key: String::from(replacer::replace(&self.category)),
+            value: String::from(replacer::replace(&self.action)),
             color: Color::Blue,
         });
     }

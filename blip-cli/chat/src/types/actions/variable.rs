@@ -1,7 +1,7 @@
-use contexts::{context, replacer};
+use contexts::{replacer, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 
-use domain::traits::chat::Executable;
+use domain::traits::{chat::Executable};
 use ui::{printer, types::{ActionProps, Color}};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -20,11 +20,11 @@ impl Executable for Variable {
             None => "".to_string(),
         };
 
-        context::set(&self.variable, replaced.as_str());
+        MANAGER_POOL.context.set(&self.variable, &replaced);
 
         printer::print_action(ActionProps {
             name: String::from("SetVariable"),
-            key: String::from(&self.variable),
+            key: String::from(replacer::replace(&self.variable)),
             value: String::from(&replaced),
             color: Color::Red,
         });

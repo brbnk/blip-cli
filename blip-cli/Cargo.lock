@@ -262,8 +262,8 @@ version = "0.1.0"
 dependencies = [
  "contexts",
  "domain",
+ "file_handler",
  "js_runner",
- "json_converter",
  "serde",
  "serde_json",
  "ui",
@@ -326,6 +326,7 @@ version = "0.1.0"
 dependencies = [
  "chat",
  "clap",
+ "contexts",
  "domain",
  "file_handler",
  "mirror",
@@ -353,7 +354,8 @@ dependencies = [
 name = "contexts"
 version = "0.1.0"
 dependencies = [
- "json_converter",
+ "domain",
+ "file_handler",
  "once_cell",
  "regex",
  "serde_json",
@@ -573,6 +575,8 @@ name = "file_handler"
 version = "0.1.0"
 dependencies = [
  "domain",
+ "serde",
+ "serde_json",
  "ui",
 ]
 
@@ -1102,14 +1106,6 @@ version = "0.1.0"
 dependencies = [
  "deno_core",
  "once_cell",
-]
-
-[[package]]
-name = "json_converter"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -1981,6 +1977,7 @@ name = "tester"
 version = "0.1.0"
 dependencies = [
  "contexts",
+ "file_handler",
  "serde",
  "serde_json",
 ]
@@ -2152,7 +2149,6 @@ name = "ui"
 version = "0.1.0"
 dependencies = [
  "colored",
- "contexts",
 ]
 
 [[package]]

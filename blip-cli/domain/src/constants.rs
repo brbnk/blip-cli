@@ -7,3 +7,6 @@ pub const CONFIGS_FILE_NAME: &str = "configs.json";
 pub const BLIP_FUNCTION_FILE_NAME: &str = "blip_functions.json";
 pub const ROUTER_CHILDREN_FILE_NAME: &str = "router_children.json";
 pub const PROXY_SERVER_BASEURL: &str = "http://localhost:5107";
+pub const MASTER_STATE: &str = "master-state";
+pub const TENANT: &str = "tenant";
+pub const TOKEN_KEY: &str = "BLIP_PORTAL_TOKEN";

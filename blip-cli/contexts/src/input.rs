@@ -1,3 +1,4 @@
+use domain::traits::contexts::Manager;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
@@ -5,12 +6,30 @@ use std::sync::RwLock;
 pub static INPUT_CONTEXT: Lazy<RwLock<HashMap<String, String>>> =
     Lazy::new(|| RwLock::new(HashMap::new()));
 
-pub fn get(key: &str) -> Option<String> {
-    let ctx = INPUT_CONTEXT.read().unwrap();
-    ctx.get(key).cloned()
+pub struct InputManager {}
+
+impl InputManager {
+    pub fn new() -> Self {
+        InputManager {}
+    }
 }
 
-pub fn set(key: &str, value: &str) {
-    let mut ctx = INPUT_CONTEXT.write().unwrap();
-    ctx.insert(key.trim().to_string(), value.trim().to_string());
+impl Manager for InputManager {
+    fn get(&self, key: &str) -> Option<String> {
+        let context = INPUT_CONTEXT.read().unwrap();
+        context.get(key).cloned()
+    }
+
+    fn set(&self, key: &str, value: &str) {
+        let mut context = INPUT_CONTEXT.write().unwrap();
+        context.insert(key.trim().to_string(), value.trim().to_string());
+    }
+
+    fn reset(&self) {
+        if let Ok(mut context) = INPUT_CONTEXT.write() {
+            context.clear();
+        } else {
+            println!("Não foi possível resetar o contexto");
+        }
+    }
 }

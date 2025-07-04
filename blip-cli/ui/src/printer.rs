@@ -1,10 +1,9 @@
 use crate::types::{ActionProps, Color};
 use colored::{ColoredString, Colorize};
-use contexts::replacer;
 
 pub fn print_action(props: ActionProps) {
-    let r_key = replacer::replace(&props.key);
-    let r_value = replacer::replace(&props.value);
+    let r_key = &props.key;
+    let r_value = &props.value;
     println!(
         "{} {:<13}{} {} {} {}",
         colorize("|", Color::BrightBlack),

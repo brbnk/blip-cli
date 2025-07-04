@@ -11,3 +11,4 @@ chat = { path = "../chat" }
 mirror = { path = "../mirror" }
 file_handler = { path = "../file_handler" }
 tester = { path = "../tester" }
+contexts = { path = "../contexts" }

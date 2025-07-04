@@ -7,7 +7,7 @@ edition = "2024"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 contexts = { path = "../contexts" }
-json_converter = { path = "../json_converter" }
+file_handler = { path = "../file_handler" }
 js_runner = { path = "../js_runner" }
 ui = { path = "../ui" }
 domain = { path = "../domain" }

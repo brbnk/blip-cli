@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = [ "chat", "cli", "contexts", "domain", "file_handler", "http", "js_runner", "json_converter", "mirror", "tester", "ui"]
+members = [ "chat", "cli", "contexts", "domain", "file_handler", "http", "js_runner", "mirror", "tester", "ui"]
 
 [dependencies]
 cli = { path = "./cli" }

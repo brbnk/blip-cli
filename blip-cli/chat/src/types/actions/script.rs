@@ -1,5 +1,5 @@
-use contexts::{context, replacer, store};
-use domain::traits::chat::Executable;
+use contexts::{replacer, store, MANAGER_POOL};
+use domain::traits::{chat::Executable};
 use serde::{Deserialize, Serialize};
 use ui::{
     printer,
@@ -35,7 +35,8 @@ impl Executable for Script {
         let function = replacer::replace(&self.source);
         let script_response =
             js_runner::exec_script(function.clone(), args).expect("Erro ao executar script");
-        context::set(&self.output_variable, &script_response);
+        
+        MANAGER_POOL.context.set(&self.output_variable, &script_response);
 
         printer::print_action(ActionProps {
             name: String::from("ExecuteScript"),

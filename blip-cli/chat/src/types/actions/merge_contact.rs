@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use contexts::{contact, replacer};
+use contexts::{replacer, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 
-use domain::traits::chat::Executable;
+use domain::traits::{chat::Executable};
 use ui::{printer, types::{ActionProps, Color}};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -64,11 +64,11 @@ impl MergeContact {
     fn save_contact_value(&self, key: &str, value: &str) {
         let parsed_value = replacer::replace(value);
 
-        contact::set(key, &parsed_value);
+        MANAGER_POOL.context.set(key, &parsed_value);
 
         printer::print_action(ActionProps {
             name: String::from("MergeContact"),
-            key: String::from(key),
+            key: String::from(replacer::replace(key)),
             value: parsed_value,
             color: Color::Cyan
         });
