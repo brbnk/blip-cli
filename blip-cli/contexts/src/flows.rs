@@ -1,31 +1,56 @@
-use crate::context;
-use json_converter::read_file_json_to_string;
+use crate::system;
+use domain::constants;
+use domain::traits::contexts::Manager;
+use domain::traits::file_handler::Reader;
+use file_handler::types::DataFile;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
 pub static FLOWS: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| RwLock::new(HashMap::new()));
 
-pub fn get(id: &str) -> Option<String> {
-    let tenant = context::get_tenant();
-    let id_normalized = id.trim();
-    let ctx = FLOWS.read().unwrap();
+pub struct FlowsManager {}
 
-    if ctx.contains_key(id_normalized) {
-        ctx.get(id_normalized).cloned()
-    } else {
-        let path = format!("./data/{}/{}/flow.json", &tenant, id_normalized);
-
-        let flow =
-            read_file_json_to_string(path).expect("Não foi possível encontrar as ações globais");
-
-        drop(ctx);
-        set(id_normalized, &flow);
-        Some(flow)
+impl FlowsManager {
+    pub fn new() -> Self {
+        FlowsManager {}
     }
 }
 
-fn set(id: &str, value: &str) {
-    let mut ctx = FLOWS.write().unwrap();
-    ctx.insert(id.trim().to_string(), value.trim().to_string());
+impl Manager for FlowsManager {
+    fn get(&self, key: &str) -> Option<String> {
+        let tenant = system::get_tenant();
+        let key_normalized = key.trim();
+        let context: std::sync::RwLockReadGuard<'_, HashMap<String, String>> =
+            FLOWS.read().unwrap();
+
+        if context.contains_key(key_normalized) {
+            context.get(key_normalized).cloned()
+        } else {
+            drop(context);
+
+            let flow_file = DataFile {
+                tenant: tenant,
+                bot_id: Some(key_normalized.to_string()),
+                file_name: String::from(constants::FLOW_FILE_NAME),
+                content: None,
+            };
+
+            let flow = flow_file.read().expect(constants::FLOW_FILE_NAME);
+
+            self.set(key_normalized, &flow);
+
+            Some(flow)
+        }
+    }
+
+    fn set(&self, key: &str, value: &str) {
+        let mut context = FLOWS.write().unwrap();
+
+        context.insert(key.trim().to_string(), value.trim().to_string());
+    }
+
+    fn reset(&self) {
+        todo!()
+    }
 }

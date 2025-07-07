@@ -1,6 +1,7 @@
 use super::content_actions::ContentAction;
-use contexts::global_actions;
+use contexts::MANAGER_POOL;
 use serde::{Deserialize, Serialize};
+use file_handler::deserialize;
 
 use super::{
     condition_outputs::ConditionOutputs, custom_actions::CustomAction,
@@ -30,8 +31,8 @@ pub struct GlobalActions {
 
 impl GlobalActions {
     pub fn deserialize(identifier: &str) -> GlobalActions {
-        let result: GlobalActions = match global_actions::get(identifier) {
-            Some(serialized_flow) => json_converter::deserialize(&serialized_flow)
+        let result: GlobalActions = match MANAGER_POOL.global_actions.get(identifier) {
+            Some(serialized_flow) => deserialize(&serialized_flow)
                 .expect("Falha ao desserializar o parse do fluxo!"),
             None => panic!(),
         };

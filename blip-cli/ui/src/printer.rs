@@ -1,10 +1,9 @@
 use crate::types::{ActionProps, Color};
 use colored::{ColoredString, Colorize};
-use contexts::replacer;
 
 pub fn print_action(props: ActionProps) {
-    let r_key = replacer::replace(&props.key);
-    let r_value = replacer::replace(&props.value);
+    let r_key = &props.key;
+    let r_value = &props.value;
     println!(
         "{} {:<13}{} {} {} {}",
         colorize("|", Color::BrightBlack),
@@ -62,7 +61,20 @@ pub fn print_error_message(message: &str) {
     );
 }
 
-fn colorize(text: &str, color: Color) -> ColoredString {
+pub fn print_test_message(message: &str, is_success: bool) {
+    let emoji = if is_success { "✔️" } else { "❌" };
+    println!("{} {}", emoji, message);
+}
+
+pub fn y(text: &str) -> ColoredString {
+    text.yellow()
+}
+
+pub fn b(text: &str) -> ColoredString {
+    text.blue()
+}
+
+pub fn colorize(text: &str, color: Color) -> ColoredString {
     match color {
         Color::Yellow => text.yellow(),
         Color::Red => text.red(),

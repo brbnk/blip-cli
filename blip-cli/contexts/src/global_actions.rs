@@ -1,5 +1,8 @@
-use crate::context;
-use json_converter::read_file_json_to_string;
+use crate::system;
+use domain::constants;
+use domain::traits::contexts::Manager;
+use domain::traits::file_handler::Reader;
+use file_handler::types::DataFile;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
@@ -7,26 +10,49 @@ use std::sync::RwLock;
 pub static GLOBAL_ACTIONS: Lazy<RwLock<HashMap<String, String>>> =
     Lazy::new(|| RwLock::new(HashMap::new()));
 
-pub fn get(id: &str) -> Option<String> {
-    let ctx = GLOBAL_ACTIONS.read().unwrap();
-    let tenant = context::get_tenant();
-    let normalized = id.trim();
+pub struct GlobalActionsManager {}
 
-    if ctx.contains_key(normalized) {
-        ctx.get(normalized).cloned()
-    } else {
-        let path = format!("./data/{}/{}/global_actions.json", tenant, normalized);
-
-        let global_action =
-            read_file_json_to_string(path).expect("Não foi possível encontrar as ações globais");
-
-        drop(ctx);
-        set(normalized, &global_action);
-        Some(global_action)
+impl GlobalActionsManager {
+    pub fn new() -> Self {
+        GlobalActionsManager {}
     }
 }
 
-fn set(id: &str, value: &str) {
-    let mut ctx = GLOBAL_ACTIONS.write().unwrap();
-    ctx.insert(id.trim().to_string(), value.trim().to_string());
+impl Manager for GlobalActionsManager {
+    fn get(&self, key: &str) -> Option<String> {
+        let context = GLOBAL_ACTIONS.read().unwrap();
+        let tenant = system::get_tenant();
+        let key_normalized = key.trim();
+
+        if context.contains_key(key_normalized) {
+            context.get(key_normalized).cloned()
+        } else {
+            drop(context);
+
+            let global_actions_file = DataFile {
+                tenant: tenant,
+                bot_id: Some(key_normalized.to_string()),
+                file_name: String::from(constants::GLOBAL_ACTIONS_FILE_NAME),
+                content: None,
+            };
+
+            let global_actions = global_actions_file
+                .read()
+                .expect(constants::GLOBAL_ACTIONS_FILE_NAME);
+
+            self.set(key_normalized, &global_actions);
+
+            Some(global_actions)
+        }
+    }
+
+    fn set(&self, key: &str, value: &str) {
+        let mut context: std::sync::RwLockWriteGuard<'_, HashMap<String, String>> =
+            GLOBAL_ACTIONS.write().unwrap();
+        context.insert(key.trim().to_string(), value.trim().to_string());
+    }
+
+    fn reset(&self) {
+        todo!()
+    }
 }

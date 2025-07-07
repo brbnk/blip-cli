@@ -1,5 +1,6 @@
 use super::State;
-use contexts::{flows};
+use contexts::{MANAGER_POOL};
+use file_handler::deserialize;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -11,9 +12,9 @@ pub struct Flow {
 
 impl Flow {
     pub fn deserialize(identifier: &str) -> Flow {
-        let serialized_flow = flows::get(identifier);
+        let serialized_flow = MANAGER_POOL.flow.get(identifier);
         let flow: Flow = match serialized_flow {
-            Some(flow) => json_converter::deserialize(&flow).expect("Falha ao desserializar o parse do fluxo!"),
+            Some(flow) => deserialize(&flow).expect("Falha ao desserializar o parse do fluxo!"),
             None => panic!(),
         };
         flow

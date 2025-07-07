@@ -5,4 +5,3 @@ edition = "2024"
 
 [dependencies]
 colored = "2"
-contexts = { path = "../contexts" }

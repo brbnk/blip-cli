@@ -10,20 +10,32 @@ public class BuilderConfiguration
   public string Template { get; set; } = string.Empty;
 }
 
-public class BuilderSetup
+public class RouterSetup
 {
   [JsonProperty("settings")]
-  public BuilderSettings? Settings { get; set; }
+  public RouterChildren? Settings { get; set; }
 }
 
-public class BuilderSettings
+public class RouterChildren
 {
-  [JsonProperty("flow")]
-  public FlowSettings? Flow { get; set; }
+  [JsonProperty("children")]
+  public IEnumerable<RouterChild> Children { get; set; } = [];
 }
 
-public class FlowSettings
+public class RouterChild
 {
-  [JsonProperty("configuration")]
-  public JToken? Configuration { get; set; }
+  [JsonProperty("identity")]
+  public string Identity { get; set; } = string.Empty;
+
+  [JsonProperty("isDefault")]
+  public bool IsDefault { get; set; }
+
+  [JsonProperty("longName")]
+  public string LongName { get; set; } = string.Empty;
+
+  [JsonProperty("service")]
+  public string Service { get; set; } = string.Empty;
+
+  [JsonProperty("shortName")]
+  public string ShortName { get; set; } = string.Empty;
 }

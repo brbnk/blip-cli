@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use contexts::{replacer, system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 
 use domain::traits::chat::Executable;
@@ -24,6 +25,7 @@ pub struct ProcessHttp {
 
 impl Executable for ProcessHttp {
     fn execute(&self) {
-        todo!()
+        let event = replacer::replace(&serde_json::to_string(&self).expect("process http event serialized"));
+        MANAGER_POOL.event.set(&system::get_master_state(), &event);
     }
 }

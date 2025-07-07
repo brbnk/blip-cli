@@ -1,3 +1,4 @@
+use domain::traits::contexts::Manager;
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
@@ -7,36 +8,37 @@ pub static CONTEXT: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| {
     RwLock::new(context)
 });
 
-pub fn get(key: &str) -> Option<String> {
-    let ctx = CONTEXT.read().unwrap();
-    ctx.get(key).cloned()
-}
+pub struct ContextManager {}
 
-pub fn set(key: &str, value: &str) {
-    let mut ctx = CONTEXT.write().unwrap();
-    ctx.insert(key.trim().to_string(), value.trim().to_string());
-}
+impl Manager for ContextManager {
+    fn get(&self, key: &str) -> Option<String> {
+        let context = CONTEXT.read().unwrap();
+    
+        context
+            .get(key)
+            .cloned()
+    }
 
-pub fn get_master_state() -> String {
-    let result = get("master-state");
-    match result {
-        Some(master_state) => master_state,
-        None => panic!("master-state não encontrado"),
+    fn set(&self, key: &str, value: &str) {
+        let mut context = CONTEXT.write().unwrap();
+    
+        context.insert(
+            key.trim().to_string(), 
+            value.trim().to_string());
+    }
+
+    fn reset(&self) {
+        if let Ok(mut context) = CONTEXT.write() {
+            context.clear();
+        }
+        else {
+            println!("Não foi possível resetar o contexto");
+        }
     }
 }
 
-pub fn set_master_state(value: &str) {
-    set("master-state", value);
-}
-
-pub fn get_tenant() -> String {
-    let result = get("tenant");
-    match result {
-        Some(tenant) => tenant,
-        None => panic!("tenant não encontrado"),
+impl ContextManager {
+    pub fn new() -> Self {
+        ContextManager {}
     }
-}
-
-pub fn set_tenant(value: &str) {
-    set("tenant", value);
 }

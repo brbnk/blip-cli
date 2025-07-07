@@ -1,5 +1,5 @@
+use contexts::{system};
 use serde::{Deserialize, Serialize};
-use contexts::context;
 use ui::{types::Color, printer};
 
 use super::{DefaultOutput, ConditionOutputs, GlobalActions};
@@ -33,19 +33,19 @@ pub struct State {
 impl State {
     pub fn handle_global_leaving_actions(&self, is_first_input: bool) {
         if self.has_input() && !is_first_input {
-            let global_actions = GlobalActions::deserialize(&context::get_master_state());
+            let global_actions = GlobalActions::deserialize(&system::get_master_state());
             global_actions.handle_custom_leaving_actions();
         }
     }
 
     pub fn save_previous(&self) {
-        context::set("state.previous.id", &self.id);
-        context::set("state.previous.name", &self.title);
+        system::set_state_previous_id(&self.id);
+        system::set_state_previous_name(&self.title);
     }
-
+    
     pub fn save_current(&self) {
-        context::set("state.id", &self.id);
-        context::set("state.name", &self.title);
+        system::set_state_id(&self.id);
+        system::set_state_name(&self.title);
     }
 
     pub fn handle_custom_entering_actions(&self) {
@@ -54,7 +54,10 @@ impl State {
                 action.execute();
             }
         }
-        println!();
+
+        if !system::is_test_mode() {
+            println!();
+        }
     }
 
     pub fn handle_custom_leaving_actions(&self) {
@@ -63,9 +66,12 @@ impl State {
                 action.execute();
             }
         }
-        let length = 60;
-        let bottom_state = format!("|{}|", "_".repeat(length - 2));
-        printer::println(&bottom_state, Color::BrightBlack)
+
+        if !system::is_test_mode() {
+            let length = 60;
+            let bottom_state = format!("|{}|", "_".repeat(length - 2));
+            printer::println(&bottom_state, Color::BrightBlack)
+        }
     }
 
     pub fn handle_content_actions(&self, is_first_input: bool) {
@@ -77,8 +83,10 @@ impl State {
                 ContentAction::Input { input } => {
                     input.handle_input();
                     if !is_first_input && !input.bypass {
-                        print!("\n");
-                        let global_actions = GlobalActions::deserialize(&context::get_master_state());
+                        if !system::is_test_mode() {
+                            print!("\n");
+                        }
+                        let global_actions = GlobalActions::deserialize(&system::get_master_state());
                         global_actions.handle_custom_entering_actions();
                     }
                 }

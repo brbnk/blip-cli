@@ -33,8 +33,8 @@ public static class CommandFactory
   public static Command GetBuilderConfigurationsCommand() => new()
   {
     Method = CommandMethod.Get,
-    Uri = "lime://builder.hosting@msging.net/configuration",
-    To = POSTMASTER_CONFIGURATIONS
+    Uri = "/buckets/blip_portal:builder_working_configuration?$take=100",
+    To = POSTMASTER_MSGING
   };
 
   public static Command GetResourcesCommand() => new()
@@ -57,4 +57,13 @@ public static class CommandFactory
     Uri = $"/functions",
     To = POSTMASTER_BUILDER
   };
+
+  public static Command GetRouterChildren(string tier) {
+    var uri = tier == "standard" ? "" : $"{tier}.";
+    return new()
+    {
+      Method = CommandMethod.Get,
+      Uri = $"lime://{uri}master.hosting@msging.net/configuration"
+    };
+  }
 }

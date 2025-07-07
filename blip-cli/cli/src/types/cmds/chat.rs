@@ -1,3 +1,4 @@
+use chat::params::ChatParams;
 use clap::Args;
 use domain::traits::cli::Runnable;
 
@@ -12,7 +13,10 @@ pub struct Chat {
 impl Runnable for Chat {
     fn run(&self) {
         if self.commong_args.is_valid() {
-            chat::init(&self.commong_args.tenant, &self.commong_args.bot);
+            chat::init(ChatParams {
+                tenant: self.commong_args.tenant.to_string(),
+                bot: self.commong_args.bot.to_string()
+            });
         }
     }
 }

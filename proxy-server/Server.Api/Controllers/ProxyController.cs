@@ -43,12 +43,11 @@ public class ProxyController(
   public async Task<IActionResult> GetBuilderConfigurationsAsync([FromHeader] string token, [FromQuery] string identifier)
   {
     var application = await applicationService.GetAsync(token, identifier);
-    var builder = await commandService.SendAsync<BuilderConfiguration>(application, CommandFactory.GetBuilderConfigurationsCommand());
-    var setup = JsonConvert.DeserializeObject<BuilderSetup>(builder!.Application);
+    var configurations = await commandService.SendAsync<IDictionary<string, string>>(application, CommandFactory.GetBuilderConfigurationsCommand());
 
     return Ok(new
     {
-      Configurations = setup?.Settings?.Flow?.Configuration?.ToObject<object>()
+      Configurations = configurations
     });
   }
 
@@ -65,7 +64,7 @@ public class ProxyController(
   }
 
   [HttpGet("blip-functions")]
-  public async Task<IActionResult> GetBlipFunction([FromHeader] string token, [FromQuery] string identifier)
+  public async Task<IActionResult> GetBlipFunctionAsync([FromHeader] string token, [FromQuery] string identifier)
   {
     var application = await applicationService.GetAsync(token, identifier);
 
@@ -86,5 +85,24 @@ public class ProxyController(
         };
       })
     });
+  }
+
+  [HttpGet("router")]
+  public async Task<IActionResult> GetRouterAsync([FromHeader] string token, [FromQuery] string routerId, [FromQuery] string tier)
+  {
+    var application = await applicationService.GetAsync(token, routerId);
+
+    var response = await commandService.SendAsync<BuilderConfiguration>(
+      application,
+      CommandFactory.GetRouterChildren(tier));
+
+    if (response?.Application is null)
+    {
+      throw new ArgumentException("application is null");
+    }
+
+    var children = JsonConvert.DeserializeObject<RouterSetup>(response.Application);
+
+    return Ok(children?.Settings?.Children ?? []);
   }
 }

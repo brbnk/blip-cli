@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use contexts::{contact, replacer};
+use contexts::{replacer, system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 
-use domain::traits::chat::Executable;
+use domain::traits::{chat::Executable};
 use ui::{printer, types::{ActionProps, Color}};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -62,15 +62,19 @@ impl Executable for MergeContact {
 
 impl MergeContact {
     fn save_contact_value(&self, key: &str, value: &str) {
+        let event = replacer::replace(&serde_json::to_string(&self).expect("process command event serialized"));
         let parsed_value = replacer::replace(value);
+        
+        MANAGER_POOL.context.set(key, &parsed_value);
+        MANAGER_POOL.event.set(&system::get_master_state(), &event);
 
-        contact::set(key, &parsed_value);
-
-        printer::print_action(ActionProps {
-            name: String::from("MergeContact"),
-            key: String::from(key),
-            value: parsed_value,
-            color: Color::Cyan
-        });
+        if !system::is_test_mode() {
+            printer::print_action(ActionProps {
+                name: String::from("MergeContact"),
+                key: String::from(replacer::replace(key)),
+                value: parsed_value,
+                color: Color::Cyan
+            });
+        }
     }
 }
