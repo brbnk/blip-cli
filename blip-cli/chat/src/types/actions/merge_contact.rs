@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use contexts::{replacer, MANAGER_POOL};
+use contexts::{replacer, system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 
 use domain::traits::{chat::Executable};
@@ -66,11 +66,13 @@ impl MergeContact {
 
         MANAGER_POOL.context.set(key, &parsed_value);
 
-        printer::print_action(ActionProps {
-            name: String::from("MergeContact"),
-            key: String::from(replacer::replace(key)),
-            value: parsed_value,
-            color: Color::Cyan
-        });
+        if !system::is_test_mode() {
+            printer::print_action(ActionProps {
+                name: String::from("MergeContact"),
+                key: String::from(replacer::replace(key)),
+                value: parsed_value,
+                color: Color::Cyan
+            });
+        }
     }
 }

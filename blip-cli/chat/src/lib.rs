@@ -1,8 +1,14 @@
 mod types;
 
-pub use types::params;
+pub use types::{
+    params, 
+    custom_actions,
+    actions,
+    content_actions,
+    execute_conditions
+};
 
-use contexts::{system, test};
+use contexts::{system};
 use crate::types::{Flow, params::ChatParams};
 
 pub fn init(params: ChatParams) {
@@ -19,13 +25,15 @@ pub fn init(params: ChatParams) {
             .expect("Bloco de início não encontrado!"); 
     
         loop {
-            ui::printer::print_state_title(&state.title);
+            if !system::is_test_mode() {
+                ui::printer::print_state_title(&state.title);
+            }
             
             state.handle_global_leaving_actions(is_first_input);
             state.handle_custom_entering_actions();
             state.handle_content_actions(is_first_input);
 
-            if test::is_reset_end_signal() {
+            if system::is_reset_end_test_signal() {
                 break;
             }
 
@@ -40,10 +48,13 @@ pub fn init(params: ChatParams) {
     
             state.save_current();
             is_first_input = false;
-            println!();
+
+            if !system::is_test_mode() {
+                println!();
+            }
         }
 
-        if test::is_reset_end_signal() {
+        if system::is_reset_end_test_signal() {
             break;
         }
 

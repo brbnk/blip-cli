@@ -1,4 +1,4 @@
-use contexts::replacer;
+use contexts::{replacer, system};
 use serde::{Deserialize, Serialize};
 use ui::{printer, types::Color};
 use super::Content;
@@ -20,17 +20,19 @@ pub struct Document {
 
 impl Document {
     pub fn handle_content(&self) {
-        match &self.content {
-            Some(Content::ChatState(json)) => {
-                let animation_time = (json.interval / 1000) as u32;
-                ui::loader::start(animation_time);
-            }
-            Some(Content::Text(text)) => {
-                printer::println(&replacer::replace(&text), Color::Yellow);
-                println!();
-            }
-            None => {
-                println!("Nenhum conteúdo encontrado!");
+        if !system::is_test_mode() {
+            match &self.content {
+                Some(Content::ChatState(json)) => {
+                    let animation_time = (json.interval / 1000) as u32;
+                    ui::loader::start(animation_time);
+                }
+                Some(Content::Text(text)) => {
+                    printer::println(&replacer::replace(&text), Color::Yellow);
+                    println!();
+                }
+                None => {
+                    println!("Nenhum conteúdo encontrado!");
+                }
             }
         }
     }

@@ -1,5 +1,5 @@
 use super::CardContent;
-use contexts::{test, MANAGER_POOL};
+use contexts::{system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 use std::{
     collections::VecDeque,
@@ -24,10 +24,11 @@ impl Input {
 
         let mut input_content = String::new();
 
-        printer::print("> ", Color::Green);
-        if test::is_activated() {
+        if system::is_test_mode() {
             input_content = self.handle_test_input();
         } else {
+            printer::print("> ", Color::Green);
+            
             io::stdout().flush().unwrap();
 
             let bytes_read = io::stdin()
@@ -47,29 +48,28 @@ impl Input {
     }
 
     fn handle_test_input(&self) -> String {
-        match test::get_inputs() {
+        match system::get_test_inputs() {
             Some(i) => {
                 let mut inputs: VecDeque<String> = serde_json::from_str(&i).expect("vec of inputs");
 
                 let result = match inputs.pop_front() {
                     Some(text) => {
-                        println!("{}", &text);
                         text
                     }
                     None => {
-                        test::set_end_signal();
+                        system::set_end_test_signal();
                         "".to_string()
                     },
                 };
 
-                test::set_inputs(&serde_json::to_string(&inputs).expect("vec stringified"));
+                system::set_test_inputs(&serde_json::to_string(&inputs).expect("vec stringified"));
 
                 return result;
             }
-            None => test::set_end_signal(),
+            None => system::set_end_test_signal(),
         };
 
-        test::set_end_signal();
+        system::set_end_test_signal();
         return "".to_string();
     }
 }

@@ -332,6 +332,7 @@ dependencies = [
  "mirror",
  "serde_json",
  "tester",
+ "ui",
 ]
 
 [[package]]
@@ -1976,10 +1977,12 @@ dependencies = [
 name = "tester"
 version = "0.1.0"
 dependencies = [
+ "chat",
  "contexts",
  "file_handler",
  "serde",
  "serde_json",
+ "ui",
 ]
 
 [[package]]

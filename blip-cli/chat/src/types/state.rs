@@ -54,7 +54,10 @@ impl State {
                 action.execute();
             }
         }
-        println!();
+
+        if !system::is_test_mode() {
+            println!();
+        }
     }
 
     pub fn handle_custom_leaving_actions(&self) {
@@ -63,9 +66,12 @@ impl State {
                 action.execute();
             }
         }
-        let length = 60;
-        let bottom_state = format!("|{}|", "_".repeat(length - 2));
-        printer::println(&bottom_state, Color::BrightBlack)
+
+        if !system::is_test_mode() {
+            let length = 60;
+            let bottom_state = format!("|{}|", "_".repeat(length - 2));
+            printer::println(&bottom_state, Color::BrightBlack)
+        }
     }
 
     pub fn handle_content_actions(&self, is_first_input: bool) {
@@ -77,7 +83,9 @@ impl State {
                 ContentAction::Input { input } => {
                     input.handle_input();
                     if !is_first_input && !input.bypass {
-                        print!("\n");
+                        if !system::is_test_mode() {
+                            print!("\n");
+                        }
                         let global_actions = GlobalActions::deserialize(&system::get_master_state());
                         global_actions.handle_custom_entering_actions();
                     }

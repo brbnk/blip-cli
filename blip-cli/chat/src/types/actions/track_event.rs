@@ -1,5 +1,5 @@
 use std::{collections::HashMap};
-use contexts::replacer;
+use contexts::{replacer, system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 
 use domain::traits::chat::Executable;
@@ -19,11 +19,16 @@ pub struct TrackEvent {
 
 impl Executable for TrackEvent {
     fn execute(&self) {
-        printer::print_action(ActionProps {
-            name: String::from("Tracking"),
-            key: String::from(replacer::replace(&self.category)),
-            value: String::from(replacer::replace(&self.action)),
-            color: Color::Blue,
-        });
+        let event = replacer::replace(&serde_json::to_string(&self).expect("track event serialized"));
+        MANAGER_POOL.event.set(&system::get_master_state(), &event);
+
+        if !system::is_test_mode() {
+            printer::print_action(ActionProps {
+                name: String::from("Tracking"),
+                key: String::from(replacer::replace(&self.category)),
+                value: String::from(replacer::replace(&self.action)),
+                color: Color::Blue,
+            });
+        }
     }
 }
