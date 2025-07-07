@@ -28,7 +28,14 @@ impl TrackingAssert {
         }
     }
 
-    pub fn assert(&self, events: &Vec<Settings>) {
+    pub fn assert(&self, events: &Vec<Settings>, global_specs: Option<&Specs>) {
+        let category = &self.category;
+        let action = &self.action;
+        let specs = match &self.specs {
+          Some(s) => Some(s),
+          None => global_specs,
+        };
+
         let collected_event: Option<&TrackEvent> = events
             .iter()
             .filter_map(|e| match e {
@@ -37,42 +44,49 @@ impl TrackingAssert {
             })
             .find(|observed| {
                 self.should
-                    .be_equal(&self.category, &observed.category, &self.specs)
+                    .be_equal(&category, &observed.category, specs)
                     .unwrap_or(false)
             });
 
         match collected_event {
             Some(event) => match self.should {
-                Should::BeEqual => match self.should.be_equal(&self.action, &event.action, &self.specs) {
+                Should::BeEqual => match self.should.be_equal(&action, &event.action, specs) {
                   Some(result) => printer::print_test_message(&match result {
-                    true => format!("Tracking '{}' should be equal to '{}'", y(&self.category), y(&self.action)),
-                    false => format!("Tracking '{}' should be equal to '{}' but '{}' was found", y(&self.category), y(&self.action), y(&event.action)) 
+                    true => format!("Tracking '{}' should be equal to '{}'", y(&category), y(&action)),
+                    false => format!("Tracking '{}' should be equal to '{}' but '{}' was found", y(&category), y(&action), y(&event.action)) 
                   }, result),
                   None => {},
                 },
                 Should::BeEmpty => match self.should.be_empty(&event.action) {
                   Some(result) => printer::print_test_message(&match result {
-                    true => format!("Tracking '{}' should be empty", y(&self.category)),
-                    false => format!("Tracking '{}' should be empty but '{}' was found", y(&self.category), y(&event.action)) 
+                    true => format!("Tracking '{}' should be empty", y(&category)),
+                    false => format!("Tracking '{}' should be empty but '{}' was found", y(&category), y(&event.action)) 
                   }, result),
                   None => {},
                 },
-                Should::Exist => match self.should.exist(&self.category, &event.category, &self.specs) {
+                Should::Exist => match self.should.exist(&category, &event.category, specs) {
                   Some(result) => printer::print_test_message(&match result {
-                    true => format!("Tracking '{}' should exist", y(&self.category)),
-                    false => format!("Tracking '{}' should exist but it was not registered", y(&self.category)) 
+                    true => format!("Tracking '{}' should exist", y(&category)),
+                    false => format!("Tracking '{}' should exist but it was not registered", y(&category)) 
+                  }, result),
+                  None => {},
+                },
+                Should::Contains => match  self.should.contains(&action, &event.action, specs) {
+                  Some(result) => printer::print_test_message(&match result {
+                    true => format!("Tracking '{}' should contain '{}' in its action value", y(&category), y(&action)),
+                    false => format!("Tracking '{}' should contain '{}' in its action value, but it was not found on '{}'", y(&category), y(&action), y(&event.action)) 
                   }, result),
                   None => {},
                 },
                 Should::NotExist => printer::print_test_message(
-                  &format!("Tracking '{}' should not exist but it was registered", y(&self.category)), 
+                  &format!("Tracking '{}' should not exist but it was registered", y(&category)), 
                   false),
                 _ => {}
             },
             None => {
               match self.should {
                 Should::NotExist => printer::print_test_message(
-                  &format!("Tracking '{}' should not exist", y(&self.category)), 
+                  &format!("Tracking '{}' should not exist", y(&category)), 
                   true),
                 _ => {}
               }

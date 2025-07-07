@@ -4,6 +4,7 @@ mod redirect_assert;
 mod send_message_assert;
 mod tracking_assert;
 mod variable_assert;
+mod execute_script_assert;
 mod should;
 mod specs;
 
@@ -13,5 +14,6 @@ pub use redirect_assert::RedirectAssert;
 pub use send_message_assert::SendMessageAssert;
 pub use tracking_assert::TrackingAssert;
 pub use variable_assert::VariableAssert;
+pub use execute_script_assert::ExecuteScriptAssert;
 pub use should::Should;
 pub use specs::Specs;

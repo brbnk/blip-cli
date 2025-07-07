@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::asserts::{RedirectAssert, SendMessageAssert, TrackingAssert, VariableAssert};
+use crate::types::asserts::{ExecuteScriptAssert, RedirectAssert, SendMessageAssert, TrackingAssert, VariableAssert};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -28,4 +28,10 @@ pub enum AssertType {
     #[serde(flatten)]
     inner: SendMessageAssert
   },
+
+  #[serde(rename = "script")]
+  Script {
+    #[serde(flatten)]
+    inner: ExecuteScriptAssert
+  }
 }

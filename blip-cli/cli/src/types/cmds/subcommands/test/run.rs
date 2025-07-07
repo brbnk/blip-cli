@@ -59,10 +59,11 @@ impl Run {
             printer::println(&format!("\n{}", b("ASSERTS")), Color::White);
             for assert in &test_file.asserts {
                 match assert {
-                    AssertType::Tracking { inner } => inner.assert(&events),
-                    AssertType::Variable { inner } => inner.assert(&events),
+                    AssertType::Tracking { inner } => inner.assert(&events, Some(&test_file.specs)),
+                    AssertType::Variable { inner } => inner.assert(&events, Some(&test_file.specs)),
                     AssertType::Redirect { inner: _ } => {},
                     AssertType::SendMessage { inner: _ } => {},
+                    AssertType::Script { inner } => inner.assert(&events, Some(&test_file.specs)),
                 }
             }
 
