@@ -2,6 +2,8 @@ use chat::{actions::Variable, custom_actions::Settings};
 use serde::{Deserialize, Serialize};
 use ui::printer::{self, y};
 
+use crate::types::TestTemplate;
+
 use super::{Should, Specs};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -29,12 +31,12 @@ impl VariableAssert {
         }
     }
 
-    pub fn assert(&self, events: &Vec<Settings>, global_specs: Option<&Specs>) {
+    pub fn assert(&self, events: &Vec<Settings>, template: &TestTemplate) {
         let variable = &self.variable;
         let expected = self.value.clone().unwrap_or("".to_owned());
         let specs = match &self.specs {
           Some(s) => Some(s),
-          None => global_specs,
+          None => Some(&template.specs),
         };
 
         let collected_event: Option<&Variable> = events
@@ -45,8 +47,8 @@ impl VariableAssert {
             })
             .find(|observed| {
                 self.should
-                    .be_equal(&self.variable, &observed.variable, specs)
-                    .unwrap_or(false)
+                  .be_equal(variable, &observed.variable, specs)
+                  .unwrap_or(false)
             });
 
         match collected_event {

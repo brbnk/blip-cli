@@ -3,6 +3,8 @@ use contexts::MANAGER_POOL;
 use serde::{Deserialize, Serialize};
 use ui::printer::{self, y};
 
+use crate::types::TestTemplate;
+
 use super::{Should, Specs};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -30,12 +32,12 @@ impl ExecuteScriptAssert {
         }
     }
 
-    pub fn assert(&self, events: &Vec<Settings>, global_specs: Option<&Specs>) {
+    pub fn assert(&self, events: &Vec<Settings>, template: &TestTemplate) {
         let variable = &self.output_variable;
         let expected = self.value.clone().unwrap_or("".to_owned());
         let specs: Option<&Specs> = match &self.specs {
             Some(s) => Some(s),
-            None => global_specs,
+            None => Some(&template.specs),
         };
 
         let collected_event: Option<&Script> = events

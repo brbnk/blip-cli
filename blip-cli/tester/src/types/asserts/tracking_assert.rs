@@ -1,6 +1,8 @@
 use chat::{actions::TrackEvent, custom_actions::Settings};
 use serde::{Deserialize, Serialize};
 use ui::printer::{self, y};
+use crate::types::TestTemplate;
+
 use super::{Should, Specs};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -28,12 +30,12 @@ impl TrackingAssert {
         }
     }
 
-    pub fn assert(&self, events: &Vec<Settings>, global_specs: Option<&Specs>) {
+    pub fn assert(&self, events: &Vec<Settings>, template: &TestTemplate) {
         let category = &self.category;
         let action = &self.action;
         let specs = match &self.specs {
           Some(s) => Some(s),
-          None => global_specs,
+          None => Some(&template.specs),
         };
 
         let collected_event: Option<&TrackEvent> = events

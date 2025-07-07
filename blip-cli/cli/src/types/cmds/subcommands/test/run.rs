@@ -39,7 +39,15 @@ impl Run {
             system::set_test_inputs(&inputs);
             system::reset_end_test_signal();
 
-            printer::println(&format!("{}", b("INPUTS")), Color::White);
+            printer::println(&format!("{}", b("MOCKS")), Color::White);
+            test_file.mocks.iter().for_each(|(k, v)| {
+                let value = serde_json::to_string(v).expect("serialized value");
+                let v_parsed = value.trim_matches('"');
+                MANAGER_POOL.context.set(&k, &v_parsed);
+                println!("- {}: {}", &k, &v_parsed)
+            });
+
+            printer::println(&format!("\n{}", b("INPUTS")), Color::White);
             test_file.inputs.iter().for_each(|i| println!("- {i}"));
 
             chat::init(ChatParams {
@@ -59,11 +67,11 @@ impl Run {
             printer::println(&format!("\n{}", b("ASSERTS")), Color::White);
             for assert in &test_file.asserts {
                 match assert {
-                    AssertType::Tracking { inner } => inner.assert(&events, Some(&test_file.specs)),
-                    AssertType::Variable { inner } => inner.assert(&events, Some(&test_file.specs)),
+                    AssertType::Tracking { inner } => inner.assert(&events, &test_file),
+                    AssertType::Variable { inner } => inner.assert(&events, &test_file),
                     AssertType::Redirect { inner: _ } => {},
                     AssertType::SendMessage { inner: _ } => {},
-                    AssertType::Script { inner } => inner.assert(&events, Some(&test_file.specs)),
+                    AssertType::Script { inner } => inner.assert(&events, &test_file),
                 }
             }
 
