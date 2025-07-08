@@ -36,9 +36,7 @@ impl Executable for Script {
         let script_response =
             js_runner::exec_script(function.clone(), args).expect("Erro ao executar script");
         
-        let event = replacer::replace(&serde_json::to_string(&self).expect("script event serialized"));
         MANAGER_POOL.context.set(&self.output_variable, &script_response);
-        MANAGER_POOL.event.set(&system::get_master_state(), &event);
         
         if !system::is_test_mode() {
             printer::print_action(ActionProps {
@@ -47,6 +45,10 @@ impl Executable for Script {
                 value: script_response,
                 color: Color::Magenta,
             });
+        }
+        else {
+            let event = replacer::replace(&serde_json::to_string(&self).expect("script event serialized"));
+            MANAGER_POOL.event.set(&system::get_master_state(), &event);
         }
     }
 }

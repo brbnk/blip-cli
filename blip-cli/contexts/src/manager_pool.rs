@@ -2,7 +2,7 @@ use domain::traits::contexts::Manager;
 use once_cell::sync::Lazy;
 
 use crate::{
-    ConfigManager, ContactManager, ContextManager, EventManager, FlowsManager, GlobalActionsManager, InputManager, ResourceManager, TestManager
+    ConfigManager, ContactManager, ContextManager, EventManager, FlowsManager, GlobalActionsManager, InputManager, MocksManager, ResourceManager, TestManager
 };
 
 pub static MANAGER_POOL: Lazy<ManagerPool> = Lazy::new(|| ManagerPool::new());
@@ -25,6 +25,8 @@ pub struct ManagerPool {
     pub test: Box<dyn Manager>,
 
     pub event: Box<dyn Manager>,
+
+    pub mocks: Box<dyn Manager>,
 }
 
 impl ManagerPool {
@@ -38,7 +40,8 @@ impl ManagerPool {
             flow: Box::new(FlowsManager::new()),
             global_actions: Box::new(GlobalActionsManager::new()),
             test: Box::new(TestManager::new()),
-            event: Box::new(EventManager::new())
+            event: Box::new(EventManager::new()),
+            mocks: Box::new(MocksManager::new())
         }
     }
 }

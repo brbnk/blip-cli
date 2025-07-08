@@ -20,7 +20,9 @@ pub struct ProcessCommand {
 
 impl Executable for ProcessCommand {
     fn execute(&self) {
-        let event = replacer::replace(&serde_json::to_string(&self).expect("process command event serialized"));
-        MANAGER_POOL.event.set(&system::get_master_state(), &event);
+        if system::is_test_mode() {
+            let event = replacer::replace(&serde_json::to_string(&self).expect("process command event serialized"));
+            MANAGER_POOL.event.set(&system::get_master_state(), &event);
+        }
     }
 }

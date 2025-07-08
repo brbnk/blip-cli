@@ -25,7 +25,9 @@ pub struct ProcessHttp {
 
 impl Executable for ProcessHttp {
     fn execute(&self) {
-        let event = replacer::replace(&serde_json::to_string(&self).expect("process http event serialized"));
-        MANAGER_POOL.event.set(&system::get_master_state(), &event);
+        if system::is_test_mode() {
+            let event = replacer::replace(&serde_json::to_string(&self).expect("process http event serialized"));
+            MANAGER_POOL.event.set(&system::get_master_state(), &event);
+        }
     }
 }

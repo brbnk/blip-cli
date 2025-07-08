@@ -20,9 +20,7 @@ impl Executable for Variable {
             None => "".to_string(),
         };
 
-        let event = replacer::replace(&serde_json::to_string(&self).expect("variable serialized"));
         MANAGER_POOL.context.set(&self.variable, &replaced);
-        MANAGER_POOL.event.set(&system::get_master_state(), &event);
 
         if !system::is_test_mode() {
             printer::print_action(ActionProps {
@@ -31,6 +29,9 @@ impl Executable for Variable {
                 value: String::from(&replaced),
                 color: Color::Red,
             });
+        } else {
+            let event = replacer::replace(&serde_json::to_string(&self).expect("variable serialized"));
+            MANAGER_POOL.event.set(&system::get_master_state(), &event);
         }
     }
 }

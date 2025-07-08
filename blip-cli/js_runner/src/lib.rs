@@ -8,7 +8,7 @@ pub fn exec_script(
 
     runtime
         .execute_script("<init>", script)
-        .map_err(|e| format!("Erro ao executar script: {e}"))?;
+        .map_err(|e| format!("{e}"))?;
 
     let mut function = String::from("run()");
     if !args.is_empty() {
@@ -17,7 +17,7 @@ pub fn exec_script(
 
     let result = runtime
         .execute_script("<run>", function)
-        .map_err(|e| format!("Erro ao executar script: {e}"))?;
+        .map_err(|e| format!("{e}"))?;
 
     let scope = &mut runtime.handle_scope();
     let value = v8::Local::new(scope, result);

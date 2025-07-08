@@ -1,4 +1,4 @@
-use contexts::store;
+use contexts::{replacer, store};
 use serde::{Deserialize, Serialize};
 use super::{Comparison, Source};
 
@@ -95,7 +95,20 @@ impl Condition {
                 store::get("input.content"),
             Source::Context => {
                 match &self.variable {
-                    Some(variable) => store::get(variable.as_str()),
+                    Some(variable) => {
+                        match variable.contains("@") {
+                            true => { 
+                                let mut v = String::new();
+
+                                v.push_str("{{");
+                                v.push_str(&variable);
+                                v.push_str("}}");
+                                
+                                Some(replacer::replace(&v))
+                            },
+                            false => store::get(variable.as_str()),
+                        }
+                    },
                     None => None,
                 }
             },

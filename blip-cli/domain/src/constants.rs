@@ -1,5 +1,6 @@
 pub const DATA_FOLDER: &str = "data";
 pub const TESTS_FOLDER: &str = "__tests__";
+pub const MOCKS_FILE_NAME: &str = "mocks.json";
 pub const FLOW_FILE_NAME: &str = "flow.json";
 pub const GLOBAL_ACTIONS_FILE_NAME: &str = "global_actions.json";
 pub const RESOURCES_FILE_NAME: &str = "resources.json";
