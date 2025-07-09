@@ -34,4 +34,5 @@ pub fn reset() {
     MANAGER_POOL.input.reset();
     MANAGER_POOL.context.reset();
     MANAGER_POOL.contact.reset();
+    MANAGER_POOL.event.reset();
 }
