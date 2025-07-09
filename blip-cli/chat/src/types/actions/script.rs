@@ -1,5 +1,5 @@
 use contexts::{replacer, store, system, MANAGER_POOL};
-use domain::traits::{chat::Executable};
+use domain::{chat::Executable};
 use serde::{Deserialize, Serialize};
 use ui::{
     printer,

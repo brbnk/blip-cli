@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use domain::traits::chat::Executable;
+use domain::chat::Executable;
 use crate::types::actions::{
     ExecuteBlipFunction, 
     MergeContact, 

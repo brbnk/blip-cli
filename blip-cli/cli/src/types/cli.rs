@@ -2,7 +2,7 @@ use clap::Parser;
 
 use crate::types::Commands;
 
-use domain::traits::cli::Runnable;
+use domain::cli::Runnable;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]

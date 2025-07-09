@@ -1,4 +1,4 @@
-use domain::{constants, traits::http::ProxyRequests};
+use domain::{constants, http::ProxyRequests};
 use http::{ProxyHttpClient};
 use ui::{loader, printer, types::Color};
 

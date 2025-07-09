@@ -1,5 +1,5 @@
 use clap::Args;
-use domain::traits::{cli::Runnable, file_handler::Writer};
+use domain::{cli::Runnable, file_handler::Writer};
 use file_handler::types::TestTemplateFile;
 use tester::types::TestTemplate;
 
