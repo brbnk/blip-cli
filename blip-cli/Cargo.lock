@@ -329,6 +329,7 @@ dependencies = [
  "contexts",
  "domain",
  "file_handler",
+ "http 0.1.0",
  "mirror",
  "serde_json",
  "tester",
