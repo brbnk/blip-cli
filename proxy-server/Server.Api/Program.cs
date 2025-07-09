@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 var documentResolver = new DocumentTypeResolver().WithBlipDocuments();
 documentResolver.RegisterAssemblyDocuments(typeof(ResourceCollectionDocument).Assembly);
 documentResolver.RegisterAssemblyDocuments(typeof(BuilderFunctionsDocument).Assembly);
+documentResolver.RegisterAssemblyDocuments(typeof(ThreadsDocument).Assembly);
 
 var serializer = new EnvelopeSerializer(documentResolver);
 builder.Services.AddSingleton(serializer);

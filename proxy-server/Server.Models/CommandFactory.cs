@@ -58,7 +58,8 @@ public static class CommandFactory
     To = POSTMASTER_BUILDER
   };
 
-  public static Command GetRouterChildren(string tier) {
+  public static Command GetRouterChildren(string tier)
+  {
     var uri = tier == "standard" ? "" : $"{tier}.";
     return new()
     {
@@ -66,4 +67,17 @@ public static class CommandFactory
       Uri = $"lime://{uri}master.hosting@msging.net/configuration"
     };
   }
+
+  public static Command GetContext(string contactIdentity, string context) => new()
+  {
+    Method = CommandMethod.Get,
+    Uri = $"/contexts/{contactIdentity}/{context}",
+    To = POSTMASTER_BUILDER
+  };
+
+  public static Command GetLastMessages(string contactIdentity) => new()
+  {
+    Method = CommandMethod.Get,
+    Uri = $"/threads/{contactIdentity}?refreshExpiredMedia=true"
+  };
 }

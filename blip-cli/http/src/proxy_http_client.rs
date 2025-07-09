@@ -1,19 +1,21 @@
+use std::process::exit;
+
 use domain::{
     constants,
     {file_handler::Writer, http::ProxyRequests},
 };
 use file_handler::types::DataFile;
 use reqwest::{
-    blocking::Client,
+    blocking::{Client, Response},
     header::{HeaderMap, HeaderValue},
 };
 use serde::de::DeserializeOwned;
 use serde_json::Value;
-use ui::printer::print_success_message;
+use ui::{printer::{print_success_message, println}, types::Color};
 
-use crate::types::{
+use crate::{auth, types::{
     BlipFunctionsResult, BuilderConfigs, BuilderFlow, BuilderGlobalActions, Resources,
-};
+}};
 
 pub struct ProxyHttpClient {
     client: Client,
@@ -25,15 +27,32 @@ pub struct ProxyHttpClient {
 }
 
 impl ProxyHttpClient {
-    pub fn new(base_url: &str, token: &str, tenant: &str, identifier: &str, tier: &str) -> Self {
-        Self {
-            client: Client::new(),
-            base_url: base_url.to_string(),
-            token: token.to_string(),
-            tenant: tenant.to_string(),
-            identifier: identifier.to_string(),
-            tier: tier.to_string()
+    pub fn new(base_url: &str, tenant: Option<String>, identifier: Option<String>, tier: Option<String>) -> Self {
+        if let Some(token) = auth::get_token() {
+            Self {
+                client: Client::new(),
+                base_url: base_url.to_string(),
+                token: token.to_string(),
+                tenant: tenant.unwrap_or_default(),
+                identifier: identifier.unwrap_or_default(),
+                tier: tier.unwrap_or_default()
+            }
         }
+        else {
+            exit(0)
+        }
+    }
+
+    pub fn send(&self, path: &str) -> Result<Response, Box<dyn std::error::Error>> {
+        Ok(self
+            .client
+            .get(format!("{}{}", &self.base_url, path))
+            .headers(self.get_headers()?)
+            .send()?)
+    }
+
+    pub fn get_raw (&self, path: &str) -> Result<String, Box<dyn std::error::Error>> {
+        Ok(self.send(path)?.text()?)
     }
 
     pub fn get<T>(&self, path: &str) -> Result<T, Box<dyn std::error::Error>>
@@ -41,10 +60,7 @@ impl ProxyHttpClient {
         T: DeserializeOwned,
     {
         let response = self
-            .client
-            .get(format!("{}{}", &self.base_url, path))
-            .headers(self.get_headers()?)
-            .send()?
+            .send(path)?
             .json::<T>()?;
 
         Ok(response)
@@ -154,5 +170,45 @@ impl ProxyRequests for ProxyHttpClient {
 
         data_file.write().expect("router children file");
         print_success_message("Route Children");
+    }
+
+    fn get_key(&self) {
+        let response: String = self
+            .get_raw(&format!("/key?identifier={}", &self.identifier))
+            .expect("identifier key");
+        
+        let key = serde_json::to_string(&response).expect("key");
+
+        println(&format!("\n{}", key.trim_matches('"')), Color::BrightBlack);
+    }
+    
+    fn get_context(&self, contact: &str, context: &str) {
+        let response: String = self
+            .get_raw(&format!("/context?identifier={}&contactIdentity={}&context={}", &self.identifier, contact, context))
+            .expect("context key");
+        
+        match serde_json::from_str::<Value>(&response) {
+            Ok(json) => {
+                println(&format!("\n{}", serde_json::to_string_pretty(&json).expect("key")), Color::BrightBlack);
+            }
+            Err(_) => {
+                println(&format!("\n{}", response), Color::BrightBlack);
+            }
+        };
+    }
+    
+    fn get_thread(&self, contact: &str) {
+        let response: String = self
+            .get_raw(&format!("/threads?identifier={}&contactIdentity={}", &self.identifier, contact))
+            .expect("threads");
+        
+        match serde_json::from_str::<Value>(&response) {
+            Ok(json) => {
+                println(&format!("\n{}", serde_json::to_string_pretty(&json).expect("key")), Color::BrightBlack);
+            }
+            Err(_) => {
+                println(&format!("\n{}", response), Color::BrightBlack);
+            }
+        };
     }
 }

@@ -1,5 +1,5 @@
 use clap::Subcommand;
-use crate::types::cmds::{Chat, Mirror, TestCommand};
+use crate::types::cmds::{Chat, GetCommand, Mirror, TestCommand};
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
@@ -13,5 +13,8 @@ pub enum Commands {
     List {},
 
     /// automate flow tests
-    Test(TestCommand)
+    Test(TestCommand),
+
+    /// Get data
+    Get(GetCommand)
 }

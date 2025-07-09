@@ -23,6 +23,7 @@ impl Cli {
                 Commands::Mirror(mirror) => mirror.run(),
                 Commands::List {} => mirror::scanner::list_identifiers().expect("list of identifiers"),
                 Commands::Test(test) => test.run(),
+                Commands::Get(get_command) => get_command.run(),
             }
         }
     }

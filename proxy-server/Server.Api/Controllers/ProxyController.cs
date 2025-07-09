@@ -105,4 +105,38 @@ public class ProxyController(
 
     return Ok(children?.Settings?.Children ?? []);
   }
+
+  [HttpGet("key")]
+  public async Task<IActionResult> GetKeyAsync([FromHeader] string token, [FromQuery] string identifier)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+
+    return Ok(application?.GetAuthorizationKey() ?? string.Empty);
+  }
+
+  [HttpGet("context")]
+  public async Task<IActionResult> GetContextAsync(
+    [FromHeader] string token,
+    [FromQuery] string identifier,
+    [FromQuery] string contactIdentity,
+    [FromQuery] string context)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+
+    var response = await commandService.SendAsync(application, CommandFactory.GetContext(contactIdentity, context));
+
+    return Ok(response?.Resource.ToString() ?? string.Empty);
+  }
+
+  [HttpGet("threads")]
+  public async Task<IActionResult> GetThreadsAsync([FromHeader] string token, [FromQuery] string identifier, [FromQuery] string contactIdentity)
+  {
+    var application = await applicationService.GetAsync(token, identifier);
+
+    var response = await commandService.SendAsync<CommandListResponse<Threads>>(
+      application,
+      CommandFactory.GetLastMessages(contactIdentity));
+
+    return Ok(response?.Items ?? []);
+  }
 }

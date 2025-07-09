@@ -13,3 +13,4 @@ file_handler = { path = "../file_handler" }
 tester = { path = "../tester" }
 contexts = { path = "../contexts" }
 ui = { path = "../ui" }
+http = { path = "../http" }

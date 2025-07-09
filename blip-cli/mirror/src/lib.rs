@@ -1,4 +1,3 @@
-mod auth;
 mod clone;
 mod request_type;
 pub mod scanner;
