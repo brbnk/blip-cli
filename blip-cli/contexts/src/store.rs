@@ -1,5 +1,5 @@
 use crate::{configs::ConfigManager, MANAGER_POOL};
-use domain::traits::contexts::Manager;
+use domain::contexts::Manager;
 
 pub fn get(key: &str) -> Option<String> {
     let input = MANAGER_POOL.input.get(key);

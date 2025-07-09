@@ -1,5 +1,5 @@
 use clap::{Args};
-use domain::traits::cli::Runnable;
+use domain::cli::Runnable;
 
 use crate::types::{cmds::subcommands::test::TestSubcommands};
 

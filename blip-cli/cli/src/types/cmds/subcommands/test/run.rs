@@ -5,7 +5,7 @@ use chat::{custom_actions::Settings, params::ChatParams};
 
 use clap::Args;
 use contexts::{MANAGER_POOL, store, system};
-use domain::traits::cli::Runnable;
+use domain::cli::Runnable;
 use file_handler::deserialize;
 use serde_json::Value;
 use tester::types::{TestTemplate, asserts::AssertType};

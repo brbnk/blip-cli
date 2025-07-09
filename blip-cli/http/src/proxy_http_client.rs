@@ -1,6 +1,6 @@
 use domain::{
     constants,
-    traits::{file_handler::Writer, http::ProxyRequests},
+    {file_handler::Writer, http::ProxyRequests},
 };
 use file_handler::types::DataFile;
 use reqwest::{

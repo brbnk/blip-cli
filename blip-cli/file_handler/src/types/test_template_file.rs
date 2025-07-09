@@ -5,7 +5,7 @@ use std::{
 
 use domain::{
     constants,
-    traits::file_handler::{PathBuilder, Writer},
+    file_handler::{PathBuilder, Writer},
 };
 use ui::printer;
 

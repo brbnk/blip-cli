@@ -1,6 +1,6 @@
 use domain::{
     constants,
-    traits::file_handler::{PathBuilder, Reader, Writer},
+    file_handler::{PathBuilder, Reader, Writer},
 };
 use std::{
     fs::{self, File},

@@ -1,4 +1,4 @@
-use domain::traits::contexts::Manager;
+use domain::contexts::Manager;
 use once_cell::sync::Lazy;
 
 use crate::{

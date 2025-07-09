@@ -3,7 +3,7 @@ use file_handler::{types::DataFile, deserialize};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
-use domain::{constants, traits::{file_handler::Reader, contexts::Manager}};
+use domain::{constants, {file_handler::Reader, contexts::Manager}};
 
 const CONFIG_VAR_PREFIX: &str = "config.";
 

@@ -1,4 +1,4 @@
-use domain::traits::{contexts::Manager, file_handler::Reader};
+use domain::{contexts::Manager, file_handler::Reader};
 use file_handler::deserialize;
 use file_handler::types::DataFile;
 use once_cell::sync::Lazy;

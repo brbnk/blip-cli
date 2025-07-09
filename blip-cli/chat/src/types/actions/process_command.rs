@@ -1,7 +1,7 @@
 use contexts::{replacer, system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
 
-use domain::traits::chat::Executable;
+use domain::chat::Executable;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProcessCommand {

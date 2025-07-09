@@ -1,7 +1,7 @@
 use chat::params::ChatParams;
 use clap::Args;
 use contexts::{MocksManager};
-use domain::{constants, traits::cli::Runnable};
+use domain::{constants, cli::Runnable};
 
 use crate::types::CommonArgs;
 

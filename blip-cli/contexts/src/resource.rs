@@ -1,7 +1,7 @@
 use crate::system;
 use domain::constants;
-use domain::traits::contexts::Manager;
-use domain::traits::file_handler::Reader;
+use domain::contexts::Manager;
+use domain::file_handler::Reader;
 use file_handler::deserialize;
 use file_handler::types::DataFile;
 use once_cell::sync::Lazy;
