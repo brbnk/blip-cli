@@ -85,5 +85,7 @@ pub fn colorize(text: &str, color: Color) -> ColoredString {
         Color::White => text.white(),
         Color::BrightBlack => text.bright_black(),
         Color::Green => text.green(),
+        Color::Purple => text.purple(),
+        Color::Pink => text.custom_color((255, 192, 203)),
     }
 }

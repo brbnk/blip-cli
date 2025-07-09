@@ -62,12 +62,9 @@ impl Executable for MergeContact {
 
 impl MergeContact {
     fn save_contact_value(&self, key: &str, value: &str) {
-        let event = replacer::replace(&serde_json::to_string(&self).expect("process command event serialized"));
         let parsed_value = replacer::replace(value);
-        
         MANAGER_POOL.context.set(key, &parsed_value);
-        MANAGER_POOL.event.set(&system::get_master_state(), &event);
-
+        
         if !system::is_test_mode() {
             printer::print_action(ActionProps {
                 name: String::from("MergeContact"),
@@ -75,6 +72,10 @@ impl MergeContact {
                 value: parsed_value,
                 color: Color::Cyan
             });
+        }
+        else {
+            let event = replacer::replace(&serde_json::to_string(&self).expect("process command event serialized"));
+            MANAGER_POOL.event.set(&system::get_master_state(), &event);
         }
     }
 }

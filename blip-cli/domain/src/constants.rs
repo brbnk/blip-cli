@@ -1,5 +1,6 @@
 pub const DATA_FOLDER: &str = "data";
 pub const TESTS_FOLDER: &str = "__tests__";
+pub const MOCKS_FILE_NAME: &str = "mocks.json";
 pub const FLOW_FILE_NAME: &str = "flow.json";
 pub const GLOBAL_ACTIONS_FILE_NAME: &str = "global_actions.json";
 pub const RESOURCES_FILE_NAME: &str = "resources.json";
@@ -10,3 +11,9 @@ pub const PROXY_SERVER_BASEURL: &str = "http://localhost:5107";
 pub const MASTER_STATE: &str = "master-state";
 pub const TENANT: &str = "tenant";
 pub const TOKEN_KEY: &str = "BLIP_PORTAL_TOKEN";
+pub const IMAGE_FLAG: &str = "IMAGE";
+pub const VIDEO_FLAG: &str = "VIDEO";
+pub const MEDIA_TYPE: &str = "application/vnd.lime.media-link+json";
+pub const TEXT_TYPE: &str = "text/plain";
+pub const DEFAULT_TO: &str = "blip-cli@msging.net";
+pub const DEFAULT_CONTACT_IDENTITY: &str = "f6c685df-c45b-401c-a0ef-0ae1e401a485.teste638760290597490566@0mn.io/default";

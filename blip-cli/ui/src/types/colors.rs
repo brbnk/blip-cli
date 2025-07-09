@@ -7,5 +7,7 @@ pub enum Color {
   BrightBlack,
   Magenta,
   White,
-  Green
+  Green,
+  Purple,
+  Pink
 }

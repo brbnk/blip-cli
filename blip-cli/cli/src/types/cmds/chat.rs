@@ -1,6 +1,7 @@
 use chat::params::ChatParams;
 use clap::Args;
-use domain::traits::cli::Runnable;
+use contexts::{MocksManager};
+use domain::{constants, traits::cli::Runnable};
 
 use crate::types::CommonArgs;
 
@@ -13,9 +14,14 @@ pub struct Chat {
 impl Runnable for Chat {
     fn run(&self) {
         if self.commong_args.is_valid() {
+            let tenant = &self.commong_args.tenant;
+            let bot_id = &self.commong_args.bot;
+
+            MocksManager::init(tenant, bot_id, constants::MOCKS_FILE_NAME);
+
             chat::init(ChatParams {
-                tenant: self.commong_args.tenant.to_string(),
-                bot: self.commong_args.bot.to_string()
+                tenant: tenant.to_string(),
+                bot: bot_id.to_string(),
             });
         }
     }

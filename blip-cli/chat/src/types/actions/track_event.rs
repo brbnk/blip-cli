@@ -19,9 +19,6 @@ pub struct TrackEvent {
 
 impl Executable for TrackEvent {
     fn execute(&self) {
-        let event = replacer::replace(&serde_json::to_string(&self).expect("track event serialized"));
-        MANAGER_POOL.event.set(&system::get_master_state(), &event);
-
         if !system::is_test_mode() {
             printer::print_action(ActionProps {
                 name: String::from("Tracking"),
@@ -29,6 +26,9 @@ impl Executable for TrackEvent {
                 value: String::from(replacer::replace(&self.action)),
                 color: Color::Blue,
             });
+        } else {
+            let event = replacer::replace(&serde_json::to_string(&self).expect("track event serialized"));
+            MANAGER_POOL.event.set(&system::get_master_state(), &event);
         }
     }
 }

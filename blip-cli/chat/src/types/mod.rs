@@ -9,6 +9,7 @@ pub mod actions;
 pub mod content_actions;
 pub mod execute_conditions;
 pub mod custom_actions;
+pub mod input_message;
 pub use condition_outputs::ConditionOutputs;
 pub use default_output::DefaultOutput;
 pub use flow::Flow;
