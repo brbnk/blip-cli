@@ -43,7 +43,7 @@ impl Executable for Script {
                 name: String::from("ExecuteScript"),
                 key: String::from(&self.output_variable),
                 value: script_response,
-                color: Color::Magenta,
+                color: Color::Yellow,
             });
         }
         else {

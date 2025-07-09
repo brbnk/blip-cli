@@ -1,3 +1,5 @@
+use crate::types::input_message::InputMessage;
+
 use super::CardContent;
 use contexts::{system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
@@ -45,6 +47,7 @@ impl Input {
         }
 
         MANAGER_POOL.context.set("input.content", &input_content);
+        MANAGER_POOL.context.set("input.message", &serde_json::to_string(&InputMessage::new(&input_content)).expect("serialized input message"))
     }
 
     fn handle_test_input(&self) -> String {
