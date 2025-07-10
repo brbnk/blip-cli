@@ -1,4 +1,4 @@
-use crate::{create_dir, create_file, read_file};
+use crate::{create_dir, create_file, read_file, resolve_path};
 use domain::{
     constants,
     file_handler::{PathBuilder, Reader, Writer},
@@ -19,10 +19,12 @@ impl PathBuilder for DataFile {
     fn build_path(&self) -> String {
         let path = format!("{}/{}", constants::DATA_FOLDER, self.tenant);
 
-        match &self.bot_id {
+        let result = match &self.bot_id {
             Some(id) => format!("{}/{}", path, id),
             None => path,
-        }
+        };
+
+        resolve_path(Some(&result))
     }
 }
 
