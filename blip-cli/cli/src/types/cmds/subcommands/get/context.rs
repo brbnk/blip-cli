@@ -4,12 +4,15 @@ use http::ProxyHttpClient;
 
 #[derive(Args, Debug)]
 pub struct Context {
+    /// bot identifier
     #[arg(short, long)]
     bot: String,
 
+    /// contact identity
     #[arg(short, long)]
     contact: String,
 
+    /// variable
     #[arg(short, long)]
     variable: String,
 }

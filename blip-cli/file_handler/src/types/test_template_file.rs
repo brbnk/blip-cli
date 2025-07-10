@@ -1,6 +1,6 @@
 use std::{
-    fs::{self, File},
-    io::{Read, Write, Result},
+    fs::{self, read_dir, File},
+    io::{Read, Result},
 };
 
 use domain::{
@@ -8,6 +8,8 @@ use domain::{
     file_handler::{PathBuilder, Writer},
 };
 use ui::printer;
+
+use crate::{create_dir, create_file, resolve_path};
 
 pub struct TestTemplateFile {
     pub tenant: String,
@@ -19,34 +21,25 @@ pub struct TestTemplateFile {
 
 impl PathBuilder for TestTemplateFile {
     fn build_path(&self) -> String {
-        format!(
-            "./{}/{}/{}/{}",
+        resolve_path(Some(&format!(
+            "{}/{}/{}/{}",
             constants::DATA_FOLDER,
             self.tenant,
             self.bot_id,
             constants::TESTS_FOLDER
-        )
+        )))
     }
 }
 
 impl Writer for TestTemplateFile {
     fn write(&self) -> std::io::Result<()> {
         let path = self.build_path();
+        let file_name = format!("test_case_{}.json", self.count() + 1);
+        
+        create_dir(&path);
+        create_file(&path, &file_name, &self.content);
 
-        fs::create_dir_all(&path)?;
-
-        let count = self.count();
-        let file_name = format!("test_case_{}.json", count + 1);
-        let file_path = self.append_file_name(&path, &file_name);
-        let mut file = File::create(&file_path)?;
-        match &self.content {
-            Some(c) => {
-              println!();
-              file.write_all(c.as_bytes())?;
-              printer::print_success_message(&format!("Arquivo '{}' criado com sucesso!", file_path));
-            },
-            None => {}
-        }
+        printer::print_success_message(&format!("Arquivo '{}' criado com sucesso!", file_name));
 
         Ok(())
     }
@@ -56,11 +49,15 @@ impl TestTemplateFile {
     pub fn count(&self) -> usize {
         let path = self.build_path();
 
-        fs::read_dir(path)
-            .expect("read directory")
-            .filter_map(Result::ok) // ignora erros ao ler entradas
-            .filter(|entry| entry.path().is_file()) // considera apenas arquivos
-            .count()
+        let dir = read_dir(path);
+
+        match dir {
+            Ok(d) => d
+                .filter_map(Result::ok)
+                .filter(|entry| entry.path().is_file())
+                .count(),
+            Err(_) => 0,
+        }
     }
 
     pub fn read_files(&self) -> Result<Vec<String>> {

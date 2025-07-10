@@ -1,10 +1,10 @@
+use crate::{create_dir, create_file, read_file};
 use domain::{
     constants,
     file_handler::{PathBuilder, Reader, Writer},
 };
 use std::{
-    fs::{self, File},
-    io::{Read, Result, Write},
+    io::{Result},
     result,
 };
 
@@ -29,16 +29,9 @@ impl PathBuilder for DataFile {
 impl Writer for DataFile {
     fn write(&self) -> Result<()> {
         let path = self.build_path();
-
-        fs::create_dir_all(&path).expect("create data folder");
-
-        let file_path = self.append_file_name(&path, &self.file_name);
-        let mut file = File::create(file_path)?;
-
-        match &self.content {
-            Some(c) => file.write_all(c.as_bytes()).expect("create file"),
-            None => {},
-        }
+        
+        create_dir(&path);
+        create_file(&path, &self.file_name, &self.content);
 
         Ok(())
     }
@@ -46,16 +39,6 @@ impl Writer for DataFile {
 
 impl Reader for DataFile {
     fn read(&self) -> result::Result<String, String> {
-        let path = self.append_file_name(&self.build_path(), &self.file_name);
-
-        let mut file =
-            File::open(&path).map_err(|e| format!("Erro ao abrir o arquivo {}: {}", path, e))?;
-
-        let mut contents = String::new();
-
-        file.read_to_string(&mut contents)
-            .map_err(|e| format!("Erro ao ler o arquivo: {}", e))?;
-
-        Ok(contents)
+        Ok(read_file(&self.build_path(), &self.file_name))
     }
 }

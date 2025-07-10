@@ -1,10 +1,11 @@
-use std::{fs, io::Result};
+use std::{io::Result};
 
 use domain::constants::{DATA_FOLDER};
 use ui::{printer, types::Color};
+use file_handler::{read_dir, resolve_path};
 
 pub fn list_identifiers() -> Result<()> {
-    let dirs = fs::read_dir(format!("./{}", DATA_FOLDER))?;
+    let dirs = read_dir(&resolve_path(Some(DATA_FOLDER)));
 
     for d in dirs {
         let dir = d?;
@@ -17,7 +18,7 @@ pub fn list_identifiers() -> Result<()> {
             printer::print("\n|- ", Color::White);
             printer::println(&tenant, Color::Blue);
 
-            let tenant_dirs = fs::read_dir(&format!("./{}/{}", DATA_FOLDER, &tenant))?;
+            let tenant_dirs = read_dir(&resolve_path(Some(&format!("{}/{}", DATA_FOLDER, tenant))));
 
             for td in tenant_dirs {
                 let tdir = td?;

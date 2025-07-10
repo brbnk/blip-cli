@@ -179,7 +179,7 @@ impl ProxyRequests for ProxyHttpClient {
         
         let key = serde_json::to_string(&response).expect("key");
 
-        println(&format!("\n{}", key.trim_matches('"')), Color::BrightBlack);
+        println(&format!("\n{}\n", key.trim_matches('"')), Color::White);
     }
     
     fn get_context(&self, contact: &str, context: &str) {
@@ -189,10 +189,10 @@ impl ProxyRequests for ProxyHttpClient {
         
         match serde_json::from_str::<Value>(&response) {
             Ok(json) => {
-                println(&format!("\n{}", serde_json::to_string_pretty(&json).expect("key")), Color::BrightBlack);
+                println(&format!("\n{}\n", serde_json::to_string_pretty(&json).expect("key")), Color::White);
             }
             Err(_) => {
-                println(&format!("\n{}", response), Color::BrightBlack);
+                println(&format!("\n{}\n", response), Color::BrightBlack);
             }
         };
     }
@@ -204,10 +204,10 @@ impl ProxyRequests for ProxyHttpClient {
         
         match serde_json::from_str::<Value>(&response) {
             Ok(json) => {
-                println(&format!("\n{}", serde_json::to_string_pretty(&json).expect("key")), Color::BrightBlack);
+                println(&format!("\n{}\n", serde_json::to_string_pretty(&json).expect("key")), Color::White);
             }
             Err(_) => {
-                println(&format!("\n{}", response), Color::BrightBlack);
+                println(&format!("\n{}\n", response), Color::White);
             }
         };
     }

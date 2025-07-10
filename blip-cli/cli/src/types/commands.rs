@@ -15,6 +15,6 @@ pub enum Commands {
     /// automate flow tests
     Test(TestCommand),
 
-    /// Get data
+    /// get data from blip 
     Get(GetCommand)
 }
