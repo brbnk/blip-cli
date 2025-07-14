@@ -4,8 +4,9 @@ use http::ProxyHttpClient;
 
 #[derive(Args, Debug)]
 pub struct Key {
-     #[arg(short, long)]
-    identifier: String,
+    /// bot identifier
+    #[arg(short, long)]
+    bot: String,
 }
 
 impl Getter for Key {
@@ -13,7 +14,7 @@ impl Getter for Key {
         let proxy_client = ProxyHttpClient::new(
             &format!("{}/api/Proxy", constants::PROXY_SERVER_BASEURL),
             None, 
-            Some(self.identifier.to_owned()),
+            Some(self.bot.to_owned()),
             None);
 
         proxy_client.get_key();

@@ -1,3 +1,4 @@
+pub const ROOT_FOLDER: &str = ".blip-cli";
 pub const DATA_FOLDER: &str = "data";
 pub const TESTS_FOLDER: &str = "__tests__";
 pub const MOCKS_FILE_NAME: &str = "mocks.json";

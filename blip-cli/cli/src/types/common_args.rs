@@ -2,11 +2,11 @@ use clap::Args;
 
 #[derive(Args, Debug)]
 pub struct CommonArgs {
-    /// bot contract
+    /// contract
     #[arg(long)]
     pub tenant: String,
 
-    /// flow identifier
+    /// bot identifier
     #[arg(long)]
     pub bot: String,
 }
