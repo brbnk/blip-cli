@@ -37,18 +37,16 @@ pub fn create_file(path: &str, file_name: &str, file_content: &Option<String>) {
     }
 }
 
-pub fn read_file(path: &str, file_name: &str) -> String {
+pub fn read_file(path: &str, file_name: &str) -> Result<String, String> {
     let file_path = format!("{}/{}", path, file_name);
 
     let mut file = File::open(&file_path)
-            .map_err(|e| format!("Erro ao abrir o arquivo {}: {}", path, e))
-            .expect("arquivo aberto");
+            .map_err(|e| format!("Erro ao abrir o arquivo {}: {}", path, e))?;
 
     let mut contents = String::new();
 
     file.read_to_string(&mut contents)
-        .map_err(|e| format!("Erro ao ler o arquivo: {}", e))
-        .expect("content read");
+        .map_err(|e| format!("Erro ao ler o arquivo: {}", e))?;
 
-    contents
+    Ok(contents)
 }
