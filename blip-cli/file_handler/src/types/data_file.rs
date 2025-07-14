@@ -41,6 +41,6 @@ impl Writer for DataFile {
 
 impl Reader for DataFile {
     fn read(&self) -> result::Result<String, String> {
-        Ok(read_file(&self.build_path(), &self.file_name))
+        Ok(read_file(&self.build_path(), &self.file_name)?)
     }
 }
