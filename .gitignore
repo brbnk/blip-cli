@@ -8,8 +8,8 @@ proxy-server/Server.Api/bin
 proxy-server/Server.Api/obj
 proxy-server/Server.Api/appsettings.Development.json
 
-proxy-server/Server.Models/bin
-proxy-server/Server.Models/obj
+proxy-server/Server.Domain/bin
+proxy-server/Server.Domain/obj
 
 proxy-server/Server.Services/bin
 proxy-server/Server.Services/obj

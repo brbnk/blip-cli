@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Server.Models\Server.Models.csproj" />
+    <ProjectReference Include="..\Server.Domain\Server.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Lime.Protocol" Version="0.12.60" />
-    <PackageReference Include="RestEase" Version="1.6.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
     <PackageReference Include="Take.Blip.Client" Version="0.7.407" />
     <PackageReference Include="Take.Blip.Client.Web" Version="0.7.407" />
