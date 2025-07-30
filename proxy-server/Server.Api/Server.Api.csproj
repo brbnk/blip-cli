@@ -8,16 +8,18 @@
 
   <ItemGroup>
     <PackageReference Include="Lime.Protocol" Version="0.12.60" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="8.0.0" />
     <PackageReference Include="Take.Blip.Client" Version="0.7.407" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Server.Services\Server.Services.csproj" />
-    <ProjectReference Include="..\Server.Models\Server.Models.csproj" />
+    <ProjectReference Include="..\Server.Domain\Server.Domain.csproj" />
   </ItemGroup>
 
 </Project>

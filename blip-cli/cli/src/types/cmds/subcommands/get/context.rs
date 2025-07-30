@@ -1,6 +1,6 @@
 use clap::Args;
-use domain::{cli::Getter, constants, http::ProxyRequests};
-use http::ProxyHttpClient;
+use domain::{cli::Getter, http::ContextRequests};
+use http::ProxyRequests;
 
 #[derive(Args, Debug)]
 pub struct Context {
@@ -19,12 +19,7 @@ pub struct Context {
 
 impl Getter for Context {
     fn get(&self) {
-        let proxy_client = ProxyHttpClient::new(
-            &format!("{}/api/Proxy", constants::PROXY_SERVER_BASEURL),
-            None, 
-            Some(self.bot.to_owned()),
-            None);
-
-        proxy_client.get_context(&self.contact, &self.variable);
+        let client = ProxyRequests::new();
+        client.get_context(&self.bot, &self.contact, &self.variable);
     }
 }

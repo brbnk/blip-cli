@@ -1,29 +1,25 @@
-use domain::{constants, http::ProxyRequests};
-use http::{ProxyHttpClient};
+use http::{ProxyRequests};
 use ui::{loader, printer, types::Color};
+use domain::http::MirrorRequests;
 
 use crate::{RequestType};
 
 pub fn clone(tenant: &str, identifier: &str, tier: &str, request_type: &Vec<RequestType>) {
-    let proxy_client = ProxyHttpClient::new(
-        &format!("{}/api/Proxy", constants::PROXY_SERVER_BASEURL),
-        Some(tenant.to_owned()), 
-        Some(identifier.to_owned()),
-        Some(tier.to_owned()));
+    let client = ProxyRequests::new();
     
-    let start_msg = &format!("\nIniciando download das configurações do bot '{}'\n", &proxy_client.identifier);
+    let start_msg = &format!("\nIniciando download das configurações do bot '{}'\n", &identifier);
     printer::println(&start_msg, Color::Yellow);
     loader::start(1);
     
     if !request_type.is_empty() {
         for rt in request_type {
             match rt {
-                RequestType::WorkingFlow => proxy_client.get_builder_flow(),
-                RequestType::GlobalAction => proxy_client.get_builder_global_actions(),
-                RequestType::Configurations => proxy_client.get_builder_configurations(),
-                RequestType::Resources => proxy_client.get_builder_resources(),
-                RequestType::BlipFunction => proxy_client.get_blip_functions(),
-                RequestType::Router => proxy_client.get_router_chidlren()
+                RequestType::WorkingFlow => client.get_working_flow(tenant, identifier),
+                RequestType::GlobalAction => client.get_global_actions(tenant, identifier),
+                RequestType::Configurations => client.get_config_variables(tenant, identifier),
+                RequestType::Resources => client.get_resources(tenant, identifier),
+                RequestType::BlipFunction => client.get_blip_functions(tenant, identifier),
+                RequestType::Router => client.get_router_children(tenant, identifier, tier)
             };
         };
     }

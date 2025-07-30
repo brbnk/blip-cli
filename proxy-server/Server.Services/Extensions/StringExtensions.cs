@@ -1,5 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using Server.Models;
+using Server.Domain.Identity;
 
 namespace Server.Services.Extensions;
 
