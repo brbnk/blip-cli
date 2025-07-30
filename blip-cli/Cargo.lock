@@ -194,7 +194,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "blip-cli"
+name = "blip"
 version = "0.1.0"
 dependencies = [
  "cli",
