@@ -9,7 +9,7 @@ public class ContextController(IContextHandler handler) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetContextAsync(
-        [FromHeader] string contact,
+        [FromQuery] string contact,
         [FromQuery] string identifier,
         [FromQuery] string context)
     {

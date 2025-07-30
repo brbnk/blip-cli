@@ -8,7 +8,7 @@ namespace Server.Api.Controllers;
 public sealed class ThreadsController(IThreadHandler handler) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetThreadAsync([FromHeader] string contact, [FromQuery] string identifier)
+    public async Task<IActionResult> GetThreadAsync([FromQuery] string contact, [FromQuery] string identifier)
     {
         return Ok(await handler.GetAsync(identifier, contact));
     }
