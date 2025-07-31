@@ -18,6 +18,9 @@ use ui::{
 pub struct Run {
     #[command(flatten)]
     commong_args: CommonArgs,
+
+    #[arg(short, long)]
+    router: Option<bool>
 }
 
 impl Runnable for Run {
@@ -53,6 +56,7 @@ impl Run {
             chat::init(ChatParams {
                 tenant: self.commong_args.tenant.to_string(),
                 bot: self.commong_args.bot.to_string(),
+                router: self.router.unwrap_or(false)
             });
 
             self.handle_asserts(&test_file);

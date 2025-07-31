@@ -7,7 +7,7 @@ use ui::{printer, types::{ActionProps, Color}};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Redirect {
     #[serde(rename = "context")]
-    pub context: RedirectContext,
+    pub context: Option<RedirectContext>,
 
     #[serde(rename = "address")]
     pub address: String
@@ -24,11 +24,21 @@ pub struct RedirectContext {
 
 impl Executable for Redirect {
     fn execute(&self) {
+        let redirect = replacer::replace(
+            &serde_json::to_string(&self).expect("redirect event"));
+       
+        system::set_redirect(&redirect);
+        
         if !system::is_test_mode() {
+            let value = match &self.context {
+                Some(c) => replacer::replace(&c.value),
+                None => String::from("no_context"),
+            };
+
             printer::print_action(ActionProps {
                 name: String::from("Redirect"),
                 key: String::from("Service"),
-                value: format!("{} ({})", replacer::replace(&self.address), replacer::replace(&self.context.value)),
+                value: format!("{} ({})", replacer::replace(&self.address), &value),
                 color: Color::Blue,
             });
         } else {    

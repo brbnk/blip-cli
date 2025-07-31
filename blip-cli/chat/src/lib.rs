@@ -1,5 +1,6 @@
 mod types;
 
+use file_handler::deserialize;
 pub use types::{
     params, 
     custom_actions,
@@ -8,14 +9,23 @@ pub use types::{
     execute_conditions
 };
 
-use contexts::{system};
-use crate::types::{Flow, params::ChatParams};
+use contexts::system;
+use crate::types::{actions::Redirect, params::ChatParams, Flow, Router};
 
 pub fn init(params: ChatParams) {
-    system::set_tenant(&params.tenant);
-    system::set_master_state(&params.bot);
-
     let mut is_first_input = true;
+
+    let mut master_state= params.bot.clone();
+    if params.router {
+        let router = Router::new(&params.tenant, &params.bot);
+        master_state = match router.get_default_child() {
+            Some(default) => default.short_name,
+            None => panic!("default child on router was not found"),
+        };
+    }
+    
+    system::set_tenant(&params.tenant);
+    system::set_master_state(&master_state);
 
     loop {
         let flow = Flow::deserialize(&system::get_master_state());
@@ -33,7 +43,7 @@ pub fn init(params: ChatParams) {
             state.handle_custom_entering_actions();
             state.handle_content_actions(is_first_input);
 
-            if system::is_reset_end_test_signal() {
+            if system::is_reset_end_test_signal() || system::is_redirect_signal() {
                 break;
             }
 
@@ -58,6 +68,25 @@ pub fn init(params: ChatParams) {
             break;
         }
 
-        // context::set_master_state(identifier);
+        if params.router {
+            let router = Router::new(&params.tenant, &params.bot);
+            let serialized = system::get_redirect().expect("serialized redirect event");
+            let redirect: Redirect = deserialize(&serialized).expect("deserialized redirect event");
+            
+            let destination = router.get_child_by_service(&redirect.address);
+            match destination {
+                Some(child) => system::set_master_state(&child.short_name),
+                None => panic!("router service destination not found"),
+            }
+
+            system::clear_redirect();
+            
+            let context = match &redirect.context {
+                Some(c) => c.value.clone(),
+                None => "no_context".to_owned(),
+            };
+
+            system::set_redirect_transition_signal(&context);
+        }
     }
 }

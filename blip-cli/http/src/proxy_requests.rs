@@ -155,7 +155,7 @@ impl MirrorRequests for ProxyRequests {
     }
     
     fn get_router_children(&self, tenant: &str, identifier: &str, tier: &str) {
-        let endpoint = format!("/v1/mirror/router-chidlren?identifier={}&tier={}", identifier, tier);
+        let endpoint = format!("/v1/mirror/router-children?identifier={}&tier={}", identifier, tier);
 
         let response = self
             .request(&endpoint)
