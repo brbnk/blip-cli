@@ -8,13 +8,16 @@ use ui::{printer, types::{ActionProps, Color}};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TrackEvent {
     #[serde(rename = "extras")]
-    pub extras: HashMap<String, String>,
+    pub extras: Option<HashMap<String, String>>,
 
     #[serde(rename = "category")]
     pub category: String,
 
     #[serde(rename = "action")]
-    pub action: String
+    pub action: String,
+
+    #[serde(rename = "subflowDefaultAction")]
+    pub subflow_default_action: Option<bool>
 }
 
 impl Executable for TrackEvent {

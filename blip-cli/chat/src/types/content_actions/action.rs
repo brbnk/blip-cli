@@ -13,11 +13,14 @@ pub struct Action {
     pub settings: Settings,
 
     #[serde(rename = "$cardContent")]
-    pub card_content: CardContent,
+    pub card_content: Option<CardContent>,
 }
 
 impl Action {
     pub fn handle_card_content(&self) {
-        self.card_content.handle_document();
+        match &self.card_content {
+            Some(content) => content.handle_document(),
+            None => {},
+        }
     }
 }

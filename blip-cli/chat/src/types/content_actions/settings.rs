@@ -1,8 +1,17 @@
 use serde::{Deserialize, Serialize};
+use crate::content_actions::DynamicContent;
+
 use super::Content;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Settings {
+#[serde(untagged)]
+pub enum Settings {
+    Default(SettingsDefault),
+    DynamicContent(DynamicContent)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SettingsDefault {
     #[serde(rename = "id")]
     pub id: String,
 
