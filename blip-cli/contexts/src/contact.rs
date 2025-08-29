@@ -27,6 +27,11 @@ impl Manager for ContactManager {
             key.trim().to_string(), 
             value.trim().to_string());
     }
+
+    fn delete(&self, key: &str) {
+        let mut writer = CONTACT_CONTEXT.write().unwrap();
+        writer.remove_entry(key);
+    }
     
     fn reset(&self) {
         if let Ok(mut context) = CONTACT_CONTEXT.write() {

@@ -25,6 +25,11 @@ impl Manager for TestManager {
         ctx.insert(key.trim().to_string(), value.trim().to_string());
     }
 
+    fn delete(&self, key: &str) {
+        let mut writer = TEST_CONTEXT.write().unwrap();
+        writer.remove_entry(key);
+    }
+
     fn reset(&self) {
         if let Ok(mut context) = TEST_CONTEXT.write() {
             context.clear();

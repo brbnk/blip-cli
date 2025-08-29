@@ -50,6 +50,11 @@ impl Manager for FlowsManager {
         context.insert(key.trim().to_string(), value.trim().to_string());
     }
 
+    fn delete(&self, key: &str) {
+        let mut writer = FLOWS.write().unwrap();
+        writer.remove_entry(key);
+    }
+
     fn reset(&self) {
         todo!()
     }

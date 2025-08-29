@@ -1,10 +1,30 @@
-use deno_core::{JsRuntime, RuntimeOptions, v8};
+use std::rc::Rc;
+
+use contexts::MANAGER_POOL;
+use deno_core::{extension, futures, op2, v8, JsRuntime, PollEventLoopOptions, RuntimeOptions};
+
+extension!(
+    scriptv2,
+    ops = [
+        op_get_var,
+        op_set_var,
+        op_delete_var
+    ],
+    esm_entry_point = "ext:scriptv2/runtime.js",
+    esm = [dir "src", "runtime.js"],
+);
 
 pub fn exec_script(
     script: String,
     args: Vec<String>,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let mut runtime = JsRuntime::new(RuntimeOptions::default());
+    let mut runtime = JsRuntime::new(RuntimeOptions {
+        module_loader: Some(Rc::new(deno_core::FsModuleLoader)),
+        extensions: vec![
+            scriptv2::init()
+        ],
+        ..Default::default()
+    });
 
     runtime
         .execute_script("<init>", script)
@@ -15,13 +35,27 @@ pub fn exec_script(
         function = String::from(format!("run({})", args.join(", ")));
     }
 
-    let result = runtime
+    let result_val = runtime
         .execute_script("<run>", function)
         .map_err(|e| format!("{e}"))?;
 
-    let scope = &mut runtime.handle_scope();
-    let value = v8::Local::new(scope, result);
+     let value_global = {
+        let scope = &mut runtime.handle_scope();
+        let local_value = v8::Local::new(scope, result_val);
+        v8::Global::new(scope, local_value)
+    };
 
+    futures::executor::block_on(runtime.run_event_loop(PollEventLoopOptions {
+        wait_for_inspector: false,
+        pump_v8_message_loop: true,
+    }))?;
+
+    #[allow(deprecated)]
+    let resolved = futures::executor::block_on(runtime.resolve_value(value_global))?;
+
+    let scope = &mut runtime.handle_scope();
+    let value = v8::Local::new(scope, resolved);
+    
     if value.is_string() {
         Ok(value.to_rust_string_lossy(scope))
     } else if value.is_object() {
@@ -48,7 +82,6 @@ pub fn exec_script(
             .call(scope, json_obj.into(), &args)
             .and_then(|val| v8::Local::<v8::String>::try_from(val).ok())
             .ok_or("Erro ao converter objeto para JSON string")?;
-
         Ok(json_str.to_rust_string_lossy(scope))
     } else {
         Ok(value
@@ -56,4 +89,28 @@ pub fn exec_script(
             .ok_or("Erro ao converter valor JS para string")?
             .to_rust_string_lossy(scope))
     }
+}
+
+#[op2(async)]
+#[string]
+pub async fn op_get_var(#[string] key: String) -> Result<String, deno_core::error::CoreError> {
+    Ok(match MANAGER_POOL.context.get(&key) {
+        Some(s) => { 
+            s
+        },
+        None => String::new(),
+    })
+}
+
+#[op2(async)]
+pub async fn op_set_var(#[string] key: String, #[string] value: String) -> Result<(), deno_core::error::CoreError> {
+    MANAGER_POOL.context.set(&key, &value);
+    Ok(())
+}
+
+
+#[op2(async)]
+pub async fn op_delete_var(#[string] key: String) -> Result<(), deno_core::error::CoreError> {
+    MANAGER_POOL.context.delete(&key);
+    Ok(())
 }

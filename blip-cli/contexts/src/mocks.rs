@@ -22,8 +22,7 @@ impl Manager for MocksManager {
         let value = context.get(key).cloned();
 
         drop(context);
-        let mut writer = MOCKS.write().unwrap();
-        writer.remove_entry(key);
+        self.delete(key);
 
         value
     }
@@ -32,6 +31,11 @@ impl Manager for MocksManager {
         let mut context = MOCKS.write().unwrap();
 
         context.insert(key.trim().to_string(), value.trim().to_string());
+    }
+
+    fn delete(&self, key: &str) {
+        let mut writer = MOCKS.write().unwrap();
+        writer.remove_entry(key);
     }
 
     fn reset(&self) {

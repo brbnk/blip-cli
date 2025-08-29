@@ -40,6 +40,11 @@ impl Manager for EventManager {
         );
     }
 
+    fn delete(&self, key: &str) {
+        let mut writer = EVENT_CONTEXT.write().unwrap();
+        writer.remove_entry(key);
+    }
+
     fn reset(&self) {
         if let Ok(mut context) = EVENT_CONTEXT.write() {
             context.clear();

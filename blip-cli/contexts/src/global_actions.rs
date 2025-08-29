@@ -52,6 +52,12 @@ impl Manager for GlobalActionsManager {
         context.insert(key.trim().to_string(), value.trim().to_string());
     }
 
+    fn delete(&self, key: &str) {
+        let mut writer = GLOBAL_ACTIONS.write().unwrap();
+        writer.remove_entry(key);
+    }
+
+
     fn reset(&self) {
         todo!()
     }

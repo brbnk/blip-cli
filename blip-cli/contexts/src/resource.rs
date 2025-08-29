@@ -64,6 +64,11 @@ impl Manager for ResourceManager {
         pool.insert(key.trim().to_string(), resources);
     }
 
+    fn delete(&self, key: &str) {
+        let mut writer = RESOURCES.write().unwrap();
+        writer.remove_entry(key);
+    }
+
     fn reset(&self) {
         todo!()
     }

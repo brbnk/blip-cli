@@ -39,6 +39,11 @@ impl Manager for ContextManager {
         }
     }
 
+    fn delete(&self, key: &str) {
+        let mut writer = CONTEXT.write().unwrap();
+        writer.remove_entry(key);
+    }
+
     fn reset(&self) {
         if let Ok(mut context) = CONTEXT.write() {
             context.clear();
