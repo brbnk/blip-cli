@@ -1128,8 +1128,11 @@ dependencies = [
 name = "js_runner"
 version = "0.1.0"
 dependencies = [
+ "contexts",
  "deno_core",
+ "domain",
  "once_cell",
+ "tokio",
 ]
 
 [[package]]

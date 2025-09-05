@@ -67,6 +67,11 @@ impl Manager for ConfigManager {
             key.trim().to_string(), 
             configs);
     }
+
+    fn delete(&self, key: &str) {
+        let mut writer = CONFIGS.write().unwrap();
+        writer.remove_entry(key);
+    }
     
     fn reset(&self) {
         todo!()

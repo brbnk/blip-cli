@@ -27,6 +27,11 @@ pub fn get(key: &str) -> Option<String> {
         return context_value;
     }
 
+    let blip_function_value = MANAGER_POOL.blip_functions.get(key);
+    if blip_function_value.is_some() {
+        return blip_function_value;
+    }
+
     return None;
 }
 

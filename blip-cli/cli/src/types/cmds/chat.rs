@@ -3,12 +3,15 @@ use clap::Args;
 use contexts::{MocksManager};
 use domain::{constants, cli::Runnable};
 
-use crate::types::CommonArgs;
+use crate::types::{CommonArgs};
 
 #[derive(Args, Debug)]
 pub struct Chat {
     #[command(flatten)]
     commong_args: CommonArgs,
+
+    #[arg(short, long)]
+    router: bool
 }
 
 impl Runnable for Chat {
@@ -22,6 +25,7 @@ impl Runnable for Chat {
             chat::init(ChatParams {
                 tenant: tenant.to_string(),
                 bot: bot_id.to_string(),
+                router: self.router
             });
         }
     }

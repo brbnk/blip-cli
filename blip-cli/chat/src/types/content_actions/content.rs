@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use crate::content_actions::{MediaContent};
 use super::ChatState;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -6,4 +7,5 @@ use super::ChatState;
 pub enum Content {
     Text(String),
     ChatState(ChatState),
+    Media(MediaContent)
 }

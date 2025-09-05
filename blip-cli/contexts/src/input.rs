@@ -25,6 +25,11 @@ impl Manager for InputManager {
         context.insert(key.trim().to_string(), value.trim().to_string());
     }
 
+    fn delete(&self, key: &str) {
+        let mut writer = INPUT_CONTEXT.write().unwrap();
+        writer.remove_entry(key);
+    }
+
     fn reset(&self) {
         if let Ok(mut context) = INPUT_CONTEXT.write() {
             context.clear();

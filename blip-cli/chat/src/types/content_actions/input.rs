@@ -1,7 +1,8 @@
-use crate::types::input_message::InputMessage;
+use crate::{actions::Redirect, types::input_message::InputMessage};
 
 use super::CardContent;
-use contexts::{system, MANAGER_POOL};
+use contexts::{replacer, system, MANAGER_POOL};
+use file_handler::deserialize;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::VecDeque,
@@ -24,30 +25,51 @@ impl Input {
             return;
         }
 
-        let mut input_content = String::new();
-
-        if system::is_test_mode() {
-            input_content = self.handle_test_input();
-        } else {
-            printer::print("> ", Color::Green);
+        if system::has_redirect() {
+            system::set_redirect_signal();
+            let serialized = system::get_redirect().expect("serialized redirect event");
+            let redirect: Redirect = deserialize(&serialized).expect("deserialized redirect event");
             
-            io::stdout().flush().unwrap();
+            let input_content = match &redirect.context {
+                Some(c) => replacer::replace(&c.value),
+                None => "".to_owned(),
+            };
 
-            let bytes_read = io::stdin()
-                .read_line(&mut input_content)
-                .expect("Erro ao ler entrada");
-
-            ui::loader::start(1);
-
-            if bytes_read == 0 {
-                std::process::exit(0);
+            MANAGER_POOL.context.set("input.content", &input_content);
+            MANAGER_POOL.context.set("input.message", &serde_json::to_string(&InputMessage::new(&input_content)).expect("serialized input message"))
+        } 
+        else {
+            if system::is_redirect_transition_signal() {
+                system::reset_redirect_transition_signal();
             }
+            else {
+                let mut input_content = String::new();
 
-            input_content = input_content.trim().to_string();
+                if system::is_test_mode() {
+                    input_content = self.handle_test_input();
+                }
+                else {
+                    printer::print("> ", Color::Green);
+                    
+                    io::stdout().flush().unwrap();
+        
+                    let bytes_read = io::stdin()
+                        .read_line(&mut input_content)
+                        .expect("Erro ao ler entrada");
+        
+                    ui::loader::start(1);
+        
+                    if bytes_read == 0 {
+                        std::process::exit(0);
+                    }
+        
+                    input_content = input_content.trim().to_string();
+                }
+
+                MANAGER_POOL.context.set("input.content", &input_content);
+                MANAGER_POOL.context.set("input.message", &serde_json::to_string(&InputMessage::new(&input_content)).expect("serialized input message"))
+            }
         }
-
-        MANAGER_POOL.context.set("input.content", &input_content);
-        MANAGER_POOL.context.set("input.message", &serde_json::to_string(&InputMessage::new(&input_content)).expect("serialized input message"))
     }
 
     fn handle_test_input(&self) -> String {

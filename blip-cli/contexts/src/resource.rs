@@ -22,7 +22,12 @@ impl Manager for ResourceManager {
     fn get(&self, key: &str) -> Option<String> {
         let replaced_key = key.replace(RESOURCE_PREFIX, "");
         let tenant = system::get_tenant();
-        let master_state = system::get_master_state();
+        
+        let master_state = match system::is_router() {
+            true => system::get_router_id().expect("router id"),
+            false => system::get_master_state(),
+        };
+        
         let pool = RESOURCES.read().unwrap();
 
         if let Some(master_configs) = pool.get(&master_state) {
@@ -57,6 +62,11 @@ impl Manager for ResourceManager {
         let resources = self.parse_resources(&value.to_string());
 
         pool.insert(key.trim().to_string(), resources);
+    }
+
+    fn delete(&self, key: &str) {
+        let mut writer = RESOURCES.write().unwrap();
+        writer.remove_entry(key);
     }
 
     fn reset(&self) {

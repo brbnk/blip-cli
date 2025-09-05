@@ -6,6 +6,8 @@ mod card_content;
 mod document;
 mod content;
 mod chat_state;
+mod media_content;
+mod dynamic_content;
 
 pub use action::Action;
 pub use input::Input;
@@ -15,3 +17,5 @@ pub use document::Document;
 pub use content::Content;
 pub use chat_state::ChatState;
 pub use content_action::ContentAction;
+pub use media_content::MediaContent;
+pub use dynamic_content::DynamicContent;
