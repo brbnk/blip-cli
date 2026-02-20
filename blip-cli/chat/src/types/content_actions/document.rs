@@ -1,7 +1,7 @@
 use contexts::{replacer, system};
 use serde::{Deserialize, Serialize};
 use ui::{printer, types::Color};
-use crate::content_actions::DynamicContent;
+use crate::content_actions::{DynamicContent};
 
 use super::Content;
 
@@ -48,6 +48,12 @@ impl Document {
                                     printer::println(&replacer::replace(&serialized), Color::Yellow);
                                     println!();
                                 }
+                                Content::QuickReply(quick_reply) => {
+                                    printer::println(&replacer::replace(&quick_reply.text), Color::Yellow);
+                                    quick_reply.options.iter().for_each(|option| {
+                                        printer::println(&format!(" - {}", &replacer::replace(&option.text)), Color::Yellow);
+                                    });
+                                },
                             }
                         },
                         None => {

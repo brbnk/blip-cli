@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::content_actions::DynamicContent;
+use crate::content_actions::{DynamicContent, components::QuickReply};
 
 use super::Content;
 
@@ -7,7 +7,8 @@ use super::Content;
 #[serde(untagged)]
 pub enum Settings {
     Default(SettingsDefault),
-    DynamicContent(DynamicContent)
+    DynamicContent(DynamicContent),
+    QuickReply(QuickReply)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
