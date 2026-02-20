@@ -41,7 +41,7 @@ pub fn read_file(path: &str, file_name: &str) -> Result<String, String> {
     let file_path = format!("{}/{}", path, file_name);
 
     let mut file = File::open(&file_path)
-            .map_err(|e| format!("Erro ao abrir o arquivo {}: {}", path, e))?;
+        .map_err(|e| format!("Erro ao abrir o arquivo {}: {}", path, e))?;
 
     let mut contents = String::new();
 

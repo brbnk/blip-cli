@@ -44,17 +44,20 @@ impl Manager for BlipFunctionsManager {
                 content: None,
             };
 
-            let json = blip_functions_file.read().expect(constants::BLIP_FUNCTION_FILE_NAME);
-            
-            let functions: HashMap<String, String> = 
-                deserialize::<HashMap<String, String>>(&json).expect("deserialized blip functions");
-            
-            self.set(&tenant, &serde_json::to_string(&functions).expect("serialized blip functions"));
-
-            let value = functions.get(&replaced_key);
-            if value.is_some() {
-                return value.cloned();
+            match blip_functions_file.read() {
+                Ok(content) => {
+                    let functions: HashMap<String, String> = deserialize::<HashMap<String, String>>(&content).expect("deserialized blip functions");
+                    self.set(&tenant, &serde_json::to_string(&functions).expect("serialized blip functions"));
+                    let value = functions.get(&replaced_key);
+                    if value.is_some() {
+                        return value.cloned();
+                    }
+                },
+                Err(_) => {
+                    self.set(&tenant, "{}");
+                },
             }
+            
         }
         None
     }

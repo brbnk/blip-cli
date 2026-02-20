@@ -88,5 +88,8 @@ pub fn init(params: ChatParams) {
 
             system::set_redirect_transition_signal(&context);
         }
+        else {
+            break;
+        }
     }
 }
