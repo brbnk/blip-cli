@@ -8,9 +8,11 @@ use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-const BLIP_FUNCTIONS_PREFIX: &str = "blipfunction.";
+use serde::{Deserialize, Serialize};
 
-pub static BLIP_FUNCTIONS: Lazy<RwLock<HashMap<String, HashMap<String, String>>>> = Lazy::new(|| {
+const BLIP_FUNCTION_PREFIX: &str = "blipfunction.";
+
+pub static BLIP_FUNCTIONS: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| {
     let blip_functions = HashMap::new();
     RwLock::new(blip_functions)
 });
@@ -23,16 +25,40 @@ impl BlipFunctionsManager {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BlipFunctionSchema {
+    #[serde(rename = "id")]
+    pub id: String,
+
+    #[serde(rename = "name")]
+    pub name: String,
+
+    #[serde(rename = "content")]
+    pub content: String
+}
+
 impl Manager for BlipFunctionsManager {
     fn get(&self, key: &str) -> Option<String> {
-        let replaced_key = key.replace(BLIP_FUNCTIONS_PREFIX, "");
         let tenant = system::get_tenant();
         
         let pool = BLIP_FUNCTIONS.read().unwrap();
 
-        if let Some(functions) = pool.get(&tenant) {
-            if let Some(value) = functions.get(&replaced_key) {
-                return Some(value.clone());
+        if let Some(fs) = pool.get(&tenant) {
+            let functions: Vec<BlipFunctionSchema> = deserialize::<Vec<BlipFunctionSchema>>(&fs).expect("deserialized blip functions");
+            let bfs = functions
+                .iter()
+                .find(|f| { 
+                    if !key.contains(BLIP_FUNCTION_PREFIX) {
+                        f.id.eq(&key)
+                    }
+                    else {
+                        let function_name = key.replace(BLIP_FUNCTION_PREFIX, "");
+                        f.name.eq(&function_name)
+                    }
+                });
+
+            if bfs.is_some() {
+                return Some(bfs.unwrap().content.clone());
             }
         } else {
             drop(pool);
@@ -46,11 +72,23 @@ impl Manager for BlipFunctionsManager {
 
             match blip_functions_file.read() {
                 Ok(content) => {
-                    let functions: HashMap<String, String> = deserialize::<HashMap<String, String>>(&content).expect("deserialized blip functions");
+                    let functions: Vec<BlipFunctionSchema> = deserialize::<Vec<BlipFunctionSchema>>(&content).expect("deserialized blip functions");
                     self.set(&tenant, &serde_json::to_string(&functions).expect("serialized blip functions"));
-                    let value = functions.get(&replaced_key);
+                    
+                    let value = functions
+                        .iter()
+                        .find(|f| { 
+                            if !key.contains(BLIP_FUNCTION_PREFIX) {
+                                f.id.eq(&key)
+                            }
+                            else {
+                                let function_name = key.replace(BLIP_FUNCTION_PREFIX, "");
+                                f.name.eq(&function_name)
+                            }
+                        });
+                    
                     if value.is_some() {
-                        return value.cloned();
+                        return Some(value.unwrap().content.clone());
                     }
                 },
                 Err(_) => {
@@ -66,11 +104,11 @@ impl Manager for BlipFunctionsManager {
         let mut pool = BLIP_FUNCTIONS.write().unwrap();
         
         let functions = 
-            deserialize::<HashMap<String, String>>(&value.to_string()).expect("deserialized blip functions");
+            deserialize::<Vec<BlipFunctionSchema>>(&value.to_string()).expect("deserialized blip functions");
 
         pool.insert(
             key.trim().to_string(), 
-            functions);
+            serde_json::to_string(&functions).expect("serialized tenant functions"));
     }
 
     fn delete(&self, key: &str) {

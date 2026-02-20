@@ -11,3 +11,4 @@ file_handler = { path = "../file_handler" }
 js_runner = { path = "../js_runner" }
 ui = { path = "../ui" }
 domain = { path = "../domain" }
+uuid = { version = "1", features = ["v4"] }

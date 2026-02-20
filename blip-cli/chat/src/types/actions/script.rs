@@ -1,3 +1,4 @@
+use uuid::Uuid;
 use contexts::{replacer, store, system, MANAGER_POOL};
 use domain::{chat::Executable};
 use serde::{Deserialize, Serialize};
@@ -23,32 +24,75 @@ pub struct Script {
 
 impl Executable for Script {
     fn execute(&self) {
-        let args: Vec<String> = self
-            .input_variables
-            .iter()
-            .map(|input_var| match store::get(&input_var) {
-                Some(value) => serde_json::to_string(&value).unwrap(),
-                None => serde_json::to_string("").unwrap(),
-            })
-            .collect();
-
-        let function = replacer::replace(&self.source);
-        let script_response =
-            js_runner::exec_script(function.clone(), args).expect("Erro ao executar script");
-        
-        MANAGER_POOL.context.set(&self.output_variable, &script_response);
-        
-        if !system::is_test_mode() {
-            printer::print_action(ActionProps {
-                name: String::from("ExecuteScript"),
-                key: String::from(&self.output_variable),
-                value: script_response,
-                color: Color::Yellow,
-            });
-        }
-        else {
-            let event = replacer::replace(&serde_json::to_string(&self).expect("script event serialized"));
-            MANAGER_POOL.event.set(&system::get_master_state(), &event);
+        match parse_guid(&self.source) {
+            Ok(_) => execute_blip_function(self),
+            Err(_) => execute_script_v1(self),
         }
     }
+}
+
+fn parse_guid(value: &str) -> Result<Uuid, uuid::Error> {
+    Uuid::parse_str(value)
+}
+
+fn execute_blip_function(script: &Script) {
+    let args = get_input_variables(script);
+    let blip_function = store::get(&script.source);
+    
+    let function = match blip_function {
+        Some(fs) => replacer::replace(&fs),
+        None => todo!(),
+    };
+
+    let script_response =
+        js_runner::exec_script(function.clone(), args).expect("Erro ao executar script");
+
+    MANAGER_POOL.context.set(&script.output_variable, &script_response);
+
+    if !system::is_test_mode() {
+        printer::print_action(ActionProps {
+            name: String::from("BlipFunction"),
+            key: String::from(&script.output_variable),
+            value: script_response,
+            color: Color::Yellow
+        });
+    }
+    else {
+        let event = replacer::replace(&serde_json::to_string(&script).expect("script event serialized"));
+        MANAGER_POOL.event.set(&system::get_master_state(), &event);
+    }
+}
+
+fn execute_script_v1(script: &Script) {
+    let args: Vec<String> = get_input_variables(script);
+
+    let function = replacer::replace(&script.source);
+    let script_response =
+        js_runner::exec_script(function.clone(), args).expect("Erro ao executar script");
+    
+    MANAGER_POOL.context.set(&script.output_variable, &script_response);
+    
+    if !system::is_test_mode() {
+        printer::print_action(ActionProps {
+            name: String::from("ExecuteScript"),
+            key: String::from(&script.output_variable),
+            value: script_response,
+            color: Color::Yellow,
+        });
+    }
+    else {
+        let event = replacer::replace(&serde_json::to_string(&script).expect("script event serialized"));
+        MANAGER_POOL.event.set(&system::get_master_state(), &event);
+    }
+}
+
+fn get_input_variables(script: &Script) -> Vec<String> {
+    script
+        .input_variables
+        .iter()
+        .map(|input_var| match store::get(&input_var) {
+            Some(value) => serde_json::to_string(&value).unwrap(),
+            None => serde_json::to_string("").unwrap(),
+        })
+        .collect()
 }
