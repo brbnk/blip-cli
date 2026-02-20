@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap};
 
 use contexts::{replacer, store, system, MANAGER_POOL};
 use serde::{Deserialize, Serialize};
@@ -18,19 +18,24 @@ pub struct ProcessHttp {
     pub uri: String,
 
     #[serde(rename = "responseStatusVariable")]
-    pub status: String,
+    pub status: Option<String>,
 
     #[serde(rename = "responseBodyVariable")]
-    pub response: String
+    pub response: Option<String>
 }
 
 impl Executable for ProcessHttp {
     fn execute(&self) {
         if !system::is_test_mode() {
+            let status = self.status.clone().unwrap_or(String::from(""));
+            let response = self.response.clone().unwrap_or(String::from(""));
             printer::print_action(ActionProps {
                 name: String::from("ProcessHttp"),
                 key: format!("{} {}", &self.method, replacer::replace(&self.uri)),
-                value: format!("Status: {} | Response: {}", store::get(&self.status).unwrap_or("".to_string()), store::get(&self.response).unwrap_or("".to_string())),
+                value: format!(
+                    "Status: {} | Response: {}", 
+                    store::get(&status).unwrap_or(String::from("")), 
+                    store::get(&response).unwrap_or(String::from(""))),
                 color: Color::Purple,
             });
         } else {
