@@ -17,6 +17,10 @@ pub struct Mirror {
     #[arg(long)]
     router: bool,
 
+    /// mirror all
+    #[arg(short, long)]
+    all: bool,
+
     /// mirror only working flow
     #[arg(short, long)]
     working_flow: bool,
@@ -50,29 +54,25 @@ impl Runnable for Mirror {
 
             if self.router {
                 request_type.push(RequestType::Router);
-
-                if self.resources {
-                    request_type.push(RequestType::Resources);
-                }
             }
             else {
-                if self.working_flow {
+                if self.working_flow || self.all {
                     request_type.push(RequestType::WorkingFlow);
                 }
     
-                if self.global_actions {
+                if self.global_actions || self.all {
                     request_type.push(RequestType::GlobalAction);
                 }
     
-                if self.configurations {
+                if self.configurations || self.all {
                     request_type.push(RequestType::Configurations);
                 }
     
-                if self.resources {
+                if self.resources || self.all {
                     request_type.push(RequestType::Resources);
                 }
     
-                if self.blip_functions {
+                if self.blip_functions || self.all {
                     request_type.push(RequestType::BlipFunction);
                 }
             }

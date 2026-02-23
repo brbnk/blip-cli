@@ -1248,6 +1248,7 @@ dependencies = [
  "domain",
  "file_handler",
  "http 0.1.0",
+ "serde",
  "serde_json",
  "ui",
 ]

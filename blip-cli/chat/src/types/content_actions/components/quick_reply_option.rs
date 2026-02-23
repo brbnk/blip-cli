@@ -12,7 +12,7 @@ pub struct QuickReplyOption {
     pub value: Option<String>,
 
     #[serde(rename = "index")]
-    pub index: u32,
+    pub index: i32,
 
     #[serde(rename = "type")]
     pub option_type: Option<String>
