@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use contexts::MANAGER_POOL;
+use contexts::{MANAGER_POOL, store};
 use deno_core::{extension, futures, op2, v8, JsRuntime, PollEventLoopOptions, RuntimeOptions};
 
 extension!(
@@ -94,7 +94,7 @@ pub fn exec_script(
 #[op2(async)]
 #[string]
 pub async fn op_get_var(#[string] key: String) -> Result<String, deno_core::error::CoreError> {
-    Ok(match MANAGER_POOL.context.get(&key) {
+    Ok(match store::get(&key) {
         Some(s) => { 
             s
         },

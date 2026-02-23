@@ -6,7 +6,10 @@ use std::sync::RwLock;
 use crate::MANAGER_POOL;
 
 pub static CONTEXT: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| {
-    let context = HashMap::new();
+    let mut context = HashMap::new();
+
+    context.insert(String::from("random.guid"), String::from("e575f2dc-e948-4eda-bab5-367618462aec"));
+
     RwLock::new(context)
 });
 

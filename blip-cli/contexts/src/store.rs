@@ -1,5 +1,5 @@
 use crate::{configs::ConfigManager, MANAGER_POOL};
-use domain::contexts::Manager;
+use domain::{constants::{CONFIG_VAR_PREFIX, RESOURCE_PREFIX}, contexts::Manager};
 
 pub fn get(key: &str) -> Option<String> {
     let input = MANAGER_POOL.input.get(key);
@@ -7,19 +7,25 @@ pub fn get(key: &str) -> Option<String> {
         return Some(input.unwrap());
     }
 
-    let config_value = ConfigManager::new().get(key);
-    if config_value.is_some() {
-        return config_value;
+    if key.contains(CONFIG_VAR_PREFIX) {
+        let config_value = ConfigManager::new().get(key);
+        if config_value.is_some() {
+            return config_value;
+        }
     }
 
-    let resource = MANAGER_POOL.resource.get(key);
-    if resource.is_some() {
-        return Some(resource.unwrap());
+    if key.contains(RESOURCE_PREFIX) {
+        let resource = MANAGER_POOL.resource.get(key);
+        if resource.is_some() {
+            return Some(resource.unwrap());
+        }
     }
 
-    let contact_value = MANAGER_POOL.contact.get(key);
-    if contact_value.is_some() {
-        return contact_value;
+    if key.contains(CONFIG_VAR_PREFIX) {
+        let contact_value = MANAGER_POOL.contact.get(key);
+        if contact_value.is_some() {
+            return contact_value;
+        }
     }
 
     let context_value = MANAGER_POOL.context.get(key);

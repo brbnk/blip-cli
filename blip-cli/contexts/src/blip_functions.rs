@@ -1,5 +1,5 @@
 use crate::system;
-use domain::constants;
+use domain::constants::{self, BLIP_FUNCTION_PREFIX};
 use domain::contexts::Manager;
 use domain::file_handler::Reader;
 use file_handler::deserialize;
@@ -9,8 +9,6 @@ use std::collections::HashMap;
 use std::sync::RwLock;
 
 use serde::{Deserialize, Serialize};
-
-const BLIP_FUNCTION_PREFIX: &str = "blipfunction.";
 
 pub static BLIP_FUNCTIONS: Lazy<RwLock<HashMap<String, String>>> = Lazy::new(|| {
     let blip_functions = HashMap::new();
