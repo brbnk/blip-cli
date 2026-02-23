@@ -12,5 +12,6 @@ pub enum ActionType {
     ProcessCommand,
     ExecuteBlipFunction,
     ProcessContentAssistant,
-    TrackEvent
+    TrackEvent,
+    ForwardToAgent
 }

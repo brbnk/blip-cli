@@ -38,7 +38,7 @@ fn parse_guid(value: &str) -> Result<Uuid, uuid::Error> {
 fn execute_blip_function(script: &Script) {
     let args = get_input_variables(script);
     let blip_function = store::get(&script.source);
-    
+    println!("Blip Function: {:?}", &script.source);
     let function = match blip_function {
         Some(fs) => replacer::replace(&fs),
         None => todo!(),
