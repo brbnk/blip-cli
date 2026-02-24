@@ -53,7 +53,7 @@ pub fn init(params: ChatParams) {
             let default_output = state.get_default_output();
             state = flow.get_state(match state.handle_condition_outputs() {
                 Some(destination) => destination,
-                None => &default_output,
+                None => default_output,
             }).expect("Bloco não encontrado");
     
             state.save_current();

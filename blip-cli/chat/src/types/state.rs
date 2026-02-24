@@ -94,7 +94,7 @@ impl State {
         }
     }
 
-    pub fn handle_condition_outputs(&self) -> Option<&String> {
+    pub fn handle_condition_outputs(&self) -> Option<String> {
         for condition_output in &self.condition_outputs {
             let destination = condition_output.get_destination();
             if destination.is_some() {

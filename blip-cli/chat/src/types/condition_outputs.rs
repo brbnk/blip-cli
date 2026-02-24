@@ -1,4 +1,5 @@
 use super::execute_conditions::Condition;
+use contexts::replacer;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -11,7 +12,7 @@ pub struct ConditionOutputs {
 }
 
 impl ConditionOutputs {
-    pub fn get_destination(&self) -> Option<&String> {
+    pub fn get_destination(&self) -> Option<String> {
         match &self.conditions {
             Some(conditions) => {
                 let all_conditions_satisfied = conditions
@@ -21,8 +22,10 @@ impl ConditionOutputs {
                 if !all_conditions_satisfied {
                     return None;
                 }
+                
+                let destination = replacer::replace(&self.destination);
 
-                return Some(&self.destination);
+                return Some(destination);
             }
             None => None,
         }

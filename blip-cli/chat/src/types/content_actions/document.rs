@@ -1,7 +1,7 @@
 use contexts::{replacer, system};
 use serde::{Deserialize, Serialize};
 use ui::{printer, types::Color};
-use crate::content_actions::DynamicContent;
+use crate::content_actions::{DynamicContent};
 
 use super::Content;
 
@@ -40,14 +40,20 @@ impl Document {
                                     ui::loader::start(animation_time);
                                 }
                                 Content::Text(text) => {
-                                    printer::println(&replacer::replace(&text), Color::Yellow);
+                                    printer::println(&replacer::replace(&text), get_bot_message_color());
                                     println!();
                                 }
                                 Content::Media(media) => {
                                     let serialized = serde_json::to_string(media).unwrap_or(String::from("media content"));
-                                    printer::println(&replacer::replace(&serialized), Color::Yellow);
+                                    printer::println(&replacer::replace(&serialized), get_bot_message_color());
                                     println!();
                                 }
+                                Content::QuickReply(quick_reply) => {
+                                    printer::println(&replacer::replace(&quick_reply.text), get_bot_message_color());
+                                    quick_reply.options.iter().for_each(|option| {
+                                        printer::println(&format!(" - {}", &replacer::replace(&option.text)), get_bot_message_color());
+                                    });
+                                },
                             }
                         },
                         None => {
@@ -57,10 +63,14 @@ impl Document {
                 },
                 Document::DynamicContent(dynamic_content) => {
                     let serialized = serde_json::to_string(dynamic_content).unwrap_or(String::from("dynamic content"));
-                    printer::println(&replacer::replace(&serialized), Color::Yellow);
+                    printer::println(&replacer::replace(&serialized), get_bot_message_color());
                     println!();
                 },
             }
         }
     }
+}
+
+fn get_bot_message_color() -> Color {
+    Color::BrightBlack
 }

@@ -154,23 +154,27 @@ impl MirrorRequests for ProxyRequests {
         print_success_message("Blip Functions");
     }
     
-    fn get_router_children(&self, tenant: &str, identifier: &str, tier: &str) {
+    fn get_router_children(&self, tenant: &str, identifier: &str, tier: &str) -> String {
         let endpoint = format!("/v1/mirror/router-children?identifier={}&tier={}", identifier, tier);
 
         let response = self
             .request(&endpoint)
             .expect("router children");
+        
+        let content = serde_json::to_string_pretty(&response.data).expect("router children");
 
         let file = DataFile {
             tenant: tenant.to_string(),
             bot_id: Some(identifier.to_string()),
             file_name: constants::ROUTER_CHILDREN_FILE_NAME.to_string(),
-            content: Some(serde_json::to_string_pretty(&response.data).expect("router children")) 
+            content: Some(content.clone()) 
         };
 
         file.write().expect("write router children file");
 
         print_success_message("Router Children");
+
+        content
     }
 }
 

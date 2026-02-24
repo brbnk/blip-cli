@@ -8,6 +8,7 @@ mod content;
 mod chat_state;
 mod media_content;
 mod dynamic_content;
+mod components;
 
 pub use action::Action;
 pub use input::Input;

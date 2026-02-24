@@ -19,3 +19,7 @@ pub const TEXT_TYPE: &str = "text/plain";
 pub const DEFAULT_TO: &str = "blip-cli@msging.net";
 pub const DEFAULT_CONTACT_IDENTITY: &str = "f6c685df-c45b-401c-a0ef-0ae1e401a485.teste638760290597490566@0mn.io/default";
 pub const TOKEN_HEADER: &str = "X-Blip-User-Access-Token";
+pub const RESOURCE_PREFIX: &str = "resource.";
+pub const CONFIG_VAR_PREFIX: &str = "config.";
+pub const CONTACT_VAR_PREFIX: &str = "contact.";
+pub const BLIP_FUNCTION_PREFIX: &str = "blipfunction.";

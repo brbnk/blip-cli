@@ -1,5 +1,5 @@
 use crate::system;
-use domain::constants;
+use domain::constants::{self, RESOURCE_PREFIX};
 use domain::contexts::Manager;
 use domain::file_handler::Reader;
 use file_handler::deserialize;
@@ -8,8 +8,6 @@ use once_cell::sync::Lazy;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::sync::RwLock;
-
-const RESOURCE_PREFIX: &str = "resource.";
 
 pub static RESOURCES: Lazy<RwLock<HashMap<String, HashMap<String, String>>>> = Lazy::new(|| {
     let configs = HashMap::new();

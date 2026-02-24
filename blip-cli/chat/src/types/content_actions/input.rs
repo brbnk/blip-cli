@@ -1,4 +1,4 @@
-use crate::{actions::Redirect, types::input_message::InputMessage};
+use crate::{actions::Redirect, execute_conditions::Condition, types::input_message::InputMessage};
 
 use super::CardContent;
 use contexts::{replacer, system, MANAGER_POOL};
@@ -15,13 +15,21 @@ pub struct Input {
     #[serde(rename = "bypass")]
     pub bypass: bool,
 
+    #[serde(rename = "conditions")]
+    pub conditions: Option<Vec<Condition>>,
+
     #[serde(rename = "$cardContent")]
     pub card_content: CardContent,
 }
 
 impl Input {
     pub fn handle_input(&self) {
-        if self.bypass {
+        let is_agent_response = match &self.conditions {
+            Some(c) => c.iter().any(|c| c.variable.clone().unwrap().eq("agent_forwardToAgentState_status")),
+            None => false,
+        };
+
+        if self.bypass || is_agent_response {
             return;
         }
 
@@ -65,7 +73,7 @@ impl Input {
         
                     input_content = input_content.trim().to_string();
                 }
-
+                
                 MANAGER_POOL.context.set("input.content", &input_content);
                 MANAGER_POOL.context.set("input.message", &serde_json::to_string(&InputMessage::new(&input_content)).expect("serialized input message"))
             }

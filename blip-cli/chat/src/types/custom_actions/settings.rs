@@ -10,7 +10,8 @@ use crate::types::actions::{
     Script, 
     ScriptV2, 
     TrackEvent, 
-    Variable
+    Variable,
+    Agent
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -25,7 +26,8 @@ pub enum Settings {
     ScriptV2(ScriptV2),
     ProcessCommand(ProcessCommand),
     ExecuteBlipFunction(ExecuteBlipFunction),
-    ProcessContentAssistant(ProcessContentAssistant)
+    ProcessContentAssistant(ProcessContentAssistant),
+    Agent(Agent)
 }
 
 impl Settings {
@@ -41,6 +43,7 @@ impl Settings {
             Settings::ProcessCommand(pc) => pc,
             Settings::ExecuteBlipFunction(ebf) => ebf,
             Settings::ProcessContentAssistant(pca) => pca,
+            Settings::Agent(a) => a,
         }
     }
 }

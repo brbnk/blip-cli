@@ -26,9 +26,9 @@ impl Flow {
             .ok_or("Estado 'onboarding' não encontrado".to_string())
     }
 
-    pub fn get_state(&self, id: &String) -> Result<&State, String> {
+    pub fn get_state(&self, id: String) -> Result<&State, String> {
         self.flow
-            .get(id)
+            .get(&id)
             .ok_or(format!("State {} não encontrado!", &id))
     }
 }

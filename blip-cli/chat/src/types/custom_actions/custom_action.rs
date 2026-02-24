@@ -11,7 +11,7 @@ pub struct CustomAction {
     pub action_type: ActionType,
 
     #[serde(rename = "$title")]
-    pub title: String,
+    pub title: Option<String>,
 
     #[serde(rename = "settings")]
     pub settings: Settings,

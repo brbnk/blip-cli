@@ -3,9 +3,7 @@ use file_handler::{types::DataFile, deserialize};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::RwLock;
-use domain::{constants, {file_handler::Reader, contexts::Manager}};
-
-const CONFIG_VAR_PREFIX: &str = "config.";
+use domain::{constants::{self, CONFIG_VAR_PREFIX}, contexts::Manager, file_handler::Reader};
 
 pub static CONFIGS: Lazy<RwLock<HashMap<String, HashMap<String, String>>>> = Lazy::new(|| {
     let configs = HashMap::new();
