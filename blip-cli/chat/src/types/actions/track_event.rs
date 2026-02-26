@@ -31,7 +31,7 @@ impl Executable for TrackEvent {
             });
         } else {
             let event = replacer::replace(&serde_json::to_string(&self).expect("track event serialized"));
-            MANAGER_POOL.event.set(&system::get_master_state(), &event);
+            MANAGER_POOL.event.set(&system::get_test_master_state(), &event);
         }
     }
 }

@@ -30,8 +30,24 @@ impl Executable for Variable {
                 color: Color::Red,
             });
         } else {
-            let event = replacer::replace(&serde_json::to_string(&self).expect("variable serialized"));
-            MANAGER_POOL.event.set(&system::get_master_state(), &event);
+            let var_event = VariableEvent::new(self.variable.clone(), replaced);
+            let event = replacer::replace(&serde_json::to_string(&var_event).expect("variable serialized"));
+            MANAGER_POOL.event.set(&system::get_test_master_state(), &event);
         }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct VariableEvent {
+    #[serde(rename = "variable")]
+    pub variable: String,
+
+    #[serde(rename = "value")]
+    pub value: String
+}
+
+impl VariableEvent {
+    pub fn new(variable: String, value: String) -> Self {
+        VariableEvent { variable, value }
     }
 }

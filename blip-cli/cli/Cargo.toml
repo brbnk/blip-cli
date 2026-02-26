@@ -14,3 +14,4 @@ tester = { path = "../tester" }
 contexts = { path = "../contexts" }
 ui = { path = "../ui" }
 http = { path = "../http" }
+regex = "1.12.3"

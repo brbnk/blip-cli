@@ -7,6 +7,7 @@ use domain::{
     constants,
     file_handler::{PathBuilder, Writer},
 };
+use regex::Regex;
 use ui::printer;
 
 use crate::{create_dir, create_file, resolve_path};
@@ -63,14 +64,30 @@ impl TestTemplateFile {
     pub fn read_files(&self) -> Result<Vec<String>> {
         let path = self.build_path();
 
-         fs::read_dir(path)?
+        let re = Regex::new(r"test_case_(\d+)\.json$").unwrap();
+
+        let mut entries: Vec<_> = fs::read_dir(path)?
             .filter_map(Result::ok)
             .filter(|entry| entry.path().is_file())
+            .collect();
+
+        entries.sort_by_key(|entry| {
+            let filename = entry.file_name();
+            let filename = filename.to_string_lossy();
+
+            re.captures(&filename)
+                .and_then(|caps| caps.get(1))
+                .and_then(|m| m.as_str().parse::<u32>().ok())
+                .unwrap_or(0)
+        });
+        
+        entries
+            .into_iter()
             .map(|entry| {
                 let mut contents = String::new();
                 File::open(entry.path())?.read_to_string(&mut contents)?;
                 Ok(contents)
             })
             .collect()
-    }
+        }
 }

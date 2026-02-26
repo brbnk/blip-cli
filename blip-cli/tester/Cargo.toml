@@ -10,3 +10,4 @@ contexts = { path = "../contexts" }
 file_handler = { path = "../file_handler" }
 chat = { path = "../chat" }
 ui = { path = "../ui" }
+regex = "1.12.3"
