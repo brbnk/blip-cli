@@ -28,9 +28,11 @@ impl CustomAction {
                     return true
                 }
 
-                return conditions
+                let is_invalid = conditions
                     .iter()
-                    .any(|c| c.should_execute())
+                    .any(|c| !c.should_execute());
+
+                return !is_invalid
             },
             None => true,
         }

@@ -96,7 +96,7 @@ pub fn exec_script(
 pub async fn op_get_var(#[string] key: String) -> Result<String, deno_core::error::CoreError> {
     Ok(match store::get(&key) {
         Some(s) => { 
-            s
+            String::from(s.trim_matches('"'))
         },
         None => String::new(),
     })

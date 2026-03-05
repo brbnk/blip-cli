@@ -91,7 +91,9 @@ impl TrackingAssert {
                 Should::NotExist => printer::print_test_message(
                   &format!("Tracking '{}' should not exist", y(&category)), 
                   true),
-                _ => {}
+                _ => printer::print_test_message(
+                  &format!("Tracking '{}' not registered during test execution.", y(&category)), 
+                  false)
               }
             },
         };

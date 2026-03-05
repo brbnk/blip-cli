@@ -36,9 +36,13 @@ impl Condition {
             },
             Comparison::Equals => {
                 match value {
-                    Some(context) => self.values
-                        .iter()
-                        .any(|s| s.eq_ignore_ascii_case(context.as_str())),
+                    Some(context) => {
+                        self.values
+                           .iter()
+                           .any(|s| {
+                                s.eq_ignore_ascii_case(context.as_str())
+                            })
+                    },
                     None => false,
                 }
             },
