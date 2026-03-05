@@ -7,6 +7,7 @@ use clap::Args;
 use contexts::{MANAGER_POOL, store, system};
 use domain::cli::Runnable;
 use file_handler::deserialize;
+use regex::Regex;
 use serde_json::Value;
 use tester::types::{TestTemplate, asserts::AssertType};
 use ui::{
@@ -40,6 +41,7 @@ impl Runnable for Run {
 impl Run {
     fn execute_test(&self, test_file: &TestTemplate) {
         if let Ok(inputs) = serde_json::to_string(&test_file.inputs) {
+            store::reset();
             printer::println(
                 &format!("{}\n{}\n", b("DESCRIÇÃO"), test_file.description),
                 Color::White,
@@ -60,8 +62,6 @@ impl Run {
             });
 
             self.handle_asserts(&test_file);
-
-            store::reset();
         }
     }
 
@@ -81,11 +81,22 @@ impl Run {
     }
 
     fn collect_events(&self) -> Vec<Settings> {
-        match MANAGER_POOL.event.get(&system::get_master_state()) {
+        match MANAGER_POOL.event.get(&system::get_test_master_state()) {
             Some(events_str) => deserialize::<Vec<String>>(&events_str)
                 .expect("events")
                 .iter()
-                .map(|s| deserialize::<Settings>(s).expect("action deserialized"))
+                .map(|s| {
+                    let mut cleaned = s
+                    .replace("\\n", " ")
+                    .replace("\\t", " ")
+                    .replace("\n", " ")
+                    .replace("\t", "");
+
+                    let re = Regex::new(r"\\.").unwrap();
+                    cleaned = re.replace_all(&cleaned, "").to_string();
+
+                    deserialize::<Settings>(&cleaned).expect("action deserialized")
+                })
                 .collect::<Vec<Settings>>(),
             None => panic!("Test events were expected"),
         }

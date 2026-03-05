@@ -24,5 +24,5 @@ build:
 
 install: 
 	@echo "📦 Instalando em $(INSTALL_PATH)..."
-	cp $(RENAMED_BIN) $(INSTALL_PATH)
+	sudo cp $(RENAMED_BIN) $(INSTALL_PATH)
 	@echo "✅ Instalação concluída: $(INSTALL_PATH)"

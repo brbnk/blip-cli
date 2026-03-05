@@ -40,11 +40,12 @@ impl TrackingAssert {
 
         let collected_event: Option<&TrackEvent> = events
             .iter()
-            .filter_map(|e| match e {
+            .filter_map(|e| {
+              match e {
                 Settings::TrackEvent(track) => Some(track),
                 _ => None,
-            })
-            .find(|observed| {
+              }})
+              .find(|observed| {
                 self.should
                     .be_equal(&category, &observed.category, specs)
                     .unwrap_or(false)

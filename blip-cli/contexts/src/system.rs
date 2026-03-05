@@ -29,6 +29,17 @@ pub fn set_tenant(tenant: &str) {
 }
 
 // Master-State
+pub fn get_test_master_state() -> String {
+    if is_router() {
+        return get_router_id().unwrap_or_default();
+    }
+    
+    match MANAGER_POOL.context.get(MASTER_STATE) {
+        Some(ms) => ms,
+        None => panic!("master-state não encontrado"),
+    }
+}
+
 pub fn get_master_state() -> String {
     match MANAGER_POOL.context.get(MASTER_STATE) {
         Some(ms) => ms,

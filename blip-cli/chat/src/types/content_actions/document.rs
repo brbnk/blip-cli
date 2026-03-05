@@ -53,6 +53,12 @@ impl Document {
                                     quick_reply.options.iter().for_each(|option| {
                                         printer::println(&format!(" - {}", &replacer::replace(&option.text)), get_bot_message_color());
                                     });
+                                }
+                                Content::ListMenu(list_menu) => {
+                                    printer::println(&replacer::replace(&list_menu.text), get_bot_message_color());
+                                    list_menu.options.iter().for_each(|option| {
+                                        printer::println(&format!(" - {}", &replacer::replace(&option.text)), get_bot_message_color());
+                                    });
                                 },
                             }
                         },

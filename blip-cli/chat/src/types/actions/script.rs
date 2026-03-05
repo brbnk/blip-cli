@@ -64,7 +64,6 @@ fn execute_blip_function(script: &Script) {
 
 fn execute_script_v1(script: &Script) {
     let args: Vec<String> = get_input_variables(script);
-
     let function = replacer::replace(&script.source);
     let script_response =
         js_runner::exec_script(function.clone(), args).expect("Erro ao executar script");
@@ -81,7 +80,7 @@ fn execute_script_v1(script: &Script) {
     }
     else {
         let event = replacer::replace(&serde_json::to_string(&script).expect("script event serialized"));
-        MANAGER_POOL.event.set(&system::get_master_state(), &event);
+        MANAGER_POOL.event.set(&system::get_test_master_state(), &event);
     }
 }
 

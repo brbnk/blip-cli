@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use crate::content_actions::{MediaContent, components::QuickReply};
+use crate::content_actions::{MediaContent, components::{ListMenu, QuickReply}};
 use super::ChatState;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -8,5 +8,6 @@ pub enum Content {
     Text(String),
     ChatState(ChatState),
     Media(MediaContent),
-    QuickReply(QuickReply)
+    QuickReply(QuickReply),
+    ListMenu(ListMenu)
 }

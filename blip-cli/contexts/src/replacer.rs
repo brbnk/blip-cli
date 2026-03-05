@@ -39,10 +39,14 @@ fn replace_object(message: &str) -> String {
         if let Some((key, path)) = token.split_once('@') {
             let placeholder = format!("{{{{{}@{}}}}}", key, path);
             if let Some(obj_value) = store::get(key) {
-                let json: Value = from_str(&obj_value).unwrap();
-                if let Some(val) = get_json_path(&json, path) {
-                    result =
-                        result.replace(&placeholder, &val.to_string().trim_matches('"').to_string())
+                let val: Result<Value, _> = from_str(&obj_value);
+                match val {
+                    Ok(json) => {
+                        if let Some(val) = get_json_path(&json, path) {
+                            result = result.replace(&placeholder, &val.to_string().trim_matches('"').to_string())
+                        }
+                    },
+                    Err(_) => {},
                 }
             }
         }

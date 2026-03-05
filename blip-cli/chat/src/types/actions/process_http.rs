@@ -40,7 +40,7 @@ impl Executable for ProcessHttp {
             });
         } else {
             let event = replacer::replace(&serde_json::to_string(&self).expect("process http event serialized"));
-            MANAGER_POOL.event.set(&system::get_master_state(), &event);
+            MANAGER_POOL.event.set(&system::get_test_master_state(), &event);
         }
     }
 }
