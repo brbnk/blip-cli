@@ -23,6 +23,9 @@ public class Thread
   [JsonPropertyName("status")]
   public string? Status { get; set; } = string.Empty;
 
+  [JsonPropertyName("reason")]
+  public ThreadReason? Reason { get; set; }
+
   [JsonPropertyName("metadata")]
   public IDictionary<string, string>? Metadata { get; set; }
 }
