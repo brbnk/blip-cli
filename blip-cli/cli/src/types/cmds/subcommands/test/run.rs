@@ -50,8 +50,12 @@ impl Run {
             system::enter_test_mode();
             system::set_test_inputs(&inputs);
             system::reset_end_test_signal();
+            
+            let mut mocks = test_file.mocks.clone();
 
-            self.handle_mocks(&test_file.mocks);
+            mocks.insert(String::from("isUnitTest"), Value::Bool(true)); 
+
+            self.handle_mocks(&mocks);
             self.show_inputs(&test_file.inputs);
             
             // Run chat in test mode and collect events
