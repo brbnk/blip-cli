@@ -1,10 +1,12 @@
-use chat::{custom_actions::ActionType, types::{Flow, State}};
+use std::ops::AddAssign;
+
+use chat::{custom_actions::{ActionType, CustomAction, Settings}, types::{Flow, State}};
 use clap::{Args};
 use domain::{cli::Runnable, constants, file_handler::Reader};
 use file_handler::{RouterChild, deserialize, types::DataFile};
 use ui::{printer::{print_state_title, println}, types::Color};
 
-use crate::types::CommonArgs;
+use crate::types::{CommonArgs};
 
 #[derive(Args, Debug)]
 pub struct Analyze {
@@ -13,9 +15,6 @@ pub struct Analyze {
 
     #[arg(short, long)]
     router: bool,
-
-    #[arg(short, long)]
-    all: bool,
 
     #[arg(short, long)]
     scripts: bool,
@@ -30,7 +29,22 @@ pub struct Analyze {
     variable: bool,
 
     #[arg(short, long)]
-    tracking: bool
+    tracking: bool,
+    
+    #[arg(short, long)]
+    redirect: bool,
+
+    #[arg(short, long)]
+    blip_function: bool,
+
+    #[arg(short, long)]
+    merge_contacts: bool,
+
+    #[arg(short, long)]
+    agents: bool,
+
+    #[arg(short, long)]
+    desk: bool
 }
 
 impl Runnable for Analyze {
@@ -54,7 +68,7 @@ impl Runnable for Analyze {
                     Err(_) => {},
                 }
 
-                context_store.print_result();
+                context_store.print_result(&self);
             }
         }
         else {
@@ -72,87 +86,200 @@ impl Runnable for Analyze {
                 Err(_) => {},
             }
             
-            context_store.print_result();
+            context_store.print_result(&self);
+        }
+    }
+}
+
+struct Context {
+    count: i32,
+    actions: Vec<CustomAction>
+}
+
+impl AddAssign<i32> for Context {
+    fn add_assign(&mut self, rhs: i32) {
+        self.count += rhs;
+    }
+}
+
+impl Context {
+
+}
+
+impl Context {
+    pub fn new() -> Self {
+        Self { 
+            count: 0, 
+            actions: Vec::new() 
+        }
+    }
+
+    pub fn print_result(&self, label: &str, should_display_actions: Option<bool>) {
+        println(&format!("{} = {}", label, self.count), Color::White);
+
+        if should_display_actions.unwrap_or(false) {
+            for ca in &self.actions {
+                self.print_action(&ca.settings);
+            }
+        }
+    }
+
+    fn print_action(&self, settings: &Settings) {
+        match settings {
+            Settings::Script(s) => {
+                println(&format!("SCRIPT: {}\n\n{}", s.output_variable, s.source.replace("\\n", "\n")), Color::White);
+            },
+            Settings::Variable(v) => {
+                println(&format!("    Variable: {}\n    Value: {}\n", v.variable, v.value.clone().unwrap_or(String::from("EMPTY"))), Color::White);
+            },
+            Settings::ProcessHttp(h) => {
+                println(
+                    &format!("    {} {}\n      Status: {}\n      Response: {}\n", 
+                    h.method, 
+                    h.uri, 
+                    h.status.clone().unwrap_or(String::from("EMPTY")), 
+                    h.response.clone().unwrap_or(String::from("EMPTY"))), Color::White);
+            },
+            Settings::TrackEvent(t) => {
+                println(&format!("    Category: {}\n    Action: {}\n", t.category, t.action), Color::White);
+            },
+            Settings::MergeContact(m) => {
+                println(&format!("    {:#?}\n", m), Color::White);
+            },
+            Settings::Redirect(r) => {
+                println(&format!("    Address: {}\n    {:#?}", r.address, r.context), Color::White);
+            },
+            Settings::ScriptV2(sv2) => {
+                println(&format!(" SCRIPT: {}\n\n{}", sv2.output_variable, sv2.source.replace("\\n", "\n")), Color::White);
+            },
+            Settings::ProcessCommand(p) => {
+                println(&format!("    {} {}\n    Variable: {}\n", p.method, p.uri, p.variable), Color::White);
+            },
+            Settings::ExecuteBlipFunction(ebf) => {
+                println(&format!("    {}\n", ebf.output_variable), Color::White);
+            },
+            Settings::ProcessContentAssistant(pca) => {
+                println(&format!("    Variable: {}\n    Score: {}\n", pca.output_variable, pca.score), Color::White);
+            },
+            Settings::ForwardToDesk(ftd) => {
+                println(&format!("    {:#?}\n", ftd), Color::White);
+            },
+            Settings::Agent(a) => {
+                println(&format!("    {:#?}\n", a.output), Color::White);
+            },
         }
     }
 }
 
 struct ContextStore {
     bot_id: String,
-    states: i32,
-    scripts_v1: i32,
-    scripts_v2: i32,
-    http: i32,
-    commands: i32,
-    trackings: i32,
-    variables: i32,
-    redirects: i32,
-    blip_function: i32,
-    merge_contacts: i32,
-    agents: i32,
-    desk: i32
+    states: Context,
+    scripts_v1: Context,
+    scripts_v2: Context,
+    http: Context,
+    commands: Context,
+    trackings: Context,
+    variables: Context,
+    redirects: Context,
+    blip_function: Context,
+    merge_contacts: Context,
+    agents: Context,
+    desk: Context
 }
 
 impl ContextStore {
     pub fn new(bot_id: &str) -> Self {
         ContextStore { 
             bot_id: String::from(bot_id),
-            states: 0,
-            scripts_v1: 0,
-            scripts_v2: 0,
-            http: 0,
-            commands: 0,
-            trackings: 0,
-            variables: 0,
-            redirects: 0,
-            blip_function: 0,
-            merge_contacts: 0,
-            agents: 0,
-            desk: 0,
+            states: Context::new(),
+            scripts_v1: Context::new(),
+            scripts_v2: Context::new(),
+            http: Context::new(),
+            commands: Context::new(),
+            trackings: Context::new(),
+            variables: Context::new(),
+            redirects: Context::new(),
+            blip_function: Context::new(),
+            merge_contacts: Context::new(),
+            agents: Context::new(),
+            desk: Context::new(),
         }
     }
 
-    pub fn print_result(&self) {
+    pub fn print_result(&self, analyze: &Analyze) {
         print_state_title(&self.bot_id);
-        println(&format!("States = {}", self.states), Color::White);
-        println(&format!("ScriptsV1 = {}", self.scripts_v1), Color::White);
-        println(&format!("ScriptsV2 = {}", self.scripts_v2), Color::White);
-        println(&format!("ProcessHttp = {}", self.http), Color::White);
-        println(&format!("ProcessCommands = {}", self.commands), Color::White);
-        println(&format!("Trackings = {}", self.trackings), Color::White);
-        println(&format!("Variables = {}", self.variables), Color::White);
-        println(&format!("Redirects = {}", self.redirects), Color::White);
-        println(&format!("BlipFunctions = {}", self.blip_function), Color::White);
-        println(&format!("MergeContacts = {}", self.merge_contacts), Color::White);
-        println(&format!("Agents = {}", self.agents), Color::White);
-        println(&format!("Desk = {}", self.desk), Color::White);
+        self.states.print_result("States", None);
+        self.scripts_v1.print_result("ScriptV1", Some(analyze.scripts));
+        self.scripts_v2.print_result("ScriptV2", Some(analyze.scripts));
+        self.http.print_result("ProcessHttp", Some(analyze.http));
+        self.commands.print_result("ProcessCommand", Some(analyze.command));
+        self.trackings.print_result("Trackings",Some(analyze.tracking));
+        self.variables.print_result("Variables", Some(analyze.variable));
+        self.redirects.print_result("Redirects", Some(analyze.redirect));
+        self.blip_function.print_result("BlipFunctions", Some(analyze.blip_function));
+        self.merge_contacts.print_result("MergeContacts", Some(analyze.merge_contacts));
+        self.agents.print_result("Agents", Some(analyze.agents));
+        self.desk.print_result("Desk", Some(analyze.desk));
         println!();
     }
     
     pub fn update(&mut self, state: State) {
         for eca in state.entering_custom_actions {
-            self.increment(eca.action_type);
+            self.increment(eca);
         }
     
         for lca in state.leaving_custom_actions {
-            self.increment(lca.action_type);
+            self.increment(lca);
         }
     }
     
-    fn increment(&mut self, action_type: ActionType) {
-        match action_type {
-            ActionType::ExecuteScript => self.scripts_v1 += 1,
-            ActionType::SetVariable => self.variables += 1,
-            ActionType::ProcessHttp => self.http += 1,
-            ActionType::MergeContact => self.merge_contacts += 1,
-            ActionType::Redirect => self.redirects += 1,
-            ActionType::ExecuteScriptV2 => self.scripts_v2 += 1,
-            ActionType::ProcessCommand => self.commands += 1,
-            ActionType::ExecuteBlipFunction => self.blip_function += 1,
+    fn increment(&mut self, custom_action: CustomAction) {
+        match custom_action.action_type {
+            ActionType::ExecuteScript => {
+                self.scripts_v1 += 1;
+                self.scripts_v1.actions.push(custom_action);
+            },
+            ActionType::SetVariable => {
+                self.variables += 1;
+                self.variables.actions.push(custom_action);
+            },
+            ActionType::ProcessHttp => {
+                self.http += 1;
+                self.http.actions.push(custom_action);
+            },
+            ActionType::MergeContact => {
+                self.merge_contacts += 1;
+                self.merge_contacts.actions.push(custom_action);
+            },
+            ActionType::Redirect => {
+                self.redirects += 1;
+                self.redirects.actions.push(custom_action);
+            },
+            ActionType::ExecuteScriptV2 => {
+                self.scripts_v2 += 1;
+                self.scripts_v2.actions.push(custom_action);
+            },
+            ActionType::ProcessCommand => {
+                self.commands += 1;
+                self.commands.actions.push(custom_action);
+            },
+            ActionType::ExecuteBlipFunction => {
+                self.blip_function += 1;
+                self.blip_function.actions.push(custom_action);
+            },
             ActionType::ProcessContentAssistant => {},
-            ActionType::TrackEvent => self.trackings += 1,
-            ActionType::ForwardToAgent => self.agents += 1,
-            ActionType::ForwardToDesk => self.desk += 1,
+            ActionType::TrackEvent => {
+                self.trackings += 1;
+                self.trackings.actions.push(custom_action);
+            },
+            ActionType::ForwardToAgent => {
+                self.agents += 1;
+                self.agents.actions.push(custom_action);
+            },
+            ActionType::ForwardToDesk => {
+                self.desk += 1;
+                self.desk.actions.push(custom_action);
+            }
         }
     }
 }
