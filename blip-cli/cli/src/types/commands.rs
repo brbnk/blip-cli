@@ -1,5 +1,5 @@
 use clap::Subcommand;
-use crate::types::cmds::{Chat, GetCommand, Mirror, TestCommand};
+use crate::types::cmds::{Analyze, Chat, GetCommand, Mirror, TestCommand};
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
@@ -16,5 +16,8 @@ pub enum Commands {
     Test(TestCommand),
 
     /// get data from blip 
-    Get(GetCommand)
+    Get(GetCommand),
+
+    /// scan flow
+    Analyze(Analyze)
 }

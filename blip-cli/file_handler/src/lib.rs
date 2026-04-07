@@ -5,7 +5,10 @@ use domain::constants;
 
 pub mod types;
 mod deserializer;
+mod data;
+
 pub use deserializer::deserialize;
+pub use data::RouterChild;
 
 pub fn resolve_path(child_path: Option<&str>) -> String {
     let mut path = home_dir().expect("Não foi possível obter o diretório home");

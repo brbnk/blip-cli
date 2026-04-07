@@ -9,6 +9,7 @@ mod execute_blip_function;
 mod process_content_assistant;
 mod track_event;
 mod agent;
+mod forward_to_desk;
 
 pub use script::Script;
 pub use variable::Variable;
@@ -21,3 +22,4 @@ pub use execute_blip_function::ExecuteBlipFunction;
 pub use process_content_assistant::ProcessContentAssistant;
 pub use track_event::TrackEvent;
 pub use agent::Agent;
+pub use forward_to_desk::ForwardToDesk;

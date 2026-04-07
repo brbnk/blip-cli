@@ -21,7 +21,7 @@ pub struct Run {
     commong_args: CommonArgs,
 
     #[arg(short, long)]
-    router: Option<bool>
+    router: bool
 }
 
 impl Runnable for Run {
@@ -62,7 +62,7 @@ impl Run {
             chat::init(ChatParams {
                 tenant: self.commong_args.tenant.to_string(),
                 bot: self.commong_args.bot.to_string(),
-                router: self.router.unwrap_or(false)
+                router: self.router
             });
 
             self.handle_asserts(&test_file);
