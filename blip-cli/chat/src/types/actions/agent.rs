@@ -33,8 +33,8 @@ pub struct Forward {
     pub enabled: bool,
 
     #[serde(rename = "outputVariable")]
-    pub output_variable: String,
+    pub output_variable: Option<String>,
 
     #[serde(rename = "handoffName")]
-    pub handoff_name: String,
+    pub handoff_name: Option<String>,
 }

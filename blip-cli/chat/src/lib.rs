@@ -1,4 +1,4 @@
-mod types;
+pub mod types;
 
 use file_handler::deserialize;
 pub use types::{

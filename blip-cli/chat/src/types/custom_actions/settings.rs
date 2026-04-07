@@ -1,18 +1,8 @@
 use serde::{Serialize, Deserialize};
 use domain::chat::Executable;
-use crate::types::actions::{
-    ExecuteBlipFunction, 
-    MergeContact, 
-    ProcessCommand, 
-    ProcessContentAssistant, 
-    ProcessHttp, 
-    Redirect, 
-    Script, 
-    ScriptV2, 
-    TrackEvent, 
-    Variable,
-    Agent
-};
+use crate::{actions::ForwardToDesk, types::actions::{
+    Agent, ExecuteBlipFunction, MergeContact, ProcessCommand, ProcessContentAssistant, ProcessHttp, Redirect, Script, ScriptV2, TrackEvent, Variable
+}};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -27,6 +17,7 @@ pub enum Settings {
     ProcessCommand(ProcessCommand),
     ExecuteBlipFunction(ExecuteBlipFunction),
     ProcessContentAssistant(ProcessContentAssistant),
+    ForwardToDesk(ForwardToDesk),
     Agent(Agent)
 }
 
@@ -44,6 +35,7 @@ impl Settings {
             Settings::ExecuteBlipFunction(ebf) => ebf,
             Settings::ProcessContentAssistant(pca) => pca,
             Settings::Agent(a) => a,
+            Settings::ForwardToDesk(ftd) => ftd,
         }
     }
 }
