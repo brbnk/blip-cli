@@ -4,7 +4,7 @@ use chat::{custom_actions::{ActionType, CustomAction, Settings}, types::{Flow, S
 use clap::{Args};
 use domain::{cli::Runnable, constants, file_handler::Reader};
 use file_handler::{RouterChild, deserialize, types::DataFile};
-use ui::{printer::{print_state_title, println}, types::Color};
+use ui::{printer::{colorize, print, print_state_title, println}, types::Color};
 
 use crate::types::{CommonArgs};
 
@@ -18,6 +18,9 @@ pub struct Analyze {
 
     #[arg(short, long)]
     scripts: bool,
+
+    #[arg(short, long)]
+    fetch: bool,
 
     #[arg(short, long)]
     http: bool,
@@ -127,39 +130,95 @@ impl Context {
     fn print_action(&self, settings: &Settings) {
         match settings {
             Settings::Script(s) => {
-                println(&format!("SCRIPT: {}\n\n{}", s.output_variable, s.source.replace("\\n", "\n")), Color::White);
+                if s.source.contains("fetchAsync") {
+                    print("[HTTP] ", Color::Yellow);
+                }
+
+                println(
+                    &format!("{}: {}\n\n{}\n", 
+                        colorize("Script", Color::Yellow), 
+                        s.output_variable, 
+                        s.source.replace("\\n", "\n")
+                    ), 
+                    Color::White);
             },
             Settings::Variable(v) => {
-                println(&format!("    Variable: {}\n    Value: {}\n", v.variable, v.value.clone().unwrap_or(String::from("EMPTY"))), Color::White);
+                println(
+                    &format!("    {}: {}\n    {}: {}\n", 
+                        colorize("Variable", Color::Yellow),
+                        v.variable, 
+                        colorize("Value", Color::Yellow),
+                        v.value.clone().unwrap_or(String::from("EMPTY"))
+                    ), 
+                    Color::White);
             },
             Settings::ProcessHttp(h) => {
                 println(
-                    &format!("    {} {}\n      Status: {}\n      Response: {}\n", 
-                    h.method, 
-                    h.uri, 
-                    h.status.clone().unwrap_or(String::from("EMPTY")), 
-                    h.response.clone().unwrap_or(String::from("EMPTY"))), Color::White);
+                    &format!("    {} {}\n    {}: {}\n    {}: {}\n", 
+                        colorize(&h.method, Color::Yellow), 
+                        h.uri,
+                        colorize("Status", Color::Yellow),
+                        h.status.clone().unwrap_or(String::from("EMPTY")), 
+                        colorize("Response", Color::Yellow),
+                        h.response.clone().unwrap_or(String::from("EMPTY"))),
+                    Color::White);
             },
             Settings::TrackEvent(t) => {
-                println(&format!("    Category: {}\n    Action: {}\n", t.category, t.action), Color::White);
+                println(
+                    &format!("    {}: {}\n    {}: {}\n", 
+                        colorize("Category", Color::Yellow),
+                        t.category, 
+                        colorize("Action", Color::Yellow),
+                        t.action), 
+                    Color::White);
             },
             Settings::MergeContact(m) => {
-                println(&format!("    {:#?}\n", m), Color::White);
+                println(
+                    &format!("    {} {:#?}\n", colorize("MergeContact", Color::Yellow), m), 
+                    Color::White);
             },
             Settings::Redirect(r) => {
-                println(&format!("    Address: {}\n    {:#?}", r.address, r.context), Color::White);
+                println(
+                    &format!("    {}: {}\n{}: {:#?}", 
+                        colorize("Address", Color::Yellow),
+                        r.address, 
+                        colorize("Context", Color::Yellow),
+                        r.context), 
+                    Color::White);
             },
             Settings::ScriptV2(sv2) => {
-                println(&format!(" SCRIPT: {}\n\n{}", sv2.output_variable, sv2.source.replace("\\n", "\n")), Color::White);
+                if sv2.source.contains("fetchAsync") {
+                    print("[HTTP] ", Color::Yellow);
+                }
+                println(
+                    &format!("{}: {}\n\n{}\n", 
+                        colorize("ScriptV2", Color::Yellow), 
+                        sv2.output_variable, 
+                        sv2.source.replace("\\n", "\n")), 
+                    Color::White);
             },
             Settings::ProcessCommand(p) => {
-                println(&format!("    {} {}\n    Variable: {}\n", p.method, p.uri, p.variable), Color::White);
+                println(
+                    &format!("    {} {}\n    {}: {}\n",
+                        p.method,
+                        p.uri,
+                        colorize("Variable", Color::Yellow),
+                        p.variable), 
+                    Color::White);
             },
             Settings::ExecuteBlipFunction(ebf) => {
-                println(&format!("    {}\n", ebf.output_variable), Color::White);
+                println(
+                    &format!("    {}\n", ebf.output_variable), 
+                    Color::White);
             },
             Settings::ProcessContentAssistant(pca) => {
-                println(&format!("    Variable: {}\n    Score: {}\n", pca.output_variable, pca.score), Color::White);
+                println(
+                    &format!("    {}: {}\n    {}: {}\n",
+                        colorize("Variable", Color::Yellow),
+                        pca.output_variable, 
+                         colorize("Score", Color::Yellow),
+                        pca.score), 
+                    Color::White);
             },
             Settings::ForwardToDesk(ftd) => {
                 println(&format!("    {:#?}\n", ftd), Color::White);
@@ -176,6 +235,7 @@ struct ContextStore {
     states: Context,
     scripts_v1: Context,
     scripts_v2: Context,
+    scripts_v2_http: Context,
     http: Context,
     commands: Context,
     trackings: Context,
@@ -194,6 +254,7 @@ impl ContextStore {
             states: Context::new(),
             scripts_v1: Context::new(),
             scripts_v2: Context::new(),
+            scripts_v2_http: Context::new(),
             http: Context::new(),
             commands: Context::new(),
             trackings: Context::new(),
@@ -211,6 +272,7 @@ impl ContextStore {
         self.states.print_result("States", None);
         self.scripts_v1.print_result("ScriptV1", Some(analyze.scripts));
         self.scripts_v2.print_result("ScriptV2", Some(analyze.scripts));
+        self.scripts_v2_http.print_result("ScriptV2_Http", Some(analyze.fetch));
         self.http.print_result("ProcessHttp", Some(analyze.http));
         self.commands.print_result("ProcessCommand", Some(analyze.command));
         self.trackings.print_result("Trackings",Some(analyze.tracking));
@@ -237,7 +299,28 @@ impl ContextStore {
         match custom_action.action_type {
             ActionType::ExecuteScript => {
                 self.scripts_v1 += 1;
-                self.scripts_v1.actions.push(custom_action);
+                
+                match &custom_action.settings {
+                    Settings::Script(s) => {
+                        if s.source.contains("fetchAsync") {
+                            self.scripts_v2_http += 1;
+                            self.scripts_v2_http.actions.push(custom_action);
+                        }
+                        else {
+                            self.scripts_v1.actions.push(custom_action);
+                        }
+                    },
+                    Settings::ScriptV2(s2) => {
+                        if s2.source.contains("fetchAsync") {
+                            self.scripts_v2_http += 1;
+                            self.scripts_v2_http.actions.push(custom_action);
+                        }
+                        else {
+                            self.scripts_v1.actions.push(custom_action);
+                        }
+                    },
+                    _ => {}
+                }
             },
             ActionType::SetVariable => {
                 self.variables += 1;
@@ -257,7 +340,28 @@ impl ContextStore {
             },
             ActionType::ExecuteScriptV2 => {
                 self.scripts_v2 += 1;
-                self.scripts_v2.actions.push(custom_action);
+
+                match &custom_action.settings {
+                    Settings::Script(s) => {
+                        if s.source.contains("fetchAsync") {
+                            self.scripts_v2_http += 1;
+                            self.scripts_v2_http.actions.push(custom_action);
+                        }
+                        else {
+                            self.scripts_v2.actions.push(custom_action);
+                        }
+                    },
+                    Settings::ScriptV2(s2) => {
+                        if s2.source.contains("fetchAsync") {
+                            self.scripts_v2_http += 1;
+                            self.scripts_v2_http.actions.push(custom_action);
+                        }
+                        else {
+                            self.scripts_v2.actions.push(custom_action);
+                        }
+                    },
+                    _ => {}
+                }
             },
             ActionType::ProcessCommand => {
                 self.commands += 1;
