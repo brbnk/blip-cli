@@ -22,6 +22,7 @@ pub fn clone(tenant: &str, identifier: &str, tier: &str, request_type: &Vec<Requ
             for child in children {
                 print_start_msg(&child.short_name);
                 client.get_working_flow(tenant, &child.short_name);
+                client.get_working_subflow(tenant, &child.short_name);
                 client.get_global_actions(tenant, &child.short_name);
                 client.get_config_variables(tenant, &child.short_name);
                 client.get_resources(tenant, &child.short_name);
@@ -34,7 +35,10 @@ pub fn clone(tenant: &str, identifier: &str, tier: &str, request_type: &Vec<Requ
         else {
             for rt in request_type {
                 match rt {
-                    RequestType::WorkingFlow => client.get_working_flow(tenant, identifier),
+                    RequestType::WorkingFlow => {
+                        client.get_working_flow(tenant, identifier);
+                        client.get_working_subflow(tenant, identifier);
+                    },
                     RequestType::GlobalAction => client.get_global_actions(tenant, identifier),
                     RequestType::Configurations => client.get_config_variables(tenant, identifier),
                     RequestType::Resources => client.get_resources(tenant, identifier),
