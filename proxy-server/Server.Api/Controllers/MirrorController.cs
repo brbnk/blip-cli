@@ -19,6 +19,12 @@ public sealed class MirrorController(
         return Ok(await workingFlow.GetAsync(identifier));
     }
 
+    [HttpGet("working-subflow")]
+    public async Task<IActionResult> GetWorkingSubFlowAsync([FromQuery] string flowId)
+    {
+        return Ok(await workingFlow.GetSubflowAsync(flowId));
+    }
+
     [HttpGet("global-actions")]
     public async Task<IActionResult> GetGlobalActionsAsync([FromQuery] string identifier)
     {

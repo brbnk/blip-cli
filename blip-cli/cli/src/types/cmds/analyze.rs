@@ -1,4 +1,4 @@
-use std::{ops::AddAssign};
+use std::{collections::HashMap, fs, ops::AddAssign};
 
 use chat::{custom_actions::{ActionType, CustomAction, Settings}, types::{Flow, State}};
 use clap::{Args};
@@ -72,6 +72,23 @@ impl Runnable for Analyze {
                 }
 
                 context_store.print_result(&self);
+
+                let subflows = get_bot_subflows(&self.commong_args.tenant, &child.short_name);
+
+                if subflows.is_ok() {
+                    for subflow in subflows.unwrap() {
+                        for (id, json) in subflow {
+                            let mut context_subflow_store = ContextStore::new(&id);
+                            
+                            for (_, state) in json.flow {
+                                context_subflow_store.states += 1;
+                                context_subflow_store.update(state);
+                            }
+
+                            context_subflow_store.print_result(&self);
+                        }
+                    }
+                }
             }
         }
         else {
@@ -90,6 +107,23 @@ impl Runnable for Analyze {
             }
             
             context_store.print_result(&self);
+
+            let subflows = get_bot_subflows(&self.commong_args.tenant, &self.commong_args.bot);
+
+            if subflows.is_ok() {
+                for subflow in subflows.unwrap() {
+                    for (id, json) in subflow {
+                        let mut context_subflow_store = ContextStore::new(&id);
+                        
+                        for (_, state) in json.flow {
+                            context_subflow_store.states += 1;
+                            context_subflow_store.update(state);
+                        }
+
+                        context_subflow_store.print_result(&self);
+                    }
+                }
+            }
         }
     }
 }
@@ -144,21 +178,29 @@ impl Context {
     fn print_action(&self, settings: &Settings, state_id: &String, state_name: &String, action_name: String) {
         match settings {
             Settings::Script(s) => {
-                // if s.source.contains("fetchAsync") {
-                //     print("[HTTP] ", Color::Yellow);
-                // }
+                if s.source.contains("fetchAsync") {
+                    print("[HTTP] ", Color::Yellow);
+                }
 
-                println(
-                    &format!("{},{},{}", 
+                 println(
+                    &format!("{}: {} ({}) - {}\n{}: {}\n\n{}\n",
+                        colorize("State", Color::Yellow),
                         state_name,
                         state_id,
-                        action_name
+                        action_name,
+                        colorize("Script", Color::Yellow), 
+                        s.output_variable, 
+                        s.source.replace("\\n", "\n")
                     ), 
                     Color::White);
             },
             Settings::Variable(v) => {
                 println(
-                    &format!("    {}: {}\n    {}: {}\n", 
+                    &format!("    {}: {} ({}) - {}\n    {}: {}\n    {}: {}\n",
+                        colorize("State", Color::Yellow),
+                        state_name,
+                        state_id,
+                        action_name,
                         colorize("Variable", Color::Yellow),
                         v.variable, 
                         colorize("Value", Color::Yellow),
@@ -167,8 +209,12 @@ impl Context {
                     Color::White);
             },
             Settings::ProcessHttp(h) => {
-                println(
-                    &format!("    {} {}\n    {}: {}\n    {}: {}\n", 
+                   println(
+                    &format!("    {}: {} ({}) - {}\n    {} {}\n    {}: {}\n    {}: {}\n",
+                        colorize("State", Color::Yellow),
+                        state_name,
+                        state_id,
+                        action_name,
                         colorize(&h.method, Color::Yellow), 
                         h.uri,
                         colorize("Status", Color::Yellow),
@@ -179,7 +225,11 @@ impl Context {
             },
             Settings::TrackEvent(t) => {
                 println(
-                    &format!("    {}: {}\n    {}: {}\n", 
+                    &format!("    {}: {} ({}) - {}\n    {}: {}\n    {}: {}\n",
+                        colorize("State", Color::Yellow),
+                        state_name,
+                        state_id,
+                        action_name,
                         colorize("Category", Color::Yellow),
                         t.category, 
                         colorize("Action", Color::Yellow),
@@ -188,12 +238,22 @@ impl Context {
             },
             Settings::MergeContact(m) => {
                 println(
-                    &format!("    {} {:#?}\n", colorize("MergeContact", Color::Yellow), m), 
+                    &format!("    {}: {} ({}) - {}\n    {} {:#?}\n", 
+                        colorize("State", Color::Yellow),
+                        state_name,
+                        state_id,
+                        action_name,
+                        colorize("MergeContact", Color::Yellow), 
+                        m), 
                     Color::White);
             },
             Settings::Redirect(r) => {
                 println(
-                    &format!("    {}: {}\n{}: {:#?}", 
+                    &format!("    {}: {} ({}) - {}\n    {}: {}\n    {}: {:#?}\n",
+                        colorize("State", Color::Yellow),
+                        state_name,
+                        state_id,
+                        action_name, 
                         colorize("Address", Color::Yellow),
                         r.address, 
                         colorize("Context", Color::Yellow),
@@ -201,20 +261,29 @@ impl Context {
                     Color::White);
             },
             Settings::ScriptV2(sv2) => {
-                // if sv2.source.contains("fetchAsync") {
-                //     print("[HTTP] ", Color::Yellow);
-                // }
-                  println(
-                    &format!("{},{},{}", 
+                if sv2.source.contains("fetchAsync") {
+                    print("[HTTP] ", Color::Yellow);
+                }
+
+                println(
+                    &format!("{}: {} ({}) - {}\n{}: {}\n\n{}\n",
+                        colorize("State", Color::Yellow),
                         state_name,
                         state_id,
-                        action_name
+                        action_name,
+                        colorize("Script", Color::Yellow), 
+                        sv2.output_variable, 
+                        sv2.source.replace("\\n", "\n")
                     ), 
                     Color::White);
             },
             Settings::ProcessCommand(p) => {
                 println(
-                    &format!("    {} {}\n    {}: {}\n",
+                    &format!("    {}: {} ({}) - {}\n    {} {}\n    {}: {}\n",
+                        colorize("State", Color::Yellow),
+                        state_name,
+                        state_id,
+                        action_name,
                         p.method,
                         p.uri,
                         colorize("Variable", Color::Yellow),
@@ -223,12 +292,21 @@ impl Context {
             },
             Settings::ExecuteBlipFunction(ebf) => {
                 println(
-                    &format!("    {}\n", ebf.output_variable), 
-                    Color::White);
+                    &format!("    {}: {} ({}) - {}\n    {}\n", 
+                    colorize("State", Color::Yellow),
+                    state_name,
+                    state_id,
+                    action_name,
+                    ebf.output_variable), 
+                        Color::White);
             },
             Settings::ProcessContentAssistant(pca) => {
                 println(
-                    &format!("    {}: {}\n    {}: {}\n",
+                    &format!("    {}: {} ({}) - {}\n    {}: {}\n    {}: {}\n",
+                        colorize("State", Color::Yellow),
+                        state_name,
+                        state_id,
+                        action_name,
                         colorize("Variable", Color::Yellow),
                         pca.output_variable, 
                          colorize("Score", Color::Yellow),
@@ -236,10 +314,22 @@ impl Context {
                     Color::White);
             },
             Settings::ForwardToDesk(ftd) => {
-                println(&format!("    {:#?}\n", ftd), Color::White);
+                println(&format!("    {}: {} ({}) - {}\n    {:#?}\n",
+                    colorize("State", Color::Yellow),
+                    state_name,
+                    state_id,
+                    action_name,
+                    ftd), 
+                Color::White);
             },
             Settings::Agent(a) => {
-                println(&format!("    {:#?}\n", a.output), Color::White);
+                println(&format!("    {}: {} ({}) - {}\n    {:#?}\n",
+                    colorize("State", Color::Yellow),
+                    state_name,
+                    state_id,
+                    action_name,
+                    a.output), 
+                Color::White);
             },
         }
     }
@@ -284,19 +374,19 @@ impl ContextStore {
 
     pub fn print_result(&self, analyze: &Analyze) {
         print_state_title(&self.bot_id);
-        // self.states.print_result("States", None);
-        // self.scripts_v1.print_result("ScriptV1", Some(analyze.scripts));
-        // self.scripts_v2.print_result("ScriptV2", Some(analyze.scripts));
+        self.states.print_result("States", None);
+        self.scripts_v1.print_result("ScriptV1", Some(analyze.scripts));
+        self.scripts_v2.print_result("ScriptV2", Some(analyze.scripts));
         self.scripts_v2_http.print_result("ScriptV2_Http", Some(analyze.fetch));
-        // self.http.print_result("ProcessHttp", Some(analyze.http));
-        // self.commands.print_result("ProcessCommand", Some(analyze.command));
-        // self.trackings.print_result("Trackings",Some(analyze.tracking));
-        // self.variables.print_result("Variables", Some(analyze.variable));
-        // self.redirects.print_result("Redirects", Some(analyze.redirect));
-        // self.blip_function.print_result("BlipFunctions", Some(analyze.blip_function));
-        // self.merge_contacts.print_result("MergeContacts", Some(analyze.merge_contacts));
-        // self.agents.print_result("Agents", Some(analyze.agents));
-        // self.desk.print_result("Desk", Some(analyze.desk));
+        self.http.print_result("ProcessHttp", Some(analyze.http));
+        self.commands.print_result("ProcessCommand", Some(analyze.command));
+        self.trackings.print_result("Trackings",Some(analyze.tracking));
+        self.variables.print_result("Variables", Some(analyze.variable));
+        self.redirects.print_result("Redirects", Some(analyze.redirect));
+        self.blip_function.print_result("BlipFunctions", Some(analyze.blip_function));
+        self.merge_contacts.print_result("MergeContacts", Some(analyze.merge_contacts));
+        self.agents.print_result("Agents", Some(analyze.agents));
+        self.desk.print_result("Desk", Some(analyze.desk));
         println!();
     }
     
@@ -453,4 +543,39 @@ fn get_bot_flow(tenant: &str, bot_id: &str) -> Result<Flow, String> {
         Ok(content) => deserialize::<Flow>(&content),
         Err(err) => Err(err),
     }
+}
+
+fn get_bot_subflows(tenant: &str, bot_id: &str) -> Result<Vec<HashMap<String, Flow>>, String> {
+    let folder = file_handler::resolve_path(Some(&format!("{}/{}/{}", "data", &tenant, &bot_id)));
+
+    let mut subflows: Vec<HashMap<String, Flow>> = Vec::new();
+    
+    for entry in fs::read_dir(folder).expect("") {
+        let mut map: HashMap<String, Flow> = HashMap::new();
+        let entry = entry.expect("");
+        let metadata = entry.metadata().expect("");
+
+        if metadata.is_file() {
+            let file_name = entry.file_name();
+            let file_name = file_name.to_string_lossy();
+            if file_name.starts_with("subflow_") {
+                let file = DataFile {
+                    tenant: String::from(tenant),
+                    bot_id: Some(bot_id.to_string()),
+                    file_name: String::from(file_name.clone()),
+                    content: None
+                };
+
+                let json = file.read();
+                
+                if json.is_ok() {
+                    let flow = deserialize::<Flow>(&json.unwrap()).expect("flow");
+                    map.insert(file_name.to_string(), flow);
+                    subflows.push(map);
+                }
+            }
+        }
+    }
+
+    Ok(subflows)
 }

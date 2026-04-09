@@ -1,4 +1,4 @@
-use std::{process::{exit}};
+use std::{collections::HashMap, process::exit};
 
 use domain::{
     constants, file_handler::Writer, http::{ApplicationRequests, ContextRequests, MirrorRequests, ThreadsRequests}
@@ -70,9 +70,33 @@ impl MirrorRequests for ProxyRequests {
             content: Some(serde_json::to_string_pretty(&response.data).expect("working flow")) 
         };
 
-        file.write().expect("write woring flow file");
+        file.write().expect("write working flow file");
 
         print_success_message("Working Flow");
+    }
+
+    fn get_working_subflow(&self, tenant: &str, flow_id: &str) {
+        let endpoint = format!("/v1/mirror/working-subflow?flowId={}", flow_id);
+
+        let response = self
+            .request(&endpoint)
+            .expect("working subflow");
+
+        let data: String = serde_json::to_string_pretty(&response.data).expect("router children");
+        let parsed: HashMap<String, String> = deserialize(&data).expect("deserialized response");
+
+        for (subflow_id, working_flow) in parsed {
+            let file = DataFile {
+                tenant: tenant.to_string(),
+                bot_id: Some(flow_id.to_string()),
+                file_name: format!("subflow_{}.json", subflow_id),
+                content: Some(serde_json::to_string_pretty(&serde_json::from_str::<Value>(&working_flow).expect("working subflow")).expect("subflow"))
+            };
+
+            file.write().expect("write subflow file");
+
+            print_success_message(&format!("  - Subflow {}", subflow_id));
+        }
     }
     
     fn get_resources(&self, tenant: &str, identifier: &str) {

@@ -5,4 +5,6 @@ namespace Server.Domain.Handlers;
 public interface IWorkingFlowHandler
 {
     Task<Response<object>> GetAsync(string identifier);
+
+    Task<Response<object>> GetSubflowAsync(string flowId);
 }
