@@ -65,7 +65,7 @@ Options:
 $ blip mirror --tenant $TENANT --bot $BOT_ID --tier $CONTRACT_TIER --router
 ```
 
-The command above will download the Router resources, iterate through all router child services, retrieve the required Blip resources, and store them in the _**~/.data/blip-cli**_ folder.
+The command above will download the Router resources, iterate through all router child services, retrieve the required Blip resources, and store them in the _**~/.blip-cli/data**_ folder.
 
 Possible values for $CONTRACT_TIER:
 - Standard
@@ -110,6 +110,9 @@ Options:
 ```
 
 ## blip list
+
+- List all local bots retrieved by blip mirror command
+
 ```bash
 $ blip list
 
@@ -118,3 +121,92 @@ $ blip list
 |--- bottest
 |--- botexceptions
 ```
+
+## blip test
+- Create journey tests using mocks
+
+```bash
+$ blip test --help
+automate flow tests
+
+Usage: blip test <COMMAND>
+
+Commands:
+  create  create a template test file
+  run     run tests
+  help    Print this message or the help of the given subcommand(s)
+```
+
+- Create a template file with:
+```bash
+$ blip test create --tenant $TENANT --bot $BOT_ID
+```
+This command will create a file on '_**./blip-cli/data/$TENANT/$BOT_ID/__tests__**_' folder with the following structure
+
+```json
+{
+  "description": "Test description",
+  "inputs": [
+    "olá",
+    "sim"
+  ],
+  "mocks": {
+    "myVar": "my value",
+    "apiResponse": {
+      "address": "Rua teste"
+    }
+  },
+  "specs": {
+    "ignoreCase": true
+  },
+  "asserts": [
+    {
+      "type": "variable",
+      "variable": "exampleVar",
+      "should": "BeEqual",
+      "value": "value",
+      "specs": null
+    },
+    {
+      "type": "tracking",
+      "category": "Category tracking examplo",
+      "should": "BeEqual",
+      "action": "Value tracking",
+      "specs": null
+    },
+    {
+      "type": "redirect",
+      "service": "main",
+      "should": "BeCalled",
+      "withContextMessage": "redirect from child",
+      "specs": null
+    },
+    {
+      "type": "sendMessage",
+      "message": "Olá, sou o bot Teste. Tudo bem com você?",
+      "should": "BeEqual",
+      "specs": null
+    },
+    {
+      "type": "script",
+      "outputVar": "exampleOutputScriptVar",
+      "should": "BeEqual",
+      "value": "en",
+      "specs": null
+    }
+  ]
+}
+```
+
+After, you can execute all tests with:
+
+```bash
+$ blip test run --tenant $TENANT --bot $BOT_ID
+```
+
+This is an example of output:
+
+<img width="1157" height="899" alt="image" src="https://github.com/user-attachments/assets/9d51618b-5fe0-4038-8fc6-6e385d003a1a" />
+
+
+  
