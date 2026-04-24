@@ -208,5 +208,127 @@ This is an example of output:
 
 <img width="1157" height="899" alt="image" src="https://github.com/user-attachments/assets/9d51618b-5fe0-4038-8fc6-6e385d003a1a" />
 
+## blip get
+- Get data from blip
 
-  
+```bash
+Usage: blip get <COMMAND>
+
+Commands:
+  key      bot auth key
+  context  user context value
+  thread   last user messages
+  help     Print this message or the help of the given subcommand(s)
+```
+
+- Get the authorization key:
+```bash
+$ blip get key --bot $BOT_ID
+
+#output
+Key <auth_key>
+```
+
+- Get a context variable of a contact:
+```bash
+$ blip get context --bot <BOT_ID> --contact <CONTACT_IDENTITY> --variable <CONTEXT_VARIABLE>
+```
+
+- Get a contact conversaiont thread:
+```bash
+blip get thread --bot <BOT_ID> --contact <CONTACT_IDENTITY> | less
+```
+
+## blip analyze
+- Count the number of actions like 'scripts', 'scriptv2', 'trackings', 'redirects', 'commands', 'processhttp' and states.
+- Search across multiple flows
+
+```bash
+Usage: blip analyze [OPTIONS] --tenant <TENANT> --bot <BOT>
+
+Options:
+      --tenant <TENANT>  contract
+      --bot <BOT>        bot identifier
+  -r, --router
+  -s, --scripts
+  -f, --fetch
+  -h, --http
+  -c, --command
+  -v, --variable
+  -t, --tracking
+  -r, --redirect
+  -b, --blip-function
+  -m, --merge-contacts
+  -a, --agents
+  -d, --desk
+  -h, --help             Print help
+```
+
+Example of output without subcommands:
+
+```bash
+$ blip analyze --tenant $TENANT --bot $BOT_ID
+
+#output
++----------------------------------------------------------+
+|                          $BOT_ID                         |
++----------------------------------------------------------+
+States = 24
+ScriptV1 = 12
+ScriptV2 = 40
+ScriptV2_Http = 8
+ProcessHttp = 2
+ProcessCommand = 0
+Trackings = 30
+Variables = 40
+Redirects = 2
+BlipFunctions = 0
+MergeContacts = 0
+Agents = 0
+Desk = 0
+```
+
+Example of output with the -v (--variable) subcommand. This will print all ocorrences of the searched variable.
+Use '_--router_' to search on all Router services
+
+```bash
+$ blip analyze --tenant $TENANT --bot $BOT_ID -v --router
+
+#output
++----------------------------------------------------------+
+|                 <Router_child_identity>                  |
++----------------------------------------------------------+
+States = 9
+ScriptV1 = 2
+ScriptV2 = 0
+ScriptV2_Http = 0
+ProcessHttp = 0
+ProcessCommand = 0
+Trackings = 6
+Variables = 5
+    State: MN.1.0.0 Menu Principal (9de26b3b-a562-4513-a05d-294036a91465) - set "isBackToStart" to true
+    Variable: isBackToStart
+    Value: true
+
+    State: DV.1.0.0 Duvidas (0f21de5f-4d0b-490a-8cb9-e5ef16a0b715) - dv100
+    Variable: dv100
+    Value: {{input.content}}
+
+    State: Exceções (fallback) - set "statePreviousId"
+    Variable: statePreviousId
+    Value: {{state.previous.id}}
+
+    State: Início (onboarding) - reset "subfluxoRespostas"
+    Variable: subfluxoRespostas
+    Value: N/A
+
+    State: salvar respostas (29438acb-1177-47c4-bf39-ce8e2229f720) - Definir variável
+    Variable: subfluxoRespostas
+    Value: true
+
+Redirects = 0
+BlipFunctions = 0
+MergeContacts = 1
+Agents = 0
+Desk = 0
+```
